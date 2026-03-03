@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINSTELEC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; background: #f5f5f5; }
+        
+        /* Login simple */
+        #login { display: flex; height: 100vh; align-items: center; justify-content: center; }
+        .login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 300px; }
+        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .btn { width: 100%; padding: 10px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #1d4ed8; }
+        
+        /* App principal */
+        #app { display: none; }
+        .nav { background: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
+        .tabs { display: flex; gap: 5px; padding: 15px; overflow-x: auto; }
+        .tab { padding: 8px 15px; background: white; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; white-space: nowrap; }
+        .tab.active { background: #2563eb; color: white; border-color: #2563eb; }
+        
+        .content { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; margin-bottom: 20px; }
+        .card.active { display: block; }
+        
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; }
+        
+        .result { margin-top: 15px; padding: 12px; border-radius: 5px; background: #f0fdf4; color: #166534; border-left: 4px solid #059669; }
+        .result.error { background: #fef2f2; color: #991b1b; border-left-color: #dc2626; }
+        
+        /* Ventana Ares simplificada */
+        #musicWindow {
+            position: fixed; top: 80px; right: 20px; width: 300px;
+            background: #ECE9D8; border: 2px outset white;
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
+            display: none; z-index: 1000;
+        }
+        #musicWindow.show { display: block; }
+        .musicHeader {
+            background: linear-gradient(90deg, #FF9900, #CC6600);
+            color: white; padding: 5px 10px; font-weight: bold;
+            font-size: 12px; cursor: move; display: flex; justify-content: space-between;
+        }
+        .musicContent { padding: 10px; border: 2px inset white; margin: 4px; background: white; }
+        .musicContent iframe { width: 100%; height: 170px; border: none; }
+        .musicStatus { font-size: 10px; padding: 3px 8px; border-top: 1px solid #999; display: flex; justify-content: space-between; }
+        .closeBtn { cursor: pointer; width: 18px; height: 18px; background: #ECE9D8; border: 1px outset white; text-align: center; line-height: 16px; }
+        
+        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+    <div class="login-box">
+        <h2 style="text-align:center; margin-bottom:20px;">LINSTELEC</h2>
+        <input type="text" id="user" placeholder="Usuario">
+        <input type="password" id="pass" placeholder="Contraseña">
+        <button class="btn" onclick="login()">Ingresar</button>
+        <p id="errorMsg" style="color:red; font-size:12px; margin-top:10px; display:none;">Credenciales incorrectas</p>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+    <div class="nav">
+        <strong>LINSTELEC</strong>
+        <div>
+            <button onclick="toggleMusic()" style="margin-right:10px; cursor:pointer;">🎵</button>
+            <button onclick="logout()" style="cursor:pointer;">Salir</button>
+        </div>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('tension')">Caída Tensión</button>
+        <button class="tab" onclick="showTab('ohm')">Ohm</button>
+        <button class="tab" onclick="showTab('nodos')">Nodos</button>
+        <button class="tab" onclick="showTab('ductos')">Ductos</button>
+    </div>
+    
+    <div class="content">
+        <!-- CAÍDA TENSIÓN -->
+        <div id="tension" class="card active">
+            <h3>Caída de Tensión</h3>
+            <div class="form-row">
+                <div class="form-group"><label>Distancia (m)</label><input type="number" id="tDist" value="10"></div>
+                <div class="form-group"><label>Corriente (A)</label><input type="number" id="tAmp" value="16"></div>
+            </div>
+            <div class="form-group">
+                <label>Sección (mm²)</label>
+                <select id="tSec">
+                    <option value="1.5">1.5</option>
+                    <option value="2.5">2.5</option>
+                    <option value="4">4</option>
+                    <option value="6" selected>6</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+            <button class="btn" onclick="calcTension()">Calcular</button>
+            <div id="resTension"></div>
+        </div>
+        
+        <!-- OHM -->
+        <div id="ohm" class="card">
+            <h3>Ley de Ohm</h3>
+            <div class="form-row">
+                <div class="form-group"><label>Potencia (W)</label><input type="number" id="oWatt" placeholder="3680"></div>
+                <div class="form-group"><label>Voltaje (V)</label><input type="number" id="oVolt" value="220"></div>
+            </div>
+            <button class="btn" onclick="calcOhm()">Calcular</button>
+            <div id="resOhm"></div>
+        </div>
+        
+        <!-- NODOS -->
+        <div id="nodos" class="card">
+            <h3>Impedancia Nodos</h3>
+            <div class="form-group"><label>Icc Nodo 1 (kA)</label><input type="number" id="nIcc" value="6"></div>
+            <div class="form-group"><label>Zcc Nodo 1 (mΩ)</label><input type="number" id="nZcc" value="36.67"></div>
+            <div class="form-row">
+                <div class="form-group"><label>Longitud (m)</label><input type="number" id="nL" value="10"></div>
+                <div class="form-group"><label>Sección (mm²)</label><input type="number" id="nS" value="6"></div>
+            </div>
+            <button class="btn" onclick="calcNodo()">Calcular</button>
+            <div id="resNodo"></div>
+        </div>
+        
+        <!-- DUCTOS -->
+        <div id="ductos" class="card">
+            <h3>Ductos EMT</h3>
+            <div class="form-group">
+                <label>Cable</label>
+                <select id="dCable">
+                    <option value="52.8">6 mm²</option>
+                    <option value="81.7">10 mm²</option>
+                    <option value="109.4">16 mm²</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Cantidad</label><input type="number" id="dCant" value="3"></div>
+            <button class="btn" onclick="calcDucto()">Calcular</button>
+            <div id="resDucto"></div>
+        </div>
+    </div>
+</div>
+
+<!-- VENTANA MÚSICA -->
+<div id="musicWindow">
+    <div class="musicHeader" id="musicHeader">
+        <span>🎵 Ares Music</span>
+        <span class="closeBtn" onclick="toggleMusic()">X</span>
+    </div>
+    <div class="musicContent">
+        <iframe src="https://www.youtube.com/embed/jfKfPfyJRdk" allowfullscreen></iframe>
+    </div>
+    <div class="musicStatus"><span>● Conectado</span><span>128 kbps</span></div>
+</div>
+
+<script>
+    // Usuarios
+    const USERS = { "Rodrigo": "1648", "Luis": "2507", "Isaias": "2071", "Brayan": "2025" };
+    const RHO = 0.018;
+    
+    // Login
+    function login() {
+        const u = document.getElementById('user').value;
+        const p = document.getElementById('pass').value;
+        if (USERS[u] === p) {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+        } else {
+            document.getElementById('errorMsg').style.display = 'block';
+        }
+    }
+    
+    function logout() { location.reload(); }
+    
+    // Tabs
+    function showTab(id) {
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        event.target.classList.add('active');
+    }
+    
+    // Calculadoras
+    function calcTension() {
+        const L = +document.getElementById('tDist').value;
+        const I = +document.getElementById('tAmp').value;
+        const S = +document.getElementById('tSec').value;
+        const drop = (2 * L * I * RHO) / S;
+        const pct = (drop / 220) * 100;
+        document.getElementById('resTension').innerHTML = 
+            `<div class="result ${pct<=3?'':'error'}">ΔV: ${drop.toFixed(2)}V (${pct.toFixed(2)}%) ${pct<=3?'✓':'✗'}</div>`;
+    }
+    
+    function calcOhm() {
+        const P = +document.getElementById('oWatt').value;
+        const V = +document.getElementById('oVolt').value;
+        if (P && V) {
+            document.getElementById('resOhm').innerHTML = `<div class="result">I = ${(P/V).toFixed(2)} A</div>`;
+        }
+    }
+    
+    function calcNodo() {
+        const zcc = +document.getElementById('nZcc').value;
+        const L = +document.getElementById('nL').value;
+        const S = +document.getElementById('nS').value;
+        const zCable = ((RHO / S) * L * 2) * 1000;
+        const zTotal = zcc + zCable;
+        const icc = 220 / (zTotal / 1000) / 1000;
+        document.getElementById('resNodo').innerHTML = 
+            `<div class="result">Z total: ${zTotal.toFixed(2)} mΩ<br>Icc: ${icc.toFixed(2)} kA</div>`;
+    }
+    
+    function calcDucto() {
+        const area = +document.getElementById('dCable').value * +document.getElementById('dCant').value;
+        const ductos = [{n:'25mm', d:24.3}, {n:'32mm', d:32.5}, {n:'40mm', d:38.4}];
+        let html = '';
+        ductos.forEach(d => {
+            const max = (Math.PI * d.d**2 / 4) * 0.4;
+            const pct = (area / max * 100).toFixed(0);
+            html += `<div class="result ${pct<=100?'':'error'}">${d.n}: ${pct}% ${pct<=100?'✓':'✗'}</div>`;
+        });
+        document.getElementById('resDucto').innerHTML = html;
+    }
+    
+    // Música - Drag & Drop
+    function toggleMusic() {
+        document.getElementById('musicWindow').classList.toggle('show');
+    }
+    
+    const mw = document.getElementById('musicWindow');
+    const mh = document.getElementById('musicHeader');
+    let dragging = false, offX, offY;
+    
+    mh.onmousedown = (e) => {
+        dragging = true;
+        offX = e.clientX - mw.offsetLeft;
+        offY = e.clientY - mw.offsetTop;
+    };
+    
+    document.onmousemove = (e) => {
+        if (dragging) {
+            mw.style.left = (e.clientX - offX) + 'px';
+            mw.style.top = (e.clientY - offY) + 'px';
+            mw.style.right = 'auto';
+        }
+    };
+    
+    document.onmouseup = () => dragging = false;
+    
+    // Enter en login
+    document.getElementById('pass').onkeypress = (e) => { if (e.key === 'Enter') login(); };
+</script>
+
+</body>
+</html>
