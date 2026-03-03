@@ -3,262 +3,1242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LINSTELEC</title>
+    <title>LINSTELEC • Herramientas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #666666;
+            --border: #e5e5e5;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #059669;
+            --danger: #dc2626;
+            --warning: #d97706;
+            --radius: 12px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.04), 0 4px 6px -2px rgba(0,0,0,0.03);
+            --transition: all 0.15s ease;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, sans-serif; background: #f5f5f5; }
         
-        /* Login simple */
-        #login { display: flex; height: 100vh; align-items: center; justify-content: center; }
-        .login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 300px; }
-        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
-        .btn { width: 100%; padding: 10px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        .btn:hover { background: #1d4ed8; }
-        
-        /* App principal */
-        #app { display: none; }
-        .nav { background: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
-        .tabs { display: flex; gap: 5px; padding: 15px; overflow-x: auto; }
-        .tab { padding: 8px 15px; background: white; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; white-space: nowrap; }
-        .tab.active { background: #2563eb; color: white; border-color: #2563eb; }
-        
-        .content { max-width: 800px; margin: 20px auto; padding: 0 15px; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: none; margin-bottom: 20px; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== LOGIN ===== */
+        #login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--surface);
+            padding: 40px 32px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+        }
+
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .login-card h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 24px;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: var(--bg);
+            transition: var(--transition);
+        }
+
+        .login-card input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn:hover { background: var(--primary-hover); }
+        .btn:active { transform: translateY(1px); }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .btn-outline:hover { background: var(--bg); }
+
+        .btn-success { background: var(--success); }
+        .btn-success:hover { background: #047857; }
+
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* ===== APP ===== */
+        #main-app { display: none; }
+
+        .navbar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .nav-brand-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .logout-btn, .music-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+        .logout-btn:hover { background: var(--bg); color: var(--danger); }
+        .music-toggle-btn:hover { background: var(--bg); color: var(--primary); }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 800px;
+            margin: 24px auto;
+            padding: 0 20px;
+            display: none;
+        }
+
+        /* ===== TABS ===== */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            padding: 10px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            white-space: nowrap;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn:hover { background: var(--bg); color: var(--text); }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .tab-btn.luis { background: #7c3aed; color: white; border-color: #7c3aed; }
+        .tab-btn.luis:hover { background: #6d28d9; }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            display: none;
+            animation: fadeIn 0.2s ease;
+        }
         .card.active { display: block; }
-        
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; }
-        
-        .result { margin-top: 15px; padding: 12px; border-radius: 5px; background: #f0fdf4; color: #166534; border-left: 4px solid #059669; }
-        .result.error { background: #fef2f2; color: #991b1b; border-left-color: #dc2626; }
-        
-        /* Ventana Ares simplificada */
-        #musicWindow {
-            position: fixed; top: 80px; right: 20px; width: 300px;
-            background: #ECE9D8; border: 2px outset white;
-            box-shadow: 3px 3px 8px rgba(0,0,0,0.3);
-            display: none; z-index: 1000;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        #musicWindow.show { display: block; }
-        .musicHeader {
+
+        .card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card p.hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin: -12px 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ===== FORMS ===== */
+        .form-group { margin-bottom: 16px; }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        select, input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: var(--bg);
+            transition: var(--transition);
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .checkbox-label input { width: auto; margin: 0; }
+
+        /* ===== RESULTS ===== */
+        .result {
+            margin-top: 20px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-left: 4px solid;
+        }
+        .result.ok { background: #f0fdf4; color: #166534; border-color: var(--success); }
+        .result.error { background: #fef2f2; color: #991b1b; border-color: var(--danger); }
+        .result.warn { background: #fffbeb; color: #92400e; border-color: var(--warning); }
+        .result.info { background: #eff6ff; color: #1e40af; border-color: var(--primary); }
+
+        /* ===== NODOS ===== */
+        .nodo-card {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .nodo-card.warning { border-left-color: var(--warning); }
+        .nodo-card.danger { border-left-color: var(--danger); }
+
+        .nodo-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .ecuacion {
+            display: none;
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--surface);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-family: 'SF Mono', 'Monaco', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+        .ecuacion.show { display: block; }
+        .ecuacion .val { color: var(--primary); font-weight: 600; }
+        .ecuacion .res { color: var(--danger); font-weight: 700; }
+
+        /* ===== INVENTARIO ===== */
+        .inv-header {
+            display: grid;
+            grid-template-columns: 1fr 80px 60px;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .inv-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .inv-table th {
+            text-align: left;
+            padding: 10px 8px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .inv-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .inv-table input {
+            padding: 6px 8px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            width: auto;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+        .btn-icon:hover { background: var(--bg); color: var(--danger); }
+
+        .bag-section {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .bag-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        .bag-item:last-child { border-bottom: none; }
+
+        /* ===== SVG DIAGRAM ===== */
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .diagram-container svg {
+            max-width: 100%;
+            height: auto;
+            background: var(--bg);
+            border-radius: 10px;
+        }
+
+        /* ===== PDF VIEWER ===== */
+        #pdf-view {
+            width: 100%;
+            height: 60vh;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-top: 16px;
+            background: var(--bg);
+        }
+
+        /* ===== IFRAME AI ===== */
+        .ai-frame {
+            width: 100%;
+            height: 70vh;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-top: 16px;
+            background: var(--surface);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            .inv-header { grid-template-columns: 1fr 70px 50px; }
+            .tabs { gap: 2px; }
+            .tab-btn { padding: 8px 12px; font-size: 0.8rem; }
+            .card { padding: 20px 16px; }
+            .login-card { padding: 32px 24px; }
+        }
+
+        /* ===== UTILS ===== */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mt-2 { margin-top: 8px; }
+        .mb-2 { margin-bottom: 8px; }
+        .flex { display: flex; }
+        .gap-2 { gap: 8px; }
+        .justify-end { justify-content: flex-end; }
+
+        /* ======================================== */
+        /* ===== REPRODUCTOR MP3 (ESTILO ARES) ===== */
+        /* ======================================== */
+        #ventanaAres {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            width: 320px;
+            background-color: #ECE9D8;
+            border: 2px outset #ffffff;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            font-family: Tahoma, Verdana, sans-serif;
+        }
+
+        #ventanaAres.visible { display: flex; }
+
+        #barraTituloAres {
             background: linear-gradient(90deg, #FF9900, #CC6600);
-            color: white; padding: 5px 10px; font-weight: bold;
-            font-size: 12px; cursor: move; display: flex; justify-content: space-between;
+            padding: 4px 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #999;
+            user-select: none;
         }
-        .musicContent { padding: 10px; border: 2px inset white; margin: 4px; background: white; }
-        .musicContent iframe { width: 100%; height: 170px; border: none; }
-        .musicStatus { font-size: 10px; padding: 3px 8px; border-top: 1px solid #999; display: flex; justify-content: space-between; }
-        .closeBtn { cursor: pointer; width: 18px; height: 18px; background: #ECE9D8; border: 1px outset white; text-align: center; line-height: 16px; }
+
+        .btn-control-ares {
+            background-color: #ECE9D8;
+            border: 1px outset #ffffff;
+            color: black;
+            font-size: 10px;
+            width: 16px;
+            height: 16px;
+            line-height: 14px;
+            text-align: center;
+            cursor: pointer;
+            font-family: sans-serif;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        .btn-control-ares:active { border: 1px inset #ffffff; }
+
+        #contenidoVentanaAres {
+            padding: 15px;
+            border: 2px inset #ffffff;
+            margin: 4px;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        #mp3Player {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .song-info {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        #barraEstadoAres {
+            background-color: #ECE9D8;
+            border-top: 1px solid #999;
+            padding: 3px 8px;
+            font-size: 10px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+        }
         
-        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+        .status-icon-ares {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: #00FF00;
+            border: 1px inset #fff;
+            margin-right: 5px;
+        }
     </style>
 </head>
 <body>
 
 <!-- LOGIN -->
-<div id="login">
-    <div class="login-box">
-        <h2 style="text-align:center; margin-bottom:20px;">LINSTELEC</h2>
-        <input type="text" id="user" placeholder="Usuario">
-        <input type="password" id="pass" placeholder="Contraseña">
-        <button class="btn" onclick="login()">Ingresar</button>
-        <p id="errorMsg" style="color:red; font-size:12px; margin-top:10px; display:none;">Credenciales incorrectas</p>
+<div id="login-wrapper">
+    <div class="login-card">
+        <div class="login-logo">L</div>
+        <h2>LINSTELEC</h2>
+        <p>Herramientas eléctricas</p>
+        <input type="text" id="userInput" placeholder="Usuario" autocomplete="username">
+        <input type="password" id="passInput" placeholder="Contraseña" autocomplete="current-password">
+        <button class="btn" onclick="checkLogin()">Ingresar</button>
+        <p class="error-msg" id="error-msg">Credenciales incorrectas</p>
     </div>
 </div>
 
 <!-- APP -->
-<div id="app">
-    <div class="nav">
-        <strong>LINSTELEC</strong>
-        <div>
-            <button onclick="toggleMusic()" style="margin-right:10px; cursor:pointer;">🎵</button>
-            <button onclick="logout()" style="cursor:pointer;">Salir</button>
+<div id="main-app">
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="nav-brand-logo">L</div>
+            <span>LINSTELEC</span>
         </div>
-    </div>
-    
-    <div class="tabs">
-        <button class="tab active" onclick="showTab('tension')">Caída Tensión</button>
-        <button class="tab" onclick="showTab('ohm')">Ohm</button>
-        <button class="tab" onclick="showTab('nodos')">Nodos</button>
-        <button class="tab" onclick="showTab('ductos')">Ductos</button>
-    </div>
-    
-    <div class="content">
-        <!-- CAÍDA TENSIÓN -->
+        <div class="user-info">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <span id="userDisplay">Usuario</span>
+        </div>
+        <div style="display: flex; gap: 4px;">
+            <button class="music-toggle-btn" onclick="toggleMusica()" title="Reproductor MP3">
+                🎵
+            </button>
+            <button class="logout-btn" onclick="logout()" title="Cerrar sesión">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container" id="container">
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab(event, 'tension')">
+                <i class="fas fa-wave-square"></i> Caída Tensión
+            </button>
+            <button class="tab-btn" onclick="showTab(event, 'ohm')">
+                <i class="fas fa-bolt"></i> Ohm
+            </button>
+            <button class="tab-btn" onclick="showTab(event, 'nodos')">
+                <i class="fas fa-network-wired"></i> Nodos
+            </button>
+            <button class="tab-btn" onclick="showTab(event, 'tuberia')">
+                <i class="fas fa-circle"></i> Ductos
+            </button>
+            <button class="tab-btn" onclick="showTab(event, 'sgc')">
+                <i class="fas fa-diagram-project"></i> SGC
+            </button>
+            <button class="tab-btn" onclick="showTab(event, 'biblioteca')">
+                <i class="fas fa-book"></i> RIC
+            </button>
+            <button class="tab-btn" onclick="showTab(event, 'inventario')">
+                <i class="fas fa-boxes"></i> Inventario
+            </button>
+            <button class="tab-btn luis" onclick="showTab(event, 'luis-ia')">
+                <i class="fas fa-robot"></i> Luis IA
+            </button>
+        </div>
+
+        <!-- CAÍDA DE TENSIÓN -->
         <div id="tension" class="card active">
-            <h3>Caída de Tensión</h3>
+            <h2>Caída de Tensión</h2>
+            <p class="hint"><i class="fas fa-info-circle"></i> Cobre ρ = 0.018 Ω·mm²/m • Monofásico 220V</p>
+            
             <div class="form-row">
-                <div class="form-group"><label>Distancia (m)</label><input type="number" id="tDist" value="10"></div>
-                <div class="form-group"><label>Corriente (A)</label><input type="number" id="tAmp" value="16"></div>
+                <div class="form-group">
+                    <label>Distancia (m)</label>
+                    <input type="number" id="dist" value="10" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Corriente (A)</label>
+                    <input type="number" id="amp" value="16" min="0.1" step="0.1">
+                </div>
             </div>
             <div class="form-group">
                 <label>Sección (mm²)</label>
-                <select id="tSec">
+                <select id="sec">
                     <option value="1.5">1.5</option>
                     <option value="2.5">2.5</option>
                     <option value="4">4</option>
                     <option value="6" selected>6</option>
                     <option value="10">10</option>
+                    <option value="16">16</option>
+                    <option value="25">25</option>
                 </select>
             </div>
             <button class="btn" onclick="calcTension()">Calcular</button>
-            <div id="resTension"></div>
+            <div id="res-tension"></div>
         </div>
-        
-        <!-- OHM -->
+
+        <!-- LEY DE OHM -->
         <div id="ohm" class="card">
-            <h3>Ley de Ohm</h3>
+            <h2>Ley de Ohm</h2>
             <div class="form-row">
-                <div class="form-group"><label>Potencia (W)</label><input type="number" id="oWatt" placeholder="3680"></div>
-                <div class="form-group"><label>Voltaje (V)</label><input type="number" id="oVolt" value="220"></div>
+                <div class="form-group">
+                    <label>Potencia (W)</label>
+                    <input type="number" id="watt-ohm" placeholder="Ej: 3680">
+                </div>
+                <div class="form-group">
+                    <label>Voltaje (V)</label>
+                    <input type="number" id="volt-ohm" value="220">
+                </div>
             </div>
-            <button class="btn" onclick="calcOhm()">Calcular</button>
-            <div id="resOhm"></div>
+            <button class="btn" onclick="calcOhm()">Calcular Corriente</button>
+            <div id="res-ohm"></div>
         </div>
-        
+
         <!-- NODOS -->
         <div id="nodos" class="card">
-            <h3>Impedancia Nodos</h3>
-            <div class="form-group"><label>Icc Nodo 1 (kA)</label><input type="number" id="nIcc" value="6"></div>
-            <div class="form-group"><label>Zcc Nodo 1 (mΩ)</label><input type="number" id="nZcc" value="36.67"></div>
-            <div class="form-row">
-                <div class="form-group"><label>Longitud (m)</label><input type="number" id="nL" value="10"></div>
-                <div class="form-group"><label>Sección (mm²)</label><input type="number" id="nS" value="6"></div>
+            <h2>Impedancia y Cortocircuito</h2>
+            
+            <div class="nodo-card warning">
+                <div class="nodo-title">Nodo 1 • Empalme</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Icc (kA)</label>
+                        <input type="number" id="icc1" value="6.00" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Zcc (mΩ)</label>
+                        <input type="number" id="zcc1" value="36.67" step="0.01">
+                    </div>
+                </div>
             </div>
-            <button class="btn" onclick="calcNodo()">Calcular</button>
-            <div id="resNodo"></div>
+
+            <div class="nodo-card">
+                <div class="nodo-title">Nodo 2 • TDF Voltex</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>L AL-01 (m)</label>
+                        <input type="number" id="L2" value="2">
+                    </div>
+                    <div class="form-group">
+                        <label>Sección (mm²)</label>
+                        <input type="number" id="S2" value="6">
+                    </div>
+                </div>
+                <button class="btn btn-outline" onclick="calcNodo(2)">Calcular + Ver</button>
+                <div id="ecu-2" class="ecuacion"></div>
+            </div>
+
+            <div class="nodo-card">
+                <div class="nodo-title">Nodo 3 • SAVE.01</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>L CR-01 (m)</label>
+                        <input type="number" id="L3" value="12">
+                    </div>
+                    <div class="form-group">
+                        <label>Sección (mm²)</label>
+                        <input type="number" id="S3" value="6">
+                    </div>
+                </div>
+                <button class="btn btn-outline" onclick="calcNodo(3)">Calcular + Ver</button>
+                <div id="ecu-3" class="ecuacion"></div>
+            </div>
+
+            <div class="nodo-card">
+                <div class="nodo-title">Nodo 4 • TDA Hogar</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>L Sub-alim (m)</label>
+                        <input type="number" id="L4" value="2">
+                    </div>
+                    <div class="form-group">
+                        <label>Sección (mm²)</label>
+                        <input type="number" id="S4" value="6">
+                    </div>
+                </div>
+                <button class="btn btn-outline" onclick="calcNodo(4)">Calcular + Ver</button>
+                <div id="ecu-4" class="ecuacion"></div>
+            </div>
         </div>
-        
+
         <!-- DUCTOS -->
-        <div id="ductos" class="card">
-            <h3>Ductos EMT</h3>
+        <div id="tuberia" class="card">
+            <h2>Ductos EMT • RIC 07</h2>
+            <p class="hint"><i class="fas fa-info-circle"></i> Factor llenado: 40% (3+ cables)</p>
+            
             <div class="form-group">
-                <label>Cable</label>
-                <select id="dCable">
-                    <option value="52.8">6 mm²</option>
-                    <option value="81.7">10 mm²</option>
-                    <option value="109.4">16 mm²</option>
+                <label>Cable RVK</label>
+                <select id="cable-tipo">
+                    <option value="52.8">6 mm² (Ø 8.2 mm)</option>
+                    <option value="81.7">10 mm² (Ø 10.2 mm)</option>
+                    <option value="109.4">16 mm² (Ø 11.8 mm)</option>
                 </select>
             </div>
-            <div class="form-group"><label>Cantidad</label><input type="number" id="dCant" value="3"></div>
-            <button class="btn" onclick="calcDucto()">Calcular</button>
-            <div id="resDucto"></div>
+            <div class="form-group">
+                <label>Cantidad</label>
+                <input type="number" id="cable-cant" value="1" min="1">
+            </div>
+            <label class="checkbox-label mb-2">
+                <input type="checkbox" id="utp-check"> Incluir UTP Cat6 (+32 mm²)
+            </label>
+            <button class="btn btn-success" onclick="calcDucto()">Analizar</button>
+            <div id="res-ducto"></div>
+        </div>
+
+        <!-- SGC -->
+        <div id="sgc" class="card text-center">
+            <h2>Esquema SGC</h2>
+            <div class="diagram-container">
+                <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <style>.lbl{font:600 10px sans-serif;fill:#666}.dot{stroke:#fff;stroke-width:2}</style>
+                    </defs>
+                    <text x="90" y="25" class="lbl">SGC</text>
+                    <text x="290" y="25" class="lbl">CARGADOR</text>
+                    
+                    <circle cx="35" cy="95" r="6" fill="#22c55e" class="dot"/>
+                    <circle cx="75" cy="95" r="6" fill="#3b82f6" class="dot"/>
+                    <circle cx="115" cy="95" r="6" fill="#22c55e" class="dot"/>
+                    <circle cx="155" cy="95" r="6" fill="#a16207" class="dot"/>
+                    <circle cx="250" cy="95" r="6" fill="#94a3b8" class="dot"/>
+                    <circle cx="290" cy="95" r="6" fill="#a16207" class="dot"/>
+                    <circle cx="330" cy="95" r="6" fill="#22c55e" class="dot"/>
+                    <circle cx="370" cy="95" r="6" fill="#3b82f6" class="dot"/>
+                    
+                    <path d="M35 95 L35 125 L115 125 L115 95" stroke="#22c55e" fill="none" stroke-width="2.5"/>
+                    <path d="M155 101 L155 155 L290 155 L290 101" stroke="#a16207" fill="none" stroke-width="1.5"/>
+                    <path d="M115 125 L115 195 L330 195 L330 101" stroke="#22c55e" fill="none" stroke-width="2"/>
+                    <path d="M75 101 L75 230 L370 230 L370 101" stroke="#3b82f6" fill="none" stroke-width="2"/>
+                </svg>
+            </div>
+            <p style="color:var(--text-muted); font-size:0.85rem;">Esquema unifilar simplificado de control</p>
+        </div>
+
+        <!-- BIBLIOTECA -->
+        <div id="biblioteca" class="card">
+            <h2>Biblioteca RIC</h2>
+            <select id="ric-select" onchange="loadPDF(this.value)">
+                <option value="">Seleccionar pliego...</option>
+                <option value="https://www.sec.cl/docs/libros/RIC01.pdf">RIC 01 • Empalmes</option>
+                <option value="https://www.sec.cl/docs/libros/RIC02.pdf">RIC 02 • Tableros</option>
+                <option value="https://www.sec.cl/docs/libros/RIC03.pdf">RIC 03 • Alimentadores</option>
+                <option value="https://www.sec.cl/docs/libros/RIC04.pdf">RIC 04 • Conductores</option>
+                <option value="https://www.sec.cl/docs/libros/RIC05.pdf">RIC 05 • Protecciones</option>
+                <option value="https://www.sec.cl/docs/libros/RIC06.pdf">RIC 06 • Puesta a Tierra</option>
+                <option value="https://www.sec.cl/docs/libros/RIC07.pdf">RIC 07 • Equipos</option>
+                <option value="https://www.sec.cl/docs/libros/RIC15.pdf">RIC 15 • Vehículos Eléctricos</option>
+            </select>
+            <iframe id="pdf-view" src="" title="Visor PDF"></iframe>
+        </div>
+
+        <!-- INVENTARIO -->
+        <div id="inventario" class="card">
+            <h2>Inventario</h2>
+            <div class="inv-header">
+                <input type="text" id="new-item-name" placeholder="Material">
+                <input type="number" id="new-item-qty" placeholder="Stock">
+                <button class="btn btn-sm" onclick="addMaterial()">+</button>
+            </div>
+            
+            <table class="inv-table">
+                <thead>
+                    <tr><th>Material</th><th>Stock</th><th>Usar</th><th></th></tr>
+                </thead>
+                <tbody id="inv-body"></tbody>
+            </table>
+
+            <div class="bag-section">
+                <h3 style="font-size:1rem; margin-bottom:12px;">Salida de Materiales</h3>
+                <input type="text" id="install-proj" placeholder="Proyecto / Cliente" style="width:100%; margin-bottom:12px;">
+                <div id="bag-items"></div>
+                <button class="btn btn-success mt-2" onclick="generateFile()">
+                    <i class="fas fa-download"></i> Generar y Descontar
+                </button>
+            </div>
+        </div>
+
+        <!-- LUIS IA -->
+        <div id="luis-ia" class="card">
+            <h2><i class="fas fa-robot"></i> Luis • Asistente RIC</h2>
+            <iframe class="ai-frame" src="https://brayaton-asistente-ric-pro.hf.space" title="Asistente IA"></iframe>
         </div>
     </div>
 </div>
 
-<!-- VENTANA MÚSICA -->
-<div id="musicWindow">
-    <div class="musicHeader" id="musicHeader">
-        <span>🎵 Ares Music</span>
-        <span class="closeBtn" onclick="toggleMusic()">X</span>
+<!-- ======================================== -->
+<!-- VENTANA FLOTANTE MP3 (ESTILO ARES) -->
+<!-- ======================================== -->
+<div id="ventanaAres">
+    <div id="barraTituloAres">
+        <span>🎵 OldSkul • MP3 Player</span>
+        <div>
+            <span class="btn-control-ares" onclick="minimizarVentana()">_</span>
+            <span class="btn-control-ares" onclick="cerrarVentanaMusica()">X</span>
+        </div>
     </div>
-    <div class="musicContent">
-        <iframe src="https://www.youtube.com/embed/jfKfPfyJRdk" allowfullscreen></iframe>
+    <div id="contenidoVentanaAres">
+        <div class="song-info">
+            <strong>🎶 oldskul.mp3</strong><br>
+            <span id="songStatus">Listo para reproducir</span>
+        </div>
+        
+        <audio id="mp3Player" controls>
+            <source src="oldskul.mp3" type="audio/mpeg">
+            Tu navegador no soporta el elemento de audio.
+        </audio>
+        
+        <p style="font-size:10px; color:#666; margin-top:10px;">
+            <i class="fas fa-music"></i> Reproductor MP3 local
+        </p>
     </div>
-    <div class="musicStatus"><span>● Conectado</span><span>128 kbps</span></div>
+    <div id="barraEstadoAres">
+        <span><div class="status-icon-ares"></div>Reproduciendo</span>
+        <span>MP3 320kbps</span>
+    </div>
 </div>
 
 <script>
-    // Usuarios
-    const USERS = { "Rodrigo": "1648", "Luis": "2507", "Isaias": "2071", "Brayan": "2025" };
+    // ===== CONFIG =====
+    const USERS = [
+        { id: "Rodrigo", pass: "1648", name: "Rodrigo Padilla", clase: "Clase D" },
+        { id: "Luis", pass: "2507", name: "Luis Rojo", clase: "Clase C" },
+        { id: "Isaias", pass: "2071", name: "Isaias Echeverria", clase: "Clase C" },
+        { id: "Brayan", pass: "2025", name: "Brayan Barraza", clase: "Clase D" }
+    ];
+    
+    let inventory = JSON.parse(localStorage.getItem('linstelec_inv')) || [];
+    let bag = [];
     const RHO = 0.018;
-    
-    // Login
-    function login() {
-        const u = document.getElementById('user').value;
-        const p = document.getElementById('pass').value;
-        if (USERS[u] === p) {
-            document.getElementById('login').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-        } else {
-            document.getElementById('errorMsg').style.display = 'block';
-        }
-    }
-    
-    function logout() { location.reload(); }
-    
-    // Tabs
-    function showTab(id) {
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        event.target.classList.add('active');
-    }
-    
-    // Calculadoras
-    function calcTension() {
-        const L = +document.getElementById('tDist').value;
-        const I = +document.getElementById('tAmp').value;
-        const S = +document.getElementById('tSec').value;
-        const drop = (2 * L * I * RHO) / S;
-        const pct = (drop / 220) * 100;
-        document.getElementById('resTension').innerHTML = 
-            `<div class="result ${pct<=3?'':'error'}">ΔV: ${drop.toFixed(2)}V (${pct.toFixed(2)}%) ${pct<=3?'✓':'✗'}</div>`;
-    }
-    
-    function calcOhm() {
-        const P = +document.getElementById('oWatt').value;
-        const V = +document.getElementById('oVolt').value;
-        if (P && V) {
-            document.getElementById('resOhm').innerHTML = `<div class="result">I = ${(P/V).toFixed(2)} A</div>`;
-        }
-    }
-    
-    function calcNodo() {
-        const zcc = +document.getElementById('nZcc').value;
-        const L = +document.getElementById('nL').value;
-        const S = +document.getElementById('nS').value;
-        const zCable = ((RHO / S) * L * 2) * 1000;
-        const zTotal = zcc + zCable;
-        const icc = 220 / (zTotal / 1000) / 1000;
-        document.getElementById('resNodo').innerHTML = 
-            `<div class="result">Z total: ${zTotal.toFixed(2)} mΩ<br>Icc: ${icc.toFixed(2)} kA</div>`;
-    }
-    
-    function calcDucto() {
-        const area = +document.getElementById('dCable').value * +document.getElementById('dCant').value;
-        const ductos = [{n:'25mm', d:24.3}, {n:'32mm', d:32.5}, {n:'40mm', d:38.4}];
-        let html = '';
-        ductos.forEach(d => {
-            const max = (Math.PI * d.d**2 / 4) * 0.4;
-            const pct = (area / max * 100).toFixed(0);
-            html += `<div class="result ${pct<=100?'':'error'}">${d.n}: ${pct}% ${pct<=100?'✓':'✗'}</div>`;
-        });
-        document.getElementById('resDucto').innerHTML = html;
-    }
-    
-    // Música - Drag & Drop
-    function toggleMusic() {
-        document.getElementById('musicWindow').classList.toggle('show');
-    }
-    
-    const mw = document.getElementById('musicWindow');
-    const mh = document.getElementById('musicHeader');
-    let dragging = false, offX, offY;
-    
-    mh.onmousedown = (e) => {
-        dragging = true;
-        offX = e.clientX - mw.offsetLeft;
-        offY = e.clientY - mw.offsetTop;
-    };
-    
-    document.onmousemove = (e) => {
-        if (dragging) {
-            mw.style.left = (e.clientX - offX) + 'px';
-            mw.style.top = (e.clientY - offY) + 'px';
-            mw.style.right = 'auto';
-        }
-    };
-    
-    document.onmouseup = () => dragging = false;
-    
-    // Enter en login
-    document.getElementById('pass').onkeypress = (e) => { if (e.key === 'Enter') login(); };
-</script>
+    const V_NOM = 220;
 
+    // ===== LOGIN =====
+    function checkLogin() {
+        const u = document.getElementById('userInput').value.trim();
+        const p = document.getElementById('passInput').value;
+        const user = USERS.find(x => x.id === u && x.pass === p);
+        
+        if (user) {
+            document.getElementById('login-wrapper').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            document.getElementById('container').style.display = 'block';
+            document.getElementById('userDisplay').textContent = user.name;
+            document.getElementById('userAvatar').textContent = user.name.charAt(0);
+            renderInv();
+            initAI();
+        } else {
+            const err = document.getElementById('error-msg');
+            err.style.display = 'block';
+            setTimeout(() => err.style.display = 'none', 3000);
+        }
+    }
+
+    function logout() {
+        if (confirm('¿Cerrar sesión?')) {
+            location.reload();
+        }
+    }
+
+    // ===== TABS =====
+    function showTab(evt, name) {
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+
+    // ===== CALCULADORAS =====
+    function calcTension() {
+        const L = +document.getElementById('dist').value;
+        const I = +document.getElementById('amp').value;
+        const S = +document.getElementById('sec').value;
+        
+        if (!L || !I || !S) return showResult('res-tension', 'Completa todos los campos', 'error');
+        
+        const drop = (2 * L * I * RHO) / S;
+        const pct = (drop / V_NOM) * 100;
+        const ok = pct <= 3;
+        
+        showResult('res-tension', 
+            `ΔV: ${drop.toFixed(2)} V • ${pct.toFixed(2)}% ${ok ? '✓ Cumple RIC' : '✗ Supera 3%'}`, 
+            ok ? 'ok' : 'error'
+        );
+    }
+
+    function calcOhm() {
+        const P = +document.getElementById('watt-ohm').value;
+        const V = +document.getElementById('volt-ohm').value;
+        
+        if (!P || !V) return showResult('res-ohm', 'Ingresa potencia y voltaje', 'error');
+        
+        const I = P / V;
+        showResult('res-ohm', `I = ${I.toFixed(2)} A`, 'ok');
+    }
+
+    function calcNodo(n) {
+        const zcc1 = +document.getElementById('zcc1').value;
+        const getZ = (L, S) => ((RHO / S) * L * 2) * 1000;
+        
+        let L, S, label, zPrev;
+        
+        if (n === 2) {
+            L = +document.getElementById('L2').value;
+            S = +document.getElementById('S2').value;
+            label = 'AL-01';
+            zPrev = zcc1;
+        } else {
+            const L2 = +document.getElementById('L2').value;
+            const S2 = +document.getElementById('S2').value;
+            zPrev = zcc1 + getZ(L2, S2);
+            
+            L = +document.getElementById(`L${n}`).value;
+            S = +document.getElementById(`S${n}`).value;
+            label = n === 3 ? 'CR-01' : 'Sub-alim';
+        }
+        
+        const zCable = getZ(L, S);
+        const zTotal = zPrev + zCable;
+        const icc = V_NOM / (zTotal / 1000) / 1000;
+        
+        const eq = document.getElementById(`ecu-${n}`);
+        eq.innerHTML = `
+            <div><strong>1. Resistencia ${label}</strong><br>
+            R = (ρ/S)×L×2 = (0.018/${S})×${L}×2 = <span class="val">${zCable.toFixed(2)} mΩ</span></div>
+            <div class="mt-2"><strong>2. Impedancia acumulada</strong><br>
+            Z = Z<sub>prev</sub> + R = ${zPrev.toFixed(2)} + ${zCable.toFixed(2)} = <span class="val">${zTotal.toFixed(2)} mΩ</span></div>
+            <div class="mt-2"><strong>3. Icc Nodo ${n}</strong><br>
+            Icc = V / Z = 220 / (${zTotal.toFixed(2)}/1000) = <span class="res">${icc.toFixed(2)} kA</span></div>
+        `;
+        eq.classList.toggle('show');
+    }
+
+    function calcDucto() {
+        const areaCable = +document.getElementById('cable-tipo').value;
+        const qty = +document.getElementById('cable-cant').value;
+        const utp = document.getElementById('utp-check').checked;
+        
+        const totalArea = (areaCable * qty) + (utp ? 32 : 0);
+        const totalCables = qty + (utp ? 1 : 0);
+        const fillFactor = totalCables === 1 ? 0.53 : totalCables === 2 ? 0.31 : 0.40;
+        
+        const ducts = [
+            { name: '25 mm', d: 24.3 },
+            { name: '32 mm', d: 32.5 },
+            { name: '40 mm', d: 38.4 },
+            { name: '50 mm', d: 50.1 }
+        ];
+        
+        let html = `<div class="result info">Área requerida: ${totalArea.toFixed(1)} mm²</div>`;
+        let recommended = false;
+        
+        ducts.forEach(d => {
+            const maxArea = (Math.PI * d.d ** 2 / 4) * fillFactor;
+            const fits = maxArea >= totalArea;
+            const pct = (totalArea / maxArea * 100).toFixed(0);
+            
+            if (fits && !recommended) {
+                html += `<div class="result ok">${d.name} ✓ Recomendado (${pct}% llenado)</div>`;
+                recommended = true;
+            } else if (fits) {
+                html += `<div class="result warn">${d.name} • ${pct}% llenado</div>`;
+            } else {
+                html += `<div class="result error">${d.name} ✗ ${pct}% (sobrecarga)</div>`;
+            }
+        });
+        
+        document.getElementById('res-ducto').innerHTML = html;
+    }
+
+    function showResult(id, msg, type) {
+        const el = document.getElementById(id);
+        el.className = `result ${type}`;
+        el.textContent = msg;
+    }
+
+    // ===== INVENTARIO =====
+    function addMaterial() {
+        const name = document.getElementById('new-item-name').value.trim();
+        const qty = +document.getElementById('new-item-qty').value;
+        
+        if (name && qty > 0) {
+            inventory.push({ name, stock: qty });
+            document.getElementById('new-item-name').value = '';
+            document.getElementById('new-item-qty').value = '';
+            renderInv();
+        }
+    }
+
+    function renderInv() {
+        const tbody = document.getElementById('inv-body');
+        tbody.innerHTML = inventory.map((item, i) => `
+            <tr>
+                <td>${item.name}</td>
+                <td><input type="number" value="${item.stock}" min="0" onchange="updateStock(${i}, this.value)" style="width:60px"></td>
+                <td><input type="number" id="use-${i}" value="1" min="1" style="width:50px"></td>
+                <td class="flex gap-2 justify-end">
+                    <button class="btn-sm" style="background:var(--primary);color:white" onclick="addToBag(${i})">Usar</button>
+                    <button class="btn-icon" onclick="delItem(${i})"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+        `).join('');
+        localStorage.setItem('linstelec_inv', JSON.stringify(inventory));
+    }
+
+    function updateStock(i, val) {
+        inventory[i].stock = Math.max(0, +val);
+        localStorage.setItem('linstelec_inv', JSON.stringify(inventory));
+    }
+
+    function delItem(i) {
+        if (confirm('¿Eliminar?')) {
+            inventory.splice(i, 1);
+            renderInv();
+        }
+    }
+
+    function addToBag(i) {
+        const qty = +document.getElementById(`use-${i}`).value;
+        if (qty <= 0 || qty > inventory[i].stock) return;
+        
+        const existing = bag.find(b => b.name === inventory[i].name);
+        if (existing) existing.qty += qty;
+        else bag.push({ name: inventory[i].name, qty, idx: i });
+        
+        renderBag();
+    }
+
+    function renderBag() {
+        const div = document.getElementById('bag-items');
+        if (bag.length === 0) {
+            div.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem">Sin materiales seleccionados</p>';
+            return;
+        }
+        div.innerHTML = bag.map(item => 
+            `<div class="bag-item"><span>${item.name}</span><strong>${item.qty} un</strong></div>`
+        ).join('');
+    }
+
+    function generateFile() {
+        if (bag.length === 0) return alert('Selecciona materiales primero');
+        
+        const proj = document.getElementById('install-proj').value.trim() || 'Salida';
+        const date = new Date().toLocaleDateString('es-CL');
+        
+        let content = `LINSTELEC CHILE\nGuía de Materiales\nProyecto: ${proj}\nFecha: ${date}\n${'─'.repeat(30)}\n\n`;
+        
+        bag.forEach(item => {
+            content += `• ${item.name}: ${item.qty}\n`;
+            inventory[item.idx].stock -= item.qty;
+        });
+        
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${proj.replace(/\s+/g, '_')}_Materiales.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        bag = [];
+        renderBag();
+        renderInv();
+        alert('✓ Archivo generado y stock actualizado');
+    }
+
+    // ===== AI =====
+    function initAI() {
+        if (!window.chatbase) {
+            window.chatbase = (...args) => {
+                if (!window.chatbase.q) window.chatbase.q = [];
+                window.chatbase.q.push(args);
+            };
+            window.chatbase = new Proxy(window.chatbase, {
+                get: (t, p) => p === 'q' ? t.q : (...args) => t(p, ...args)
+            });
+        }
+        const s = document.createElement('script');
+        s.src = 'https://www.chatbase.co/embed.min.js';
+        s.id = 'HZBhzPxQtpDaw6ZlcBzEA';
+        s.domain = 'www.chatbase.co';
+        document.body.appendChild(s);
+    }
+
+    function loadPDF(url) {
+        document.getElementById('pdf-view').src = url || 'about:blank';
+    }
+
+    // ===== CONTROLES VENTANA MUSICA =====
+    function toggleMusica() {
+        document.getElementById('ventanaAres').classList.toggle('visible');
+    }
+
+    function cerrarVentanaMusica() {
+        document.getElementById('ventanaAres').classList.remove('visible');
+    }
+
+    function minimizarVentana() {
+        const contenido = document.getElementById('contenidoVentanaAres');
+        const estado = document.getElementById('barraEstadoAres');
+        contenido.style.display = contenido.style.display === 'none' ? 'block' : 'none';
+        estado.style.display = estado.style.display === 'none' ? 'flex' : 'none';
+    }
+
+    // ===== DRAG & DROP =====
+    const ventanaAres = document.getElementById("ventanaAres");
+    const barraTituloAres = document.getElementById("barraTituloAres");
+
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    barraTituloAres?.addEventListener("mousedown", (e) => {
+        isDragging = true;
+        offsetX = e.clientX - ventanaAres.offsetLeft;
+        offsetY = e.clientY - ventanaAres.offsetTop;
+        ventanaAres.style.transition = 'none';
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+            ventanaAres.style.left = `${e.clientX - offsetX}px`;
+            ventanaAres.style.top = `${e.clientY - offsetY}px`;
+            ventanaAres.style.right = 'auto';
+        }
+    });
+
+    document.addEventListener("mouseup", () => {
+        isDragging = false;
+        ventanaAres.style.transition = '';
+    });
+
+    // ===== AUDIO EVENTS =====
+    const audioPlayer = document.getElementById('mp3Player');
+    const songStatus = document.getElementById('songStatus');
+    
+    if (audioPlayer) {
+        audioPlayer.addEventListener('play', () => {
+            songStatus.textContent = '▶ Reproduciendo...';
+        });
+        
+        audioPlayer.addEventListener('pause', () => {
+            songStatus.textContent = '⏸ Pausado';
+        });
+        
+        audioPlayer.addEventListener('ended', () => {
+            songStatus.textContent = '✓ Canción finalizada';
+        });
+        
+        audioPlayer.addEventListener('error', () => {
+            songStatus.textContent = '✗ Error al cargar MP3';
+        });
+    }
+
+    // ===== INIT =====
+    document.getElementById('passInput').addEventListener('keypress', e => {
+        if (e.key === 'Enter') checkLogin();
+    });
+</script>
 </body>
 </html>
