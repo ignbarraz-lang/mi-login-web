@@ -3,1242 +3,1192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LINSTELEC • Herramientas</title>
+    <title>LINSTELEC CHILE - Brayan Barraza</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg: #fafafa;
-            --surface: #ffffff;
-            --text: #1a1a1a;
-            --text-muted: #666666;
-            --border: #e5e5e5;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --success: #059669;
-            --danger: #dc2626;
-            --warning: #d97706;
-            --radius: 12px;
-            --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.04), 0 4px 6px -2px rgba(0,0,0,0.03);
-            --transition: all 0.15s ease;
+        :root { 
+            --primary: #3498db; --dark: #2c3e50; --success: #27ae60; 
+            --danger: #e74c3c; --bg: #f8fafc; --white: #ffffff; --luis: #8e44ad;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; color: var(--dark); }
+        
+        /* LOGIN */
+        #login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--dark) 0%, #1a252f 100%); }
+        .login-card { background: var(--white); padding: 40px; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); text-align: center; width: 100%; max-width: 350px; }
+        .login-logo { width: 120px; height: auto; margin-bottom: 10px; background: white; padding: 10px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .welcome-text { color: var(--dark); font-weight: bold; margin-bottom: 20px; font-size: 1.2rem; }
+        .login-card input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
+        
+        /* NAVBAR */
+        .navbar { background: var(--dark); color: white; padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .nav-brand { display: flex; align-items: center; }
+        .nav-logo { height: 40px; width: auto; background: white; padding: 4px; border-radius: 6px; }
 
-        /* ===== LOGIN ===== */
-        #login-wrapper {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--surface);
-            padding: 20px;
-        }
-
-        .login-card {
-            background: var(--surface);
-            padding: 40px 32px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            width: 100%;
-            max-width: 340px;
-            text-align: center;
-        }
-
-        .login-logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 24px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1.5rem;
-        }
-
-        .login-card h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text);
-        }
-
-        .login-card p {
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            margin-bottom: 24px;
-        }
-
-        .login-card input {
-            width: 100%;
-            padding: 12px 16px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            background: var(--bg);
-            transition: var(--transition);
-        }
-
-        .login-card input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--surface);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn:hover { background: var(--primary-hover); }
-        .btn:active { transform: translateY(1px); }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text);
-        }
-        .btn-outline:hover { background: var(--bg); }
-
-        .btn-success { background: var(--success); }
-        .btn-success:hover { background: #047857; }
-
-        .error-msg {
-            color: var(--danger);
-            font-size: 0.85rem;
-            margin-top: 12px;
-            display: none;
-        }
-
-        /* ===== APP ===== */
-        #main-app { display: none; }
-
-        .navbar {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .nav-brand-logo {
-            width: 32px;
-            height: 32px;
-            background: var(--primary);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .logout-btn, .music-toggle-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 6px;
-            transition: var(--transition);
-            font-size: 1.1rem;
-        }
-        .logout-btn:hover { background: var(--bg); color: var(--danger); }
-        .music-toggle-btn:hover { background: var(--bg); color: var(--primary); }
-
-        /* ===== CONTAINER ===== */
-        .container {
-            max-width: 800px;
-            margin: 24px auto;
-            padding: 0 20px;
-            display: none;
-        }
-
-        /* ===== TABS ===== */
-        .tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            scrollbar-width: none;
-        }
-        .tabs::-webkit-scrollbar { display: none; }
-
-        .tab-btn {
-            padding: 10px 16px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            white-space: nowrap;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .tab-btn:hover { background: var(--bg); color: var(--text); }
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .tab-btn.luis { background: #7c3aed; color: white; border-color: #7c3aed; }
-        .tab-btn.luis:hover { background: #6d28d9; }
-
-        /* ===== CARDS ===== */
-        .card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 24px;
-            box-shadow: var(--shadow);
-            display: none;
-            animation: fadeIn 0.2s ease;
-        }
+        /* CONTAINER & TABS */
+        .main-container { max-width: 900px; margin: 20px auto; padding: 0 20px; display: none; }
+        .calc-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .tab-btn { padding: 12px 20px; border: none; border-radius: 12px; background: var(--white); cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); white-space: nowrap; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        
+        /* CARDS */
+        .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); margin-bottom: 20px; display: none; }
         .card.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card h2 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .card p.hint {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin: -12px 0 20px 0;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* ===== FORMS ===== */
-        .form-group { margin-bottom: 16px; }
+        .card h2 { margin-top: 0; font-size: 1.25rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 20px; }
         
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 6px;
-            color: var(--text);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        select, input[type="number"], input[type="text"] {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            background: var(--bg);
-            transition: var(--transition);
-        }
-
-        select:focus, input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--surface);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .checkbox-label {
+        /* FORM ELEMENTS */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+        select, input[type="number"], input[type="text"] { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 1rem; box-sizing: border-box; }
+        .btn-calc { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.3s; }
+        
+        /* RADIO BUTTONS PARA TIPO DE SISTEMA */
+        .radio-group {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            cursor: pointer;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
         }
-        .checkbox-label input { width: auto; margin: 0; }
-
-        /* ===== RESULTS ===== */
-        .result {
-            margin-top: 20px;
-            padding: 14px 16px;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 0.95rem;
-            border-left: 4px solid;
+        .radio-option {
+            flex: 1;
+            min-width: 150px;
         }
-        .result.ok { background: #f0fdf4; color: #166534; border-color: var(--success); }
-        .result.error { background: #fef2f2; color: #991b1b; border-color: var(--danger); }
-        .result.warn { background: #fffbeb; color: #92400e; border-color: var(--warning); }
-        .result.info { background: #eff6ff; color: #1e40af; border-color: var(--primary); }
-
-        /* ===== NODOS ===== */
-        .nodo-card {
-            background: var(--bg);
-            border-radius: 10px;
-            padding: 16px;
-            margin-bottom: 16px;
-            border-left: 3px solid var(--primary);
-        }
-
-        .nodo-card.warning { border-left-color: var(--warning); }
-        .nodo-card.danger { border-left-color: var(--danger); }
-
-        .nodo-title {
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 12px;
-            color: var(--text);
-        }
-
-        .ecuacion {
+        .radio-option input[type="radio"] {
             display: none;
-            margin-top: 12px;
-            padding: 12px;
-            background: var(--surface);
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            font-family: 'SF Mono', 'Monaco', monospace;
-            font-size: 0.8rem;
-            line-height: 1.6;
-            color: var(--text-muted);
         }
-        .ecuacion.show { display: block; }
-        .ecuacion .val { color: var(--primary); font-weight: 600; }
-        .ecuacion .res { color: var(--danger); font-weight: 700; }
-
-        /* ===== INVENTARIO ===== */
-        .inv-header {
-            display: grid;
-            grid-template-columns: 1fr 80px 60px;
-            gap: 10px;
-            margin-bottom: 20px;
+        .radio-option label {
+            display: block;
+            padding: 12px 20px;
+            background: var(--white);
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
         }
-
-        .inv-table {
+        .radio-option input[type="radio"]:checked + label {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
+        }
+        .radio-option label:hover {
+            border-color: var(--primary);
+        }
+        .radio-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        /* RESULTS */
+        .resultado { margin-top: 20px; padding: 15px; border-radius: 10px; font-weight: bold; border-left: 5px solid; }
+        .res-ok { background: #f0fdf4; color: #166534; border-color: var(--success); }
+        .res-fail { background: #fef2f2; color: #991b1b; border-color: var(--danger); }
+        .res-warn { background: #eff6ff; color: #1e40af; border-color: var(--primary); }
+        
+        /* TABLA DE RESULTADOS DUCTOS */
+        .ducto-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
+            margin-top: 15px;
+            font-size: 0.85rem;
         }
-
-        .inv-table th {
-            text-align: left;
-            padding: 10px 8px;
-            font-weight: 600;
-            color: var(--text-muted);
-            border-bottom: 1px solid var(--border);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
-
-        .inv-table td {
-            padding: 10px 8px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .inv-table input {
-            padding: 6px 8px;
-            font-size: 0.9rem;
+        .ducto-table th, .ducto-table td {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
             text-align: center;
         }
-
-        .btn-sm {
-            padding: 6px 10px;
-            font-size: 0.8rem;
-            border-radius: 6px;
-            width: auto;
-        }
-
-        .btn-icon {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 6px;
-            border-radius: 6px;
-            transition: var(--transition);
-        }
-        .btn-icon:hover { background: var(--bg); color: var(--danger); }
-
-        .bag-section {
-            background: var(--bg);
-            border-radius: 10px;
-            padding: 16px;
-            margin-top: 20px;
-        }
-
-        .bag-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.9rem;
-        }
-        .bag-item:last-child { border-bottom: none; }
-
-        /* ===== SVG DIAGRAM ===== */
-        .diagram-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        .diagram-container svg {
-            max-width: 100%;
-            height: auto;
-            background: var(--bg);
-            border-radius: 10px;
-        }
-
-        /* ===== PDF VIEWER ===== */
-        #pdf-view {
-            width: 100%;
-            height: 60vh;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            margin-top: 16px;
-            background: var(--bg);
-        }
-
-        /* ===== IFRAME AI ===== */
-        .ai-frame {
-            width: 100%;
-            height: 70vh;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            margin-top: 16px;
-            background: var(--surface);
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 600px) {
-            .form-row { grid-template-columns: 1fr; }
-            .inv-header { grid-template-columns: 1fr 70px 50px; }
-            .tabs { gap: 2px; }
-            .tab-btn { padding: 8px 12px; font-size: 0.8rem; }
-            .card { padding: 20px 16px; }
-            .login-card { padding: 32px 24px; }
-        }
-
-        /* ===== UTILS ===== */
-        .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .mt-2 { margin-top: 8px; }
-        .mb-2 { margin-bottom: 8px; }
-        .flex { display: flex; }
-        .gap-2 { gap: 8px; }
-        .justify-end { justify-content: flex-end; }
-
-        /* ======================================== */
-        /* ===== REPRODUCTOR MP3 (ESTILO ARES) ===== */
-        /* ======================================== */
-        #ventanaAres {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            width: 320px;
-            background-color: #ECE9D8;
-            border: 2px outset #ffffff;
-            box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
-            z-index: 9999;
-            display: none;
-            flex-direction: column;
-            font-family: Tahoma, Verdana, sans-serif;
-        }
-
-        #ventanaAres.visible { display: flex; }
-
-        #barraTituloAres {
-            background: linear-gradient(90deg, #FF9900, #CC6600);
-            padding: 4px 8px;
+        .ducto-table th {
+            background: var(--dark);
             color: white;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: move;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #999;
-            user-select: none;
         }
-
-        .btn-control-ares {
-            background-color: #ECE9D8;
-            border: 1px outset #ffffff;
-            color: black;
-            font-size: 10px;
-            width: 16px;
-            height: 16px;
-            line-height: 14px;
-            text-align: center;
-            cursor: pointer;
-            font-family: sans-serif;
-            font-weight: bold;
-            margin-left: 4px;
-        }
-        .btn-control-ares:active { border: 1px inset #ffffff; }
-
-        #contenidoVentanaAres {
+        .ducto-ok { background: #d1fae5; color: #065f46; font-weight: bold; }
+        .ducto-fail { background: #fee2e2; color: #991b1b; }
+        .ducto-warn { background: #fef3c7; color: #92400e; }
+        
+        /* DETALLES DEL CÁLCULO */
+        .calc-details {
+            background: #f8fafc;
             padding: 15px;
-            border: 2px inset #ffffff;
-            margin: 4px;
-            background-color: #fff;
-            text-align: center;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-size: 0.85rem;
         }
-
-        #mp3Player {
-            width: 100%;
-            margin-top: 10px;
+        .calc-details h4 {
+            margin-top: 0;
+            color: var(--dark);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 8px;
         }
-
-        .song-info {
-            font-size: 11px;
-            color: #666;
-            margin-bottom: 10px;
-            padding: 8px;
-            background: #f5f5f5;
-            border-radius: 4px;
+        .calc-details ul {
+            margin: 10px 0;
+            padding-left: 20px;
         }
-
-        #barraEstadoAres {
-            background-color: #ECE9D8;
-            border-top: 1px solid #999;
-            padding: 3px 8px;
-            font-size: 10px;
-            color: #333;
-            display: flex;
-            justify-content: space-between;
+        .calc-details li {
+            margin-bottom: 5px;
         }
         
-        .status-icon-ares {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background-color: #00FF00;
-            border: 1px inset #fff;
-            margin-right: 5px;
+        /* NODOS ECUACIONES */
+        .nodo-box { background: #f1f5f9; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid var(--primary); }
+        .nodo-title { font-weight: bold; margin-bottom: 10px; color: #1e293b; text-transform: uppercase; font-size: 0.85rem; }
+        .grid-nodos { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px; }
+        .ecuacion-box { display: none; margin-top: 15px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: 'Courier New', monospace; font-size: 0.85rem; color: #334155; line-height: 1.5; }
+        .math-res { color: var(--danger); font-weight: bold; }
+
+        /* INVENTARIO */
+        .inv-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+        .inv-table th, .inv-table td { padding: 10px; border: 1px solid #e2e8f0; text-align: left; }
+        .inv-table th { background: #f8fafc; }
+        .qty-input { width: 70px !important; padding: 5px !important; text-align: center; margin: 0 !important; }
+        .install-list { background: #f0f9ff; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #bae6fd; }
+
+        /* 🔍 BUSCADOR INVENTARIO */
+        .search-box {
+            position: relative;
+            margin-bottom: 15px;
         }
+        .search-box input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        .search-results {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 5px;
+            text-align: right;
+        }
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        iframe { width: 100%; height: 70vh; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 15px; }
+
+        /* 🎵 ESTILOS REPRODUCTOR MP3 */
+        #ventanaAres {
+            position: fixed; top: 80px; right: 20px; width: 300px;
+            background: #ECE9D8; border: 2px outset #fff;
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.4); z-index: 9999;
+            display: none; flex-direction: column;
+            font-family: Tahoma, Verdana, sans-serif;
+        }
+        #ventanaAres.visible { display: flex; }
+        #barraTituloAres {
+            background: linear-gradient(90deg, #FF9900, #CC6600);
+            color: white; padding: 5px 10px; font-weight: bold;
+            font-size: 12px; cursor: move; display: flex;
+            justify-content: space-between; user-select: none;
+        }
+        .btn-control-ares {
+            width: 18px; height: 18px; background: #ECE9D8;
+            border: 1px outset #fff; text-align: center;
+            line-height: 16px; font-size: 12px; cursor: pointer;
+        }
+        .btn-control-ares:active { border-style: inset; }
+        #contenidoVentanaAres {
+            padding: 12px; border: 2px inset #fff;
+            margin: 4px; background: #fff; text-align: center;
+        }
+        #mp3Player { width: 100%; margin-top: 8px; }
+        .song-info { font-size: 11px; color: #666; margin-bottom: 8px; }
+        #barraEstadoAres {
+            font-size: 10px; padding: 3px 8px;
+            border-top: 1px solid #999; background: #ECE9D8;
+            display: flex; justify-content: space-between;
+        }
+        .status-dot {
+            display: inline-block; width: 8px; height: 8px;
+            background: #0f0; border: 1px inset #fff;
+            margin-right: 4px; vertical-align: middle;
+        }
+
+        /* 🎉 EFECTOS CAÍDA DE TENSIÓN */
+        #tension { position: relative; }
+        #successImg {
+            position: absolute; left: -100px; top: 50%;
+            transform: translateY(-50%); width: 80px;
+            display: none; animation: popIn 0.4s ease;
+            pointer-events: none; z-index: 10;
+        }
+        @keyframes popIn {
+            0% { transform: translateY(-50%) scale(0) rotate(-10deg); opacity: 0; }
+            60% { transform: translateY(-50%) scale(1.3) rotate(5deg); }
+            100% { transform: translateY(-50%) scale(1) rotate(0); opacity: 1; }
+        }
+        #dangerOverlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(231, 76, 60, 0.9);
+            display: none; justify-content: center; align-items: center;
+            flex-direction: column; z-index: 10000;
+            animation: flashRed 0.25s infinite; pointer-events: none;
+        }
+        @keyframes flashRed {
+            0%, 100% { background: rgba(231, 76, 60, 0.9); }
+            50% { background: rgba(192, 57, 43, 0.95); }
+        }
+        .danger-icon {
+            font-size: 100px; color: white; text-shadow: 0 0 30px rgba(0,0,0,0.6);
+            animation: shake 0.4s infinite;
+        }
+        .danger-text {
+            color: white; font-size: 28px; font-weight: bold;
+            margin-top: 20px; text-align: center; text-shadow: 0 3px 6px rgba(0,0,0,0.4);
+        }
+        .danger-subtext {
+            color: rgba(255,255,255,0.9); font-size: 16px;
+            margin-top: 10px;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotate(0); }
+            20% { transform: translateX(-8px) rotate(-3deg); }
+            40% { transform: translateX(8px) rotate(3deg); }
+            60% { transform: translateX(-6px) rotate(-2deg); }
+            80% { transform: translateX(6px) rotate(2deg); }
+        }
+        @keyframes confettiFall {
+            to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* 📡 INDICADOR DE SYNC */
+        .sync-status {
+            font-size: 12px; padding: 5px 10px; border-radius: 20px;
+            display: inline-flex; align-items: center; gap: 5px;
+            margin-left: 10px;
+        }
+        .sync-ok { background: #d1fae5; color: #065f46; }
+        .sync-pending { background: #fef3c7; color: #92400e; }
+        .sync-error { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="login-wrapper">
     <div class="login-card">
-        <div class="login-logo">L</div>
-        <h2>LINSTELEC</h2>
-        <p>Herramientas eléctricas</p>
-        <input type="text" id="userInput" placeholder="Usuario" autocomplete="username">
-        <input type="password" id="passInput" placeholder="Contraseña" autocomplete="current-password">
-        <button class="btn" onclick="checkLogin()">Ingresar</button>
-        <p class="error-msg" id="error-msg">Credenciales incorrectas</p>
+        <img src="logo.png" alt="Logo Linstelec" class="login-logo">
+        <div class="welcome-text">¡Bienvenido!</div>
+        <input type="text" id="userInput" placeholder="Usuario">
+        <input type="password" id="passInput" placeholder="Contraseña">
+        <button class="btn-calc" onclick="checkLogin()">Ingresar</button>
+        <p id="error-msg" style="color:var(--danger); display:none; font-size:14px; margin-top:10px;">Acceso denegado</p>
     </div>
 </div>
 
-<!-- APP -->
 <div id="main-app">
     <nav class="navbar">
-        <div class="nav-brand">
-            <div class="nav-brand-logo">L</div>
-            <span>LINSTELEC</span>
-        </div>
-        <div class="user-info">
-            <div class="user-avatar" id="userAvatar">U</div>
-            <span id="userDisplay">Usuario</span>
-        </div>
-        <div style="display: flex; gap: 4px;">
-            <button class="music-toggle-btn" onclick="toggleMusica()" title="Reproductor MP3">
-                🎵
-            </button>
-            <button class="logout-btn" onclick="logout()" title="Cerrar sesión">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
-        </div>
+        <div class="nav-brand"><img src="logo.png" alt="Logo Linstelec" class="nav-logo"></div>
+        <div id="user-display" style="font-size: 14px; opacity: 0.9;"></div>
+        <a href="#" onclick="location.reload()" style="color:white; text-decoration:none;"><i class="fas fa-sign-out-alt"></i></a>
     </nav>
 
-    <div class="container" id="container">
-        <!-- TABS -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab(event, 'tension')">
-                <i class="fas fa-wave-square"></i> Caída Tensión
-            </button>
-            <button class="tab-btn" onclick="showTab(event, 'ohm')">
-                <i class="fas fa-bolt"></i> Ohm
-            </button>
-            <button class="tab-btn" onclick="showTab(event, 'nodos')">
-                <i class="fas fa-network-wired"></i> Nodos
-            </button>
-            <button class="tab-btn" onclick="showTab(event, 'tuberia')">
-                <i class="fas fa-circle"></i> Ductos
-            </button>
-            <button class="tab-btn" onclick="showTab(event, 'sgc')">
-                <i class="fas fa-diagram-project"></i> SGC
-            </button>
-            <button class="tab-btn" onclick="showTab(event, 'biblioteca')">
-                <i class="fas fa-book"></i> RIC
-            </button>
-            <button class="tab-btn" onclick="showTab(event, 'inventario')">
-                <i class="fas fa-boxes"></i> Inventario
-            </button>
-            <button class="tab-btn luis" onclick="showTab(event, 'luis-ia')">
-                <i class="fas fa-robot"></i> Luis IA
-            </button>
+    <div class="main-container" id="container">
+        <div class="calc-tabs">
+            <button class="tab-btn active" onclick="showTab(event, 'tension')"><i class="fas fa-wave-square"></i> Caída Tensión</button>
+            <button class="tab-btn" onclick="showTab(event, 'ohm')"><i class="fas fa-bolt"></i> Ley de Ohm</button>
+            <button class="tab-btn" onclick="showTab(event, 'nodos')"><i class="fas fa-network-wired"></i> Calculadora Nodos</button>
+            <button class="tab-btn" onclick="showTab(event, 'tuberia')"><i class="fas fa-circle"></i> Ductos RIC 07</button>
+            <button class="tab-btn" onclick="showTab(event, 'sgc')"><i class="fas fa-project-diagram"></i> Esquema SGC</button>
+            <button class="tab-btn" onclick="showTab(event, 'biblioteca')"><i class="fas fa-book"></i> Biblioteca RIC</button>
+            <button class="tab-btn" onclick="showTab(event, 'inventario')"><i class="fas fa-boxes"></i> Inventario</button>
+            <button class="tab-btn" style="background:var(--luis); color:white;" onclick="showTab(event, 'luis-ia')"><i class="fas fa-robot"></i> PREGÚNTALE A LUIS</button>
         </div>
 
-        <!-- CAÍDA DE TENSIÓN -->
         <div id="tension" class="card active">
-            <h2>Caída de Tensión</h2>
-            <p class="hint"><i class="fas fa-info-circle"></i> Cobre ρ = 0.018 Ω·mm²/m • Monofásico 220V</p>
+            <h2>Calculadora Caída de Tensión (RIC 04)</h2>
+            <p style="font-size: 0.8rem; color: #64748b; margin: -15px 0 15px 0;"><i class="fas fa-info-circle"></i> Cálculo basado en resistividad del cobre ρ = 0.018</p>
             
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Distancia (m)</label>
-                    <input type="number" id="dist" value="10" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Corriente (A)</label>
-                    <input type="number" id="amp" value="16" min="0.1" step="0.1">
+            <!-- 🔌 SELECTOR MONOFÁSICO/TRIFÁSICO -->
+            <div class="form-group">
+                <label>Tipo de Sistema:</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="monofasico" name="tipoSistema" value="monofasico" checked>
+                        <label for="monofasico">
+                            <span class="radio-icon">⚡</span>
+                            Monofásico<br>
+                            <small>(220V - 2 conductores)</small>
+                        </label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="trifasico" name="tipoSistema" value="trifasico">
+                        <label for="trifasico">
+                            <span class="radio-icon">🔺</span>
+                            Trifásico<br>
+                            <small>(380V - √3)</small>
+                        </label>
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Sección (mm²)</label>
+            
+            <div class="form-group"><label>Distancia (m):</label><input type="number" id="dist" value="10"></div>
+            <div class="form-group"><label>Corriente (A):</label><input type="number" id="amp" value="16"></div>
+            <div class="form-group"><label>Sección Conductor (mm²):</label>
                 <select id="sec">
-                    <option value="1.5">1.5</option>
-                    <option value="2.5">2.5</option>
-                    <option value="4">4</option>
-                    <option value="6" selected>6</option>
-                    <option value="10">10</option>
-                    <option value="16">16</option>
-                    <option value="25">25</option>
+                    <option value="1.5">1.5 mm²</option>
+                    <option value="2.5">2.5 mm²</option>
+                    <option value="4">4 mm²</option>
+                    <option value="6" selected>6 mm²</option>
+                    <option value="10">10 mm²</option>
+                    <option value="16">16 mm²</option>
+                    <option value="25">25 mm²</option>
+                    <option value="35">35 mm²</option>
+                    <option value="50">50 mm²</option>
                 </select>
             </div>
-            <button class="btn" onclick="calcTension()">Calcular</button>
+            <button class="btn-calc" onclick="calcTension()">Calcular Pérdida</button>
             <div id="res-tension"></div>
         </div>
 
-        <!-- LEY DE OHM -->
+        <img id="successImg" src="image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2327ae60'/%3E%3Cpath d='M30 50 L45 65 L70 35' stroke='white' stroke-width='8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" alt="✓">
+
+        <div id="dangerOverlay">
+            <div class="danger-icon">⚠️</div>
+            <div class="danger-text">¡FUERA DE NORMA!</div>
+            <div class="danger-subtext">Revisar instalación eléctrica</div>
+        </div>
+
         <div id="ohm" class="card">
-            <h2>Ley de Ohm</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Potencia (W)</label>
-                    <input type="number" id="watt-ohm" placeholder="Ej: 3680">
-                </div>
-                <div class="form-group">
-                    <label>Voltaje (V)</label>
-                    <input type="number" id="volt-ohm" value="220">
-                </div>
-            </div>
-            <button class="btn" onclick="calcOhm()">Calcular Corriente</button>
+            <h2>Calculadora Ley de Ohm</h2>
+            <div class="form-group"><label>Potencia (Watts):</label><input type="number" id="watt-ohm" placeholder="Ej: 3680"></div>
+            <div class="form-group"><label>Voltaje (V):</label><input type="number" id="volt-ohm" value="220"></div>
+            <button class="btn-calc" style="background:var(--dark)" onclick="calcOhm()">Calcular Amperaje</button>
             <div id="res-ohm"></div>
         </div>
 
-        <!-- NODOS -->
         <div id="nodos" class="card">
-            <h2>Impedancia y Cortocircuito</h2>
-            
-            <div class="nodo-card warning">
-                <div class="nodo-title">Nodo 1 • Empalme</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Icc (kA)</label>
-                        <input type="number" id="icc1" value="6.00" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Zcc (mΩ)</label>
-                        <input type="number" id="zcc1" value="36.67" step="0.01">
-                    </div>
-                </div>
-            </div>
-
-            <div class="nodo-card">
-                <div class="nodo-title">Nodo 2 • TDF Voltex</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>L AL-01 (m)</label>
-                        <input type="number" id="L2" value="2">
-                    </div>
-                    <div class="form-group">
-                        <label>Sección (mm²)</label>
-                        <input type="number" id="S2" value="6">
-                    </div>
-                </div>
-                <button class="btn btn-outline" onclick="calcNodo(2)">Calcular + Ver</button>
-                <div id="ecu-2" class="ecuacion"></div>
-            </div>
-
-            <div class="nodo-card">
-                <div class="nodo-title">Nodo 3 • SAVE.01</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>L CR-01 (m)</label>
-                        <input type="number" id="L3" value="12">
-                    </div>
-                    <div class="form-group">
-                        <label>Sección (mm²)</label>
-                        <input type="number" id="S3" value="6">
-                    </div>
-                </div>
-                <button class="btn btn-outline" onclick="calcNodo(3)">Calcular + Ver</button>
-                <div id="ecu-3" class="ecuacion"></div>
-            </div>
-
-            <div class="nodo-card">
-                <div class="nodo-title">Nodo 4 • TDA Hogar</div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>L Sub-alim (m)</label>
-                        <input type="number" id="L4" value="2">
-                    </div>
-                    <div class="form-group">
-                        <label>Sección (mm²)</label>
-                        <input type="number" id="S4" value="6">
-                    </div>
-                </div>
-                <button class="btn btn-outline" onclick="calcNodo(4)">Calcular + Ver</button>
-                <div id="ecu-4" class="ecuacion"></div>
-            </div>
+            <h2>Cálculo de Impedancia y Cortocircuito</h2>
+            <div class="nodo-box" style="border-color: #f59e0b;"><div class="nodo-title">a) Nodo 1 (Empalme)</div><div class="grid-nodos"><div><label>Icc n.1 (kA):</label><input type="number" id="icc1" value="6.00" step="0.01"></div><div><label>Zcc n.1 (mΩ):</label><input type="number" id="zcc1" value="36.67" step="0.01"></div></div></div>
+            <div class="nodo-box"><div class="nodo-title">b) Nodo 2 (TDF Voltex)</div><div class="grid-nodos"><div><label>L AL-01 (m):</label><input type="number" id="L2" value="2"></div><div><label>Sección (mm²):</label><input type="number" id="S2" value="6"></div></div><button class="btn-calc" onclick="calcNodoInteractivo(2)">CALCULAR Y VER ECUACIÓN</button><div id="ecu-2" class="ecuacion-box"></div></div>
+            <div class="nodo-box"><div class="nodo-title">c) Nodo 3 (SAVE.01)</div><div class="grid-nodos"><div><label>L CR-01 (m):</label><input type="number" id="L3" value="12"></div><div><label>Sección (mm²):</label><input type="number" id="S3" value="6"></div></div><button class="btn-calc" onclick="calcNodoInteractivo(3)">CALCULAR Y VER ECUACIÓN</button><div id="ecu-3" class="ecuacion-box"></div></div>
+            <div class="nodo-box"><div class="nodo-title">d) Nodo 4 (TDA Hogar)</div><div class="grid-nodos"><div><label>L Sub-alim (m):</label><input type="number" id="L4" value="2"></div><div><label>Sección (mm²):</label><input type="number" id="S4" value="6"></div></div><button class="btn-calc" onclick="calcNodoInteractivo(4)">CALCULAR Y VER ECUACIÓN</button><div id="ecu-4" class="ecuacion-box"></div></div>
         </div>
 
-        <!-- DUCTOS -->
+        <!-- 🔽 SECCIÓN TUBERÍA MEJORADA -->
         <div id="tuberia" class="card">
-            <h2>Ductos EMT • RIC 07</h2>
-            <p class="hint"><i class="fas fa-info-circle"></i> Factor llenado: 40% (3+ cables)</p>
+            <h2>Análisis de Ductos EMT (RIC 07 - SEC)</h2>
+            <p style="font-size: 0.8rem; color: #64748b; margin: -15px 0 15px 0;"><i class="fas fa-info-circle"></i> Cálculo según factor de llenado máximo RIC 07</p>
             
             <div class="form-group">
-                <label>Cable RVK</label>
-                <select id="cable-tipo">
-                    <option value="52.8">6 mm² (Ø 8.2 mm)</option>
-                    <option value="81.7">10 mm² (Ø 10.2 mm)</option>
-                    <option value="109.4">16 mm² (Ø 11.8 mm)</option>
+                <label>Tipo de Cable:</label>
+                <select id="cable-tipo-nuevo" onchange="actualizarDatosCable()">
+                    <option value="">-- Seleccionar Tipo de Cable --</option>
+                    <optgroup label="📦 RVK Multiconductor (3xF+N)">
+                        <option value="3x2.5" data-diametro="14" data-area="154">RVK 3x2.5mm² (Ø14mm)</option>
+                        <option value="3x4" data-diametro="16" data-area="201">RVK 3x4mm² (Ø16mm)</option>
+                        <option value="3x6" data-diametro="18" data-area="254">RVK 3x6mm² (Ø18mm)</option>
+                        <option value="3x10" data-diametro="22" data-area="380">RVK 3x10mm² (Ø22mm)</option>
+                        <option value="3x16" data-diametro="26" data-area="531">RVK 3x16mm² (Ø26mm)</option>
+                    </optgroup>
+                    <optgroup label="🔌 RVK Unipolar">
+                        <option value="1x2.5" data-diametro="6" data-area="28">RVK 1x2.5mm² (Ø6mm)</option>
+                        <option value="1x4" data-diametro="7" data-area="38">RVK 1x4mm² (Ø7mm)</option>
+                        <option value="1x6" data-diametro="8.5" data-area="57">RVK 1x6mm² (Ø8.5mm)</option>
+                        <option value="1x10" data-diametro="10" data-area="79">RVK 1x10mm² (Ø10mm)</option>
+                        <option value="1x16" data-diametro="12" data-area="113">RVK 1x16mm² (Ø12mm)</option>
+                    </optgroup>
+                    <optgroup label="📡 Otros Cables">
+                        <option value="utp" data-diametro="6" data-area="28">UTP Cat6 (Ø6mm)</option>
+                        <option value="coaxial" data-diametro="7" data-area="38">Coaxial RG6 (Ø7mm)</option>
+                        <option value="personalizado" data-diametro="0" data-area="0">⚙️ Diámetro Personalizado</option>
+                    </optgroup>
                 </select>
             </div>
-            <div class="form-group">
-                <label>Cantidad</label>
-                <input type="number" id="cable-cant" value="1" min="1">
+            
+            <div class="form-group" id="custom-diametro-group" style="display:none;">
+                <label>Diámetro Exterior del Cable (mm):</label>
+                <input type="number" id="custom-diametro" placeholder="Ej: 10" step="0.1">
             </div>
-            <label class="checkbox-label mb-2">
-                <input type="checkbox" id="utp-check"> Incluir UTP Cat6 (+32 mm²)
-            </label>
-            <button class="btn btn-success" onclick="calcDucto()">Analizar</button>
+            
+            <div class="form-group">
+                <label>Cantidad de Cables:</label>
+                <input type="number" id="cable-cant" value="1" min="1" onchange="calcularFactorLlenado()">
+            </div>
+            
+            <div class="form-group">
+                <label><input type="checkbox" id="utp-check" onchange="calcularFactorLlenado()"> Incluir Cable UTP Cat6 (+1 cable Ø6mm)</label>
+            </div>
+            
+            <button class="btn-calc" style="background:var(--success)" onclick="calcularFactorLlenado()">
+                <i class="fas fa-calculator"></i> Calcular Factor de Llenado
+            </button>
+            
             <div id="res-ducto"></div>
         </div>
 
-        <!-- SGC -->
-        <div id="sgc" class="card text-center">
-            <h2>Esquema SGC</h2>
-            <div class="diagram-container">
-                <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <style>.lbl{font:600 10px sans-serif;fill:#666}.dot{stroke:#fff;stroke-width:2}</style>
-                    </defs>
-                    <text x="90" y="25" class="lbl">SGC</text>
-                    <text x="290" y="25" class="lbl">CARGADOR</text>
-                    
-                    <circle cx="35" cy="95" r="6" fill="#22c55e" class="dot"/>
-                    <circle cx="75" cy="95" r="6" fill="#3b82f6" class="dot"/>
-                    <circle cx="115" cy="95" r="6" fill="#22c55e" class="dot"/>
-                    <circle cx="155" cy="95" r="6" fill="#a16207" class="dot"/>
-                    <circle cx="250" cy="95" r="6" fill="#94a3b8" class="dot"/>
-                    <circle cx="290" cy="95" r="6" fill="#a16207" class="dot"/>
-                    <circle cx="330" cy="95" r="6" fill="#22c55e" class="dot"/>
-                    <circle cx="370" cy="95" r="6" fill="#3b82f6" class="dot"/>
-                    
-                    <path d="M35 95 L35 125 L115 125 L115 95" stroke="#22c55e" fill="none" stroke-width="2.5"/>
-                    <path d="M155 101 L155 155 L290 155 L290 101" stroke="#a16207" fill="none" stroke-width="1.5"/>
-                    <path d="M115 125 L115 195 L330 195 L330 101" stroke="#22c55e" fill="none" stroke-width="2"/>
-                    <path d="M75 101 L75 230 L370 230 L370 101" stroke="#3b82f6" fill="none" stroke-width="2"/>
-                </svg>
-            </div>
-            <p style="color:var(--text-muted); font-size:0.85rem;">Esquema unifilar simplificado de control</p>
+        <div id="sgc" class="card" style="text-align:center;">
+            <h2>Esquema de Control SGC</h2>
+            <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style="background:#fff; border-radius:10px;"><text x="95" y="30" font-weight="bold">SGC</text><text x="310" y="30" font-weight="bold">CARGADOR</text><circle cx="35" cy="100" r="7" fill="#2ecc71"/><circle cx="75" cy="100" r="7" fill="#3498db"/><circle cx="115" cy="100" r="7" fill="#2ecc71"/><circle cx="155" cy="100" r="7" fill="#8b4513"/><circle cx="250" cy="100" r="7" fill="#bdc3c7"/><circle cx="290" cy="100" r="7" fill="#8b4513"/><circle cx="330" cy="100" r="7" fill="#2ecc71"/><circle cx="370" cy="100" r="7" fill="#3498db"/><path d="M 35 100 L 35 130 L 115 130 L 115 100" stroke="#2ecc71" fill="none" stroke-width="3"/><path d="M 155 107 L 155 160 L 290 160 L 290 107" stroke="#8b4513" fill="none" stroke-width="2"/><path d="M 115 130 L 115 200 L 330 200 L 330 107" stroke="#2ecc71" fill="none" stroke-width="2"/><path d="M 75 107 L 75 235 L 370 235 L 370 107" stroke="#3498db" fill="none" stroke-width="2"/></svg>
         </div>
 
-        <!-- BIBLIOTECA -->
         <div id="biblioteca" class="card">
-            <h2>Biblioteca RIC</h2>
-            <select id="ric-select" onchange="loadPDF(this.value)">
-                <option value="">Seleccionar pliego...</option>
-                <option value="https://www.sec.cl/docs/libros/RIC01.pdf">RIC 01 • Empalmes</option>
-                <option value="https://www.sec.cl/docs/libros/RIC02.pdf">RIC 02 • Tableros</option>
-                <option value="https://www.sec.cl/docs/libros/RIC03.pdf">RIC 03 • Alimentadores</option>
-                <option value="https://www.sec.cl/docs/libros/RIC04.pdf">RIC 04 • Conductores</option>
-                <option value="https://www.sec.cl/docs/libros/RIC05.pdf">RIC 05 • Protecciones</option>
-                <option value="https://www.sec.cl/docs/libros/RIC06.pdf">RIC 06 • Puesta a Tierra</option>
-                <option value="https://www.sec.cl/docs/libros/RIC07.pdf">RIC 07 • Equipos</option>
-                <option value="https://www.sec.cl/docs/libros/RIC15.pdf">RIC 15 • Vehículos Eléctricos</option>
+            <h2>Biblioteca Pliegos RIC (01-19 + 15.1)</h2>
+            <select onchange="document.getElementById('pdf-view').src = this.value">
+                <option value="">-- Seleccionar Pliego --</option>
+                <option value="RIC01.pdf">RIC 01: Empalmes</option><option value="RIC02.pdf">RIC 02: Tableros Electricos</option>
+                <option value="RIC03.pdf">RIC 03: Alimentadores y interruptores</option><option value="RIC04.pdf">RIC 04: Conductores y canalizaciones</option>
+                <option value="RIC05.pdf">RIC 05: Protecciones</option><option value="RIC06.pdf">RIC 06: Puesta a Tierra</option>
+                <option value="RIC07.pdf">RIC 07: Instalaciones de equipos</option><option value="RIC08.pdf">RIC 08: Sistemas de Emergencia y corte en punta</option>
+                <option value="RIC09.pdf">RIC 09: Sistemas de autogeneracion</option><option value="RIC10.pdf">RIC 10: Instalaciones de uso general</option>
+                <option value="RIC11.pdf">RIC 11: Instalaciones especiales</option><option value="RIC12.pdf">RIC 12: Instalaciones en ambientes explosivos</option>
+                <option value="RIC13.pdf">RIC 13: Subestaciones y salas electricas</option><option value="RIC14.pdf">RIC 14: Alumbrado Público</option>
+                <option value="RIC15.pdf">RIC 15: Infraestructura para la recarga de vehiculos electricos</option><option value="RIC15.1.pdf">RIC 15.1: IRVE 2026</option>
+                <option value="RIC16.pdf">RIC 16: Subsistemas de distribucion</option><option value="RIC17.pdf">RIC 17: Operacion y mantenimiento</option>
+                <option value="RIC18.pdf">RIC 18: Presentacion de proyectos</option><option value="RIC19.pdf">RIC 19: Puesta en Servicio</option>
             </select>
-            <iframe id="pdf-view" src="" title="Visor PDF"></iframe>
+            <iframe id="pdf-view" src=""></iframe>
         </div>
 
-        <!-- INVENTARIO -->
+        <!-- 🔽 SECCIÓN INVENTARIO CON BUSCADOR -->
         <div id="inventario" class="card">
-            <h2>Inventario</h2>
-            <div class="inv-header">
-                <input type="text" id="new-item-name" placeholder="Material">
-                <input type="number" id="new-item-qty" placeholder="Stock">
-                <button class="btn btn-sm" onclick="addMaterial()">+</button>
-            </div>
+            <h2>Gestión de Bodega LINSTELEC 
+                <span id="sync-status" class="sync-status sync-pending">
+                    <i class="fas fa-circle"></i> Sin sincronizar
+                </span>
+            </h2>
             
-            <table class="inv-table">
-                <thead>
-                    <tr><th>Material</th><th>Stock</th><th>Usar</th><th></th></tr>
-                </thead>
-                <tbody id="inv-body"></tbody>
-            </table>
-
-            <div class="bag-section">
-                <h3 style="font-size:1rem; margin-bottom:12px;">Salida de Materiales</h3>
-                <input type="text" id="install-proj" placeholder="Proyecto / Cliente" style="width:100%; margin-bottom:12px;">
-                <div id="bag-items"></div>
-                <button class="btn btn-success mt-2" onclick="generateFile()">
-                    <i class="fas fa-download"></i> Generar y Descontar
+            <!-- 🔽 BOTONES: Descargar, Imprimir, Exportar, Importar, Actualizar -->
+            <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                <button class="tab-btn" onclick="downloadInventory()" style="background:var(--success); color:white;">
+                    <i class="fas fa-download"></i> Descargar Lista
+                </button>
+                <button class="tab-btn" onclick="printInventory()" style="background:var(--dark); color:white;">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+                <button class="tab-btn" onclick="exportForShare()" style="background:var(--primary); color:white;">
+                    <i class="fas fa-share-alt"></i> Exportar para Compartir
+                </button>
+                <button class="tab-btn" onclick="importFromShare()" style="background:var(--luis); color:white;">
+                    <i class="fas fa-upload"></i> Importar Lista
+                </button>
+                <button class="tab-btn" onclick="refreshInventory()" style="background:#95a5a6; color:white;">
+                    <i class="fas fa-sync"></i> Actualizar
                 </button>
             </div>
+            <input type="file" id="importFile" accept=".txt,.json" style="display:none;" onchange="handleImport(this)">
+            
+            <!-- 🔍 BUSCADOR DE MATERIALES -->
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-inv" placeholder="🔍 Buscar material..." oninput="filterInventory()">
+                <div class="search-results" id="search-count"></div>
+            </div>
+            
+            <div class="form-group" style="display: grid; grid-template-columns: 1fr 100px 80px; gap: 10px;">
+                <input type="text" id="new-item-name" placeholder="Nombre Material"><input type="number" id="new-item-qty" placeholder="Stock Inicial"><button onclick="addMaterial()" class="btn-calc" style="padding:0;">+</button>
+            </div>
+            <table class="inv-table">
+                <thead><tr><th>Material</th><th>Stock Bodega</th><th>Cant. a Usar</th><th>Acción</th></tr></thead>
+                <tbody id="inv-body"></tbody>
+            </table>
+            <div class="install-list">
+                <h3>Plantilla de Salida (Instalación)</h3>
+                <input type="text" id="install-proj" placeholder="Nombre Proyecto / Cliente" style="margin-bottom:10px; width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
+                <div id="bag-items"></div><hr>
+                <button class="btn-calc btn-success" style="background:var(--success);" onclick="generateFile()">Generar Archivo y Descontar Stock</button>
+            </div>
         </div>
 
-        <!-- LUIS IA -->
         <div id="luis-ia" class="card">
-            <h2><i class="fas fa-robot"></i> Luis • Asistente RIC</h2>
-            <iframe class="ai-frame" src="https://brayaton-asistente-ric-pro.hf.space" title="Asistente IA"></iframe>
+            <h2>🤖 PREGÚNTALE A LUIS (Experto RIC)</h2>
+            <iframe src="https://brayaton-asistente-ric-pro.hf.space"></iframe>
         </div>
     </div>
 </div>
 
-<!-- ======================================== -->
-<!-- VENTANA FLOTANTE MP3 (ESTILO ARES) -->
-<!-- ======================================== -->
+<!-- 🎵 VENTANA REPRODUCTOR MP3 -->
 <div id="ventanaAres">
     <div id="barraTituloAres">
-        <span>🎵 OldSkul • MP3 Player</span>
-        <div>
-            <span class="btn-control-ares" onclick="minimizarVentana()">_</span>
-            <span class="btn-control-ares" onclick="cerrarVentanaMusica()">X</span>
-        </div>
+        <span>🎵 oldskul.mp3</span>
+        <span class="btn-control-ares" onclick="document.getElementById('ventanaAres').classList.remove('visible')">X</span>
     </div>
     <div id="contenidoVentanaAres">
         <div class="song-info">
-            <strong>🎶 oldskul.mp3</strong><br>
-            <span id="songStatus">Listo para reproducir</span>
+            <strong>OldSkul</strong><br>
+            <span id="songStatus">Listo</span>
         </div>
-        
         <audio id="mp3Player" controls>
             <source src="oldskul.mp3" type="audio/mpeg">
-            Tu navegador no soporta el elemento de audio.
+            Tu navegador no soporta audio.
         </audio>
-        
-        <p style="font-size:10px; color:#666; margin-top:10px;">
-            <i class="fas fa-music"></i> Reproductor MP3 local
-        </p>
     </div>
     <div id="barraEstadoAres">
-        <span><div class="status-icon-ares"></div>Reproduciendo</span>
-        <span>MP3 320kbps</span>
+        <span><span class="status-dot"></span>MP3</span>
+        <span>320kbps</span>
     </div>
 </div>
 
 <script>
-    // ===== CONFIG =====
+    /* ========== 🔥 CONFIGURACIÓN JSONBIN ========== */
+    const JSONBIN_CONFIG = {
+        masterKey: "$2a$10$d5wiwzZ.u1m2caXKKtWSGuo4.hnU4mEWvEiCaj9XFa6IpBOA0UP0a",
+        binId: "69b37960c3097a1dd51edd41",
+        baseUrl: "https://api.jsonbin.io/v3/b"
+    };
+
+    /* ========== USUARIOS ========== */
     const USERS = [
         { id: "Rodrigo", pass: "1648", name: "Rodrigo Padilla", clase: "Clase D" },
         { id: "Luis", pass: "2507", name: "Luis Rojo", clase: "Clase C" },
         { id: "Isaias", pass: "2071", name: "Isaias Echeverria", clase: "Clase C" },
         { id: "Brayan", pass: "2025", name: "Brayan Barraza", clase: "Clase D" }
     ];
-    
-    let inventory = JSON.parse(localStorage.getItem('linstelec_inv')) || [];
-    let bag = [];
-    const RHO = 0.018;
-    const V_NOM = 220;
 
-    // ===== LOGIN =====
+    let inventory = JSON.parse(localStorage.getItem('linstelec_inv_v2')) || [];
+    let bag = [];
+    let isSyncing = false;
+
+    /* ========== 📡 FUNCIONES JSONBIN ========== */
+
+    function updateSyncStatus(status, message) {
+        const el = document.getElementById('sync-status');
+        if(!el) return;
+        
+        const statuses = {
+            ok: { class: 'sync-status sync-ok', icon: 'fa-check-circle', text: 'Sincronizado' },
+            pending: { class: 'sync-status sync-pending', icon: 'fa-circle', text: 'Sin sincronizar' },
+            error: { class: 'sync-status sync-error', icon: 'fa-exclamation-circle', text: 'Error' },
+            syncing: { class: 'sync-status sync-pending', icon: 'fa-spinner fa-spin', text: 'Sincronizando...' }
+        };
+        
+        const s = statuses[status] || statuses.pending;
+        el.className = s.class;
+        el.innerHTML = `<i class="fas ${s.icon}"></i> ${message || s.text}`;
+    }
+
+    async function loadInventoryFromCloud() {
+        if(!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI') || 
+           !JSONBIN_CONFIG.binId || JSONBIN_CONFIG.binId.includes('TU_BIN_ID')) {
+            updateSyncStatus('pending', 'Sin configurar');
+            return;
+        }
+
+        isSyncing = true;
+        updateSyncStatus('syncing', 'Cargando...');
+        
+        try {
+            const url = `${JSONBIN_CONFIG.baseUrl}/${JSONBIN_CONFIG.binId}/latest`;
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: { 
+                    'X-Master-Key': JSONBIN_CONFIG.masterKey,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if(!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`${response.status}: ${errorData.message || 'Error'}`);
+            }
+            
+            const data = await response.json();
+            
+            if(data.record && data.record.inventory) {
+                inventory = data.record.inventory;
+                localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+                renderInv();
+                updateSyncStatus('ok', `✅ ${new Date().toLocaleTimeString()}`);
+            } else {
+                inventory = [];
+                await saveInventoryToCloud();
+                updateSyncStatus('ok', '✅ Bin inicializado');
+            }
+        } catch(error) {
+            console.error("❌ Error:", error);
+            updateSyncStatus('error', 'Error de conexión');
+            inventory = JSON.parse(localStorage.getItem('linstelec_inv_v2')) || [];
+            renderInv();
+        } finally {
+            isSyncing = false;
+        }
+    }
+
+    async function saveInventoryToCloud() {
+        if(!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI')) {
+            return;
+        }
+
+        if(isSyncing) return;
+        
+        try {
+            const payload = {
+                inventory: inventory,
+                lastUpdate: new Date().toISOString(),
+                updatedBy: document.getElementById('user-display')?.textContent || 'Unknown'
+            };
+            
+            const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/${JSONBIN_CONFIG.binId}`, {
+                method: 'PUT',
+                headers: { 
+                    'X-Master-Key': JSONBIN_CONFIG.masterKey,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            if(!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            updateSyncStatus('ok', `Guardado ${new Date().toLocaleTimeString()}`);
+        } catch(error) {
+            console.error("❌ Error al guardar:", error);
+            updateSyncStatus('error', 'Error al guardar');
+        }
+    }
+
+    async function refreshInventory() {
+        updateSyncStatus('syncing', 'Actualizando...');
+        await loadInventoryFromCloud();
+        alert("📡 Inventario actualizado desde la nube");
+    }
+
+    /* ========== 🔍 FUNCIONES DE BÚSQUEDA ========== */
+
+    function filterInventory() {
+        const searchTerm = document.getElementById('search-inv').value.toLowerCase().trim();
+        const rows = document.querySelectorAll('#inv-body tr');
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+            const materialName = row.cells[0]?.textContent.toLowerCase() || '';
+            if(materialName.includes(searchTerm)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        const countEl = document.getElementById('search-count');
+        if(searchTerm) {
+            countEl.textContent = `${visibleCount} resultado${visibleCount !== 1 ? 's' : ''} encontrado${visibleCount !== 1 ? 's' : ''}`;
+            if(visibleCount === 0) {
+                countEl.textContent = '❌ Sin resultados';
+            }
+        } else {
+            countEl.textContent = '';
+        }
+    }
+
+    /* ========== FUNCIONES DE EXPORTACIÓN/IMPORTACIÓN ========== */
+
+    function downloadInventory() {
+        if(inventory.length === 0) return alert("⚠️ No hay materiales en el inventario para descargar");
+        
+        let csv = "MATERIAL;STOCK DISPONIBLE\n";
+        inventory.forEach(item => {
+            csv += `"${item.name}";${item.stock}\n`;
+        });
+        
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `Inventario_LINSTELEC_${new Date().toISOString().slice(0,10)}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function printInventory() {
+        if(inventory.length === 0) return alert("⚠️ No hay materiales para imprimir");
+        
+        let content = `
+            <html><head><title>Inventario LINSTELEC</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+                th { background: #3498db; color: white; }
+                tr:nth-child(even) { background: #f9f9f9; }
+                .footer { margin-top: 30px; font-size: 12px; color: #666; text-align: center; }
+                @media print { body { padding: 0; } }
+            </style></head><body>
+            <h1>📦 Inventario de Materiales - LINSTELEC CHILE</h1>
+            <p><strong>Fecha:</strong> ${new Date().toLocaleDateString('es-CL')} | <strong>Hora:</strong> ${new Date().toLocaleTimeString('es-CL')}</p>
+            <table>
+                <thead><tr><th>#</th><th>Material</th><th>Stock en Bodega</th></tr></thead>
+                <tbody>
+        `;
+        
+        inventory.forEach((item, idx) => {
+            content += `<tr><td>${idx + 1}</td><td>${item.name}</td><td><strong>${item.stock}</strong></td></tr>`;
+        });
+        
+        content += `</tbody></table><div class="footer">
+            Documento generado desde Sistema LINSTELEC - Uso interno<br>
+            Total de materiales: ${inventory.length}
+        </div></body></html>`;
+        
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        printWindow.document.write(content);
+        printWindow.document.close();
+        printWindow.onload = () => { 
+            setTimeout(() => { printWindow.print(); }, 500); 
+        };
+    }
+
+    function exportForShare() {
+        if(inventory.length === 0) return alert("⚠️ No hay materiales para exportar");
+        
+        const exportData = {
+            version: "1.0",
+            date: new Date().toISOString(),
+            inventory: inventory
+        };
+        
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `LINSTELEC_Inventario_Compartir_${new Date().toISOString().slice(0,10)}.json`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        alert("✅ Archivo exportado exitosamente.");
+    }
+
+    function importFromShare() {
+        document.getElementById('importFile').click();
+    }
+
+    function handleImport(input) {
+        const file = input.files[0];
+        if(!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if(data.inventory && Array.isArray(data.inventory)) {
+                    if(confirm(`⚠️ IMPORTAR INVENTARIO\n\nEsto reemplazará tu inventario actual con ${data.inventory.length} materiales.\n\n¿Deseas continuar?`)) {
+                        inventory = data.inventory;
+                        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+                        renderInv();
+                        saveInventoryToCloud();
+                        alert("✅ Inventario actualizado correctamente con " + inventory.length + " materiales");
+                    }
+                } else {
+                    alert("❌ Formato de archivo no válido.");
+                }
+            } catch(err) {
+                alert("❌ Error al leer el archivo: " + err.message);
+            }
+            input.value = '';
+        };
+        reader.readAsText(file);
+    }
+
+    /* ========== FUNCIONES DE INVENTARIO ========== */
+    function addMaterial() {
+        const n = document.getElementById('new-item-name').value, q = parseInt(document.getElementById('new-item-qty').value);
+        if(n && !isNaN(q)) { 
+            inventory.push({ name: n, stock: q }); 
+            document.getElementById('new-item-name').value = ""; 
+            document.getElementById('new-item-qty').value = ""; 
+            renderInv();
+            saveInventoryToCloud();
+        }
+    }
+    
+    function renderInv() {
+        const body = document.getElementById('inv-body'); 
+        body.innerHTML = "";
+        
+        if(inventory.length === 0) {
+            body.innerHTML = `<tr><td colspan="4" class="no-results">📦 No hay materiales registrados. ¡Agrega el primero!</td></tr>`;
+            document.getElementById('search-count').textContent = '';
+            return;
+        }
+        
+        inventory.forEach((item, idx) => {
+            body.innerHTML += `<tr><td>${item.name}</td><td><input type="number" value="${item.stock}" onchange="updateStock(${idx}, this.value)" class="qty-input"></td><td><input type="number" id="use-qty-${idx}" value="1" min="1" class="qty-input"></td><td><button onclick="addToBag(${idx})" class="tab-btn" style="padding:5px 10px; font-size:12px; background:var(--primary); color:white;">Ocupar</button> <button onclick="delMat(${idx})" style="background:var(--danger); border:none; color:white; padding:5px 8px; border-radius:5px; cursor:pointer;"><i class="fas fa-trash"></i></button></td></tr>`;
+        });
+        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+        filterInventory();
+    }
+    
+    function updateStock(idx, val) { 
+        inventory[idx].stock = parseInt(val); 
+        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+        saveInventoryToCloud();
+    }
+    
+    function delMat(idx) { 
+        if(confirm("¿Eliminar?")) { 
+            inventory.splice(idx, 1); 
+            renderInv();
+            saveInventoryToCloud();
+        } 
+    }
+    
+    function addToBag(idx) {
+        const useQty = parseInt(document.getElementById(`use-qty-${idx}`).value);
+        if(isNaN(useQty) || useQty <= 0) return;
+        const exist = bag.find(b => b.name === inventory[idx].name);
+        if(exist) exist.qty += useQty; else bag.push({ name: inventory[idx].name, qty: useQty, originIdx: idx });
+        renderBag();
+    }
+    
+    function renderBag() {
+        const div = document.getElementById('bag-items'); 
+        div.innerHTML = "";
+        bag.forEach(item => { 
+            div.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px; background:white; padding:5px; border-radius:5px; font-size:0.9rem;"><span>${item.name}</span><strong>Cant: ${item.qty}</strong></div>`; 
+        });
+    }
+    
+    function generateFile() {
+        if(bag.length === 0) return alert("Selecciona materiales primero");
+        const proj = document.getElementById('install-proj').value || "Salida_Materiales";
+        let txt = `LINSTELEC CHILE - GUIA DE MATERIALES\nPROYECTO: ${proj}\nFECHA: ${new Date().toLocaleDateString()}\n-------------------\n`;
+        bag.forEach(item => {
+            txt += `- ${item.name}: ${item.qty}\n`;
+            inventory[item.originIdx].stock -= item.qty;
+        });
+        const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `${proj}_Materiales.txt`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        bag = []; 
+        renderBag(); 
+        renderInv();
+        saveInventoryToCloud();
+        alert("Archivo generado y stock actualizado.");
+    }
+
+    /* ========== FUNCIONES DEL SISTEMA ========== */
     function checkLogin() {
         const u = document.getElementById('userInput').value.trim();
         const p = document.getElementById('passInput').value;
-        const user = USERS.find(x => x.id === u && x.pass === p);
+        const found = USERS.find(user => user.id === u && user.pass === p);
         
-        if (user) {
+        if(found) {
             document.getElementById('login-wrapper').style.display = 'none';
-            document.getElementById('main-app').style.display = 'block';
             document.getElementById('container').style.display = 'block';
-            document.getElementById('userDisplay').textContent = user.name;
-            document.getElementById('userAvatar').textContent = user.name.charAt(0);
-            renderInv();
-            initAI();
-        } else {
-            const err = document.getElementById('error-msg');
-            err.style.display = 'block';
-            setTimeout(() => err.style.display = 'none', 3000);
+            document.getElementById('user-display').innerHTML = "👷 " + found.name + " - <strong>" + found.clase + "</strong>";
+            renderInv(); 
+            iniciarChatbase();
+            loadInventoryFromCloud();
+            
+            const audio = document.getElementById('mp3Player');
+            const musicWin = document.getElementById('ventanaAres');
+            if(musicWin) musicWin.classList.add('visible');
+            if(audio) {
+                audio.play().then(() => {
+                    if(document.getElementById('songStatus')) {
+                        document.getElementById('songStatus').textContent = '▶ Reproduciendo';
+                    }
+                }).catch(err => console.log('Autoplay:', err));
+            }
+        } else { 
+            document.getElementById('error-msg').style.display = 'block';
+            setTimeout(() => { document.getElementById('error-msg').style.display = 'none'; }, 3000);
         }
     }
 
-    function logout() {
-        if (confirm('¿Cerrar sesión?')) {
-            location.reload();
-        }
-    }
-
-    // ===== TABS =====
     function showTab(evt, name) {
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(name).classList.add('active');
-        evt.currentTarget.classList.add('active');
+        let cards = document.getElementsByClassName("card"), btns = document.getElementsByClassName("tab-btn");
+        for (let i=0; i<cards.length; i++) cards[i].classList.remove("active");
+        for (let i=0; i<btns.length; i++) btns[i].classList.remove("active");
+        document.getElementById(name).classList.add("active");
+        evt.currentTarget.classList.add("active");
     }
 
-    // ===== CALCULADORAS =====
-    function calcTension() {
-        const L = +document.getElementById('dist').value;
-        const I = +document.getElementById('amp').value;
-        const S = +document.getElementById('sec').value;
-        
-        if (!L || !I || !S) return showResult('res-tension', 'Completa todos los campos', 'error');
-        
-        const drop = (2 * L * I * RHO) / S;
-        const pct = (drop / V_NOM) * 100;
-        const ok = pct <= 3;
-        
-        showResult('res-tension', 
-            `ΔV: ${drop.toFixed(2)} V • ${pct.toFixed(2)}% ${ok ? '✓ Cumple RIC' : '✗ Supera 3%'}`, 
-            ok ? 'ok' : 'error'
-        );
+    function calcNodoInteractivo(nodo) {
+        const rho = 0.0185, V = 220, zcc1 = parseFloat(document.getElementById('zcc1').value);
+        const calcZ = (L, S) => ((rho / S) * L * 2) * 1000;
+        let resHTML = "", z_acum = 0, z_cable = 0, icc = 0, label_cable = "";
+        if (nodo === 2) {
+            z_cable = calcZ(parseFloat(document.getElementById('L2').value), parseFloat(document.getElementById('S2').value));
+            z_acum = zcc1 + z_cable; icc = V / (z_acum / 1000) / 1000; label_cable = "AL-01";
+            resHTML = `<strong>PASO 1: Resistencia Conductor (${label_cable})</strong><br>R = (ρ / S) * L * 2 = (0.0185 / ${document.getElementById('S2').value}) * ${document.getElementById('L2').value} * 2<br>R = ${z_cable.toFixed(2)} mΩ<br><br><strong>PASO 2: Impedancia Acumulada</strong><br>Zcc = Zcc_n1 + R = ${zcc1} + ${z_cable.toFixed(2)}<br>Zcc = <span class="math-res">${z_acum.toFixed(2)} mΩ</span><br><br><strong>PASO 3: Cortocircuito Nodo 2</strong><br>Icc = V / Zcc = 220 / (${z_acum.toFixed(2)} / 1000)<br>Icc = <span class="math-res">${icc.toFixed(2)} kA</span>`;
+        } else {
+            const z_tdf = zcc1 + calcZ(parseFloat(document.getElementById('L2').value), parseFloat(document.getElementById('S2').value));
+            let L = document.getElementById(nodo === 3 ? 'L3' : 'L4').value, S = document.getElementById(nodo === 3 ? 'S3' : 'S4').value;
+            z_cable = calcZ(parseFloat(L), parseFloat(S)); z_acum = z_tdf + z_cable; icc = V / (z_acum / 1000) / 1000; label_cable = (nodo === 3) ? "CR-01" : "Sub-alim";
+            resHTML = `<strong>PASO 1: Resistencia Conductor (${label_cable})</strong><br>R = (0.0185 / ${S}) * ${L} * 2 = ${z_cable.toFixed(2)} mΩ<br><br><strong>PASO 2: Impedancia Acumulada (desde TDF)</strong><br>Zcc = Zcc_TDF (${z_tdf.toFixed(2)}) + R<br>Zcc = <span class="math-res">${z_acum.toFixed(2)} mΩ</span><br><br><strong>PASO 3: Cortocircuito Nodo ${nodo}</strong><br>Icc = 220 / (${z_acum.toFixed(2)} / 1000) = <span class="math-res">${icc.toFixed(2)} kA</span>`;
+        }
+        document.getElementById(`ecu-${nodo}`).innerHTML = resHTML; document.getElementById(`ecu-${nodo}`).style.display = 'block';
     }
 
     function calcOhm() {
-        const P = +document.getElementById('watt-ohm').value;
-        const V = +document.getElementById('volt-ohm').value;
-        
-        if (!P || !V) return showResult('res-ohm', 'Ingresa potencia y voltaje', 'error');
-        
-        const I = P / V;
-        showResult('res-ohm', `I = ${I.toFixed(2)} A`, 'ok');
+        let w = parseFloat(document.getElementById('watt-ohm').value), v = parseFloat(document.getElementById('volt-ohm').value);
+        if (w && v) { document.getElementById('res-ohm').className = "resultado res-ok"; document.getElementById('res-ohm').innerHTML = `Corriente Resultante: ${(w/v).toFixed(2)} Amperes`; }
+        else { document.getElementById('res-ohm').className = "resultado res-fail"; document.getElementById('res-ohm').innerHTML = "Ingrese Potencia y Voltaje"; }
     }
 
-    function calcNodo(n) {
-        const zcc1 = +document.getElementById('zcc1').value;
-        const getZ = (L, S) => ((RHO / S) * L * 2) * 1000;
+    // ⚡ CALCULADORA DE CAÍDA DE TENSIÓN - FÓRMULAS CORREGIDAS
+    function calcTension() {
+        document.getElementById('successImg').style.display = 'none';
+        const danger = document.getElementById('dangerOverlay');
+        danger.style.display = 'none';
         
-        let L, S, label, zPrev;
+        const tipoSistema = document.querySelector('input[name="tipoSistema"]:checked').value;
+        const esMonofasico = tipoSistema === 'monofasico';
         
-        if (n === 2) {
-            L = +document.getElementById('L2').value;
-            S = +document.getElementById('S2').value;
-            label = 'AL-01';
-            zPrev = zcc1;
-        } else {
-            const L2 = +document.getElementById('L2').value;
-            const S2 = +document.getElementById('S2').value;
-            zPrev = zcc1 + getZ(L2, S2);
+        const rho = 0.018;
+        const V_nominal = esMonofasico ? 220 : 380;
+        const textoTension = esMonofasico ? "220V" : "380V";
+        
+        const distancia = parseFloat(document.getElementById('dist').value);
+        const corriente = parseFloat(document.getElementById('amp').value);
+        const seccion = parseFloat(document.getElementById('sec').value);
+        
+        const factor = esMonofasico ? 2 : Math.sqrt(3);
+        
+        let dv = (factor * distancia * corriente * rho) / seccion;
+        let p = (dv / V_nominal) * 100;
+        
+        let res = document.getElementById('res-tension');
+        let sistemaTexto = esMonofasico ? "MONOFÁSICO" : "TRIFÁSICO";
+        let factorTexto = esMonofasico ? "2 (ida y vuelta)" : "√3 (1.732)";
+        
+        if (p <= 3) {
+            res.className = "resultado res-ok";
+            res.innerHTML = `
+                <strong>Sistema ${sistemaTexto} ${textoTension}</strong><br>
+                Factor: ${factorTexto} | ΔV: ${dv.toFixed(2)}V<br>
+                Pérdida: ${p.toFixed(2)}%<br>
+                ✓ CUMPLE RIC 04 (≤3%)
+            `;
+            document.getElementById('successImg').style.display = 'block';
             
-            L = +document.getElementById(`L${n}`).value;
-            S = +document.getElementById(`S${n}`).value;
-            label = n === 3 ? 'CR-01' : 'Sub-alim';
+            for(let i=0; i<15; i++) {
+                setTimeout(() => {
+                    const c = document.createElement('span');
+                    c.textContent = ['🎉','✨','⚡','🔋','✅'][Math.floor(Math.random()*5)];
+                    c.style.cssText = `position:fixed; left:${Math.random()*100}vw; top:-30px; font-size:${18+Math.random()*15}px; animation:confettiFall ${2+Math.random()*2}s linear forwards; pointer-events:none; z-index:9999;`;
+                    document.body.appendChild(c);
+                    setTimeout(() => c.remove(), 4000);
+                }, i*100);
+            }
+        } else {
+            res.className = "resultado res-fail";
+            res.innerHTML = `
+                <strong>Sistema ${sistemaTexto} ${textoTension}</strong><br>
+                Factor: ${factorTexto} | ΔV: ${dv.toFixed(2)}V<br>
+                Pérdida: ${p.toFixed(2)}%<br>
+                ✗ FUERA DE NORMA (>3%)
+            `;
+            
+            danger.style.display = 'flex';
+            
+            if(navigator.vibrate) navigator.vibrate([300,100,300,100,300]);
+            
+            setTimeout(() => {
+                danger.style.display = 'none';
+            }, 6000);
+        }
+    }
+
+    // 🔌 ACTUALIZAR DATOS DEL CABLE SELECCIONADO
+    function actualizarDatosCable() {
+        const select = document.getElementById('cable-tipo-nuevo');
+        const customGroup = document.getElementById('custom-diametro-group');
+        const option = select.options[select.selectedIndex];
+        
+        if(option.value === 'personalizado') {
+            customGroup.style.display = 'block';
+        } else {
+            customGroup.style.display = 'none';
+        }
+    }
+
+    // 📐 CALCULAR FACTOR DE LLENADO - RIC 07
+    function calcularFactorLlenado() {
+        const select = document.getElementById('cable-tipo-nuevo');
+        const option = select.options[select.selectedIndex];
+        const cantidad = parseInt(document.getElementById('cable-cant').value) || 0;
+        const incluirUTP = document.getElementById('utp-check').checked;
+        
+        if(!option.value || cantidad <= 0) {
+            document.getElementById('res-ducto').innerHTML = '<div class="resultado res-warn">⚠️ Selecciona un cable y cantidad válida</div>';
+            return;
         }
         
-        const zCable = getZ(L, S);
-        const zTotal = zPrev + zCable;
-        const icc = V_NOM / (zTotal / 1000) / 1000;
+        // Obtener diámetro del cable seleccionado
+        let diametroCable = parseFloat(option.getAttribute('data-diametro'));
         
-        const eq = document.getElementById(`ecu-${n}`);
-        eq.innerHTML = `
-            <div><strong>1. Resistencia ${label}</strong><br>
-            R = (ρ/S)×L×2 = (0.018/${S})×${L}×2 = <span class="val">${zCable.toFixed(2)} mΩ</span></div>
-            <div class="mt-2"><strong>2. Impedancia acumulada</strong><br>
-            Z = Z<sub>prev</sub> + R = ${zPrev.toFixed(2)} + ${zCable.toFixed(2)} = <span class="val">${zTotal.toFixed(2)} mΩ</span></div>
-            <div class="mt-2"><strong>3. Icc Nodo ${n}</strong><br>
-            Icc = V / Z = 220 / (${zTotal.toFixed(2)}/1000) = <span class="res">${icc.toFixed(2)} kA</span></div>
-        `;
-        eq.classList.toggle('show');
-    }
-
-    function calcDucto() {
-        const areaCable = +document.getElementById('cable-tipo').value;
-        const qty = +document.getElementById('cable-cant').value;
-        const utp = document.getElementById('utp-check').checked;
+        // Si es personalizado, usar el valor ingresado
+        if(option.value === 'personalizado') {
+            diametroCable = parseFloat(document.getElementById('custom-diametro').value);
+            if(!diametroCable || diametroCable <= 0) {
+                document.getElementById('res-ducto').innerHTML = '<div class="resultado res-fail">❌ Ingresa un diámetro válido</div>';
+                return;
+            }
+        }
         
-        const totalArea = (areaCable * qty) + (utp ? 32 : 0);
-        const totalCables = qty + (utp ? 1 : 0);
-        const fillFactor = totalCables === 1 ? 0.53 : totalCables === 2 ? 0.31 : 0.40;
+        // Calcular área del cable (π × r²)
+        const radioCable = diametroCable / 2;
+        const areaCable = Math.PI * Math.pow(radioCable, 2);
         
-        const ducts = [
-            { name: '25 mm', d: 24.3 },
-            { name: '32 mm', d: 32.5 },
-            { name: '40 mm', d: 38.4 },
-            { name: '50 mm', d: 50.1 }
+        // Calcular área total de cables
+        let totalCables = cantidad;
+        let areaTotalCables = areaCable * cantidad;
+        
+        // Agregar UTP si está marcado
+        if(incluirUTP) {
+            const areaUTP = Math.PI * Math.pow(3, 2); // Ø6mm → r=3mm
+            areaTotalCables += areaUTP;
+            totalCables += 1;
+        }
+        
+        // ✅ FACTORES DE LLENADO SEGÚN RIC 07 (SEC)
+        // 1 conductor: 53%
+        // 2 conductores: 31%
+        // 3 o más conductores: 40%
+        let factorLlenadoMax;
+        if(totalCables === 1) {
+            factorLlenadoMax = 0.53;
+        } else if(totalCables === 2) {
+            factorLlenadoMax = 0.31;
+        } else {
+            factorLlenadoMax = 0.40;
+        }
+        
+        // ✅ DIMENSIONES DE TUBOS EMT SEGÚN NORMA
+        const tubosEMT = [
+            { nombre: "25mm (3/4\")", diametroInt: 24.3, areaInt: Math.PI * Math.pow(24.3/2, 2) },
+            { nombre: "32mm (1\")", diametroInt: 32.5, areaInt: Math.PI * Math.pow(32.5/2, 2) },
+            { nombre: "40mm (1¼\")", diametroInt: 38.4, areaInt: Math.PI * Math.pow(38.4/2, 2) },
+            { nombre: "50mm (1½\")", diametroInt: 50.1, areaInt: Math.PI * Math.pow(50.1/2, 2) },
+            { nombre: "63mm (2\")", diametroInt: 62.5, areaInt: Math.PI * Math.pow(62.5/2, 2) }
         ];
         
-        let html = `<div class="result info">Área requerida: ${totalArea.toFixed(1)} mm²</div>`;
-        let recommended = false;
-        
-        ducts.forEach(d => {
-            const maxArea = (Math.PI * d.d ** 2 / 4) * fillFactor;
-            const fits = maxArea >= totalArea;
-            const pct = (totalArea / maxArea * 100).toFixed(0);
+        // Calcular porcentaje de llenado para cada tubo
+        let html = `
+            <div class="calc-details">
+                <h4><i class="fas fa-calculator"></i> Datos del Cálculo</h4>
+                <ul>
+                    <li><strong>Cable:</strong> ${option.text}</li>
+                    <li><strong>Diámetro exterior:</strong> Ø${diametroCable}mm</li>
+                    <li><strong>Área por cable:</strong> ${areaCable.toFixed(2)} mm²</li>
+                    <li><strong>Cantidad de cables:</strong> ${cantidad}${incluirUTP ? ' + 1 UTP' : ''}</li>
+                    <li><strong>Área total ocupada:</strong> ${areaTotalCables.toFixed(2)} mm²</li>
+                    <li><strong>Total conductores:</strong> ${totalCables}</li>
+                    <li><strong>Factor llenado máximo (RIC 07):</strong> ${(factorLlenadoMax * 100).toFixed(0)}%</li>
+                </ul>
+            </div>
             
-            if (fits && !recommended) {
-                html += `<div class="result ok">${d.name} ✓ Recomendado (${pct}% llenado)</div>`;
-                recommended = true;
-            } else if (fits) {
-                html += `<div class="result warn">${d.name} • ${pct}% llenado</div>`;
+            <table class="ducto-table">
+                <thead>
+                    <tr>
+                        <th>Tubo EMT</th>
+                        <th>Área Interior</th>
+                        <th>Máx. Permitido</th>
+                        <th>% Ocupado</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        let tuboRecomendado = null;
+        
+        tubosEMT.forEach(tubo => {
+            const areaMaxPermitida = tubo.areaInt * factorLlenadoMax;
+            const porcentajeOcupado = (areaTotalCables / tubo.areaInt) * 100;
+            const cumple = areaTotalCables <= areaMaxPermitida;
+            
+            let estadoClass = '';
+            let estadoTexto = '';
+            
+            if(porcentajeOcupado > (factorLlenadoMax * 100)) {
+                estadoClass = 'ducto-fail';
+                estadoTexto = '❌ SOBRECARGADO';
+            } else if(porcentajeOcupado > (factorLlenadoMax * 100 * 0.8)) {
+                estadoClass = 'ducto-warn';
+                estadoTexto = '⚠️ AJUSTADO';
             } else {
-                html += `<div class="result error">${d.name} ✗ ${pct}% (sobrecarga)</div>`;
+                estadoClass = 'ducto-ok';
+                estadoTexto = '✅ RECOMENDADO';
+                if(!tuboRecomendado) tuboRecomendado = tubo.nombre;
             }
+            
+            html += `
+                <tr class="${estadoClass}">
+                    <td>${tubo.nombre}</td>
+                    <td>${tubo.areaInt.toFixed(2)} mm²</td>
+                    <td>${areaMaxPermitida.toFixed(2)} mm²</td>
+                    <td>${porcentajeOcupado.toFixed(2)}%</td>
+                    <td>${estadoTexto}</td>
+                </tr>
+            `;
         });
+        
+        html += `</tbody></table>`;
+        
+        if(tuboRecomendado) {
+            html += `
+                <div class="resultado res-ok" style="margin-top:15px;">
+                    <i class="fas fa-check-circle"></i> 
+                    <strong>Tubo Recomendado: ${tuboRecomendado}</strong><br>
+                    <small>Cumple con factor de llenado máximo del ${(factorLlenadoMax * 100).toFixed(0)}% según RIC 07</small>
+                </div>
+            `;
+        } else {
+            html += `
+                <div class="resultado res-fail" style="margin-top:15px;">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    <strong>⚠️ Ningún tubo cumple con la norma</strong><br>
+                    <small>Considera reducir cantidad de cables o usar tubo de mayor diámetro</small>
+                </div>
+            `;
+        }
         
         document.getElementById('res-ducto').innerHTML = html;
     }
 
-    function showResult(id, msg, type) {
-        const el = document.getElementById(id);
-        el.className = `result ${type}`;
-        el.textContent = msg;
+    function calcDucto() {
+        calcularFactorLlenado();
     }
 
-    // ===== INVENTARIO =====
-    function addMaterial() {
-        const name = document.getElementById('new-item-name').value.trim();
-        const qty = +document.getElementById('new-item-qty').value;
-        
-        if (name && qty > 0) {
-            inventory.push({ name, stock: qty });
-            document.getElementById('new-item-name').value = '';
-            document.getElementById('new-item-qty').value = '';
-            renderInv();
-        }
+    function iniciarChatbase() {
+        if(!window.chatbase){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}});}
+        const s = document.createElement("script"); s.src = "https://www.chatbase.co/embed.min.js"; s.id = "HZBhzPxQtpDaw6ZlcBzEA"; s.domain = "www.chatbase.co"; document.body.appendChild(s);
     }
 
-    function renderInv() {
-        const tbody = document.getElementById('inv-body');
-        tbody.innerHTML = inventory.map((item, i) => `
-            <tr>
-                <td>${item.name}</td>
-                <td><input type="number" value="${item.stock}" min="0" onchange="updateStock(${i}, this.value)" style="width:60px"></td>
-                <td><input type="number" id="use-${i}" value="1" min="1" style="width:50px"></td>
-                <td class="flex gap-2 justify-end">
-                    <button class="btn-sm" style="background:var(--primary);color:white" onclick="addToBag(${i})">Usar</button>
-                    <button class="btn-icon" onclick="delItem(${i})"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>
-        `).join('');
-        localStorage.setItem('linstelec_inv', JSON.stringify(inventory));
+    const vw = document.getElementById('ventanaAres'), vh = document.getElementById('barraTituloAres');
+    let drag = false, ox, oy;
+    if(vh) {
+        vh.onmousedown = e => { drag = true; ox = e.clientX - vw.offsetLeft; oy = e.clientY - vw.offsetTop; vw.style.transition = 'none'; };
+        document.onmousemove = e => { if(drag) { vw.style.left = (e.clientX - ox) + 'px'; vw.style.top = (e.clientY - oy) + 'px'; vw.style.right = 'auto'; } };
+        document.onmouseup = () => { drag = false; vw.style.transition = ''; };
     }
 
-    function updateStock(i, val) {
-        inventory[i].stock = Math.max(0, +val);
-        localStorage.setItem('linstelec_inv', JSON.stringify(inventory));
+    const audioEl = document.getElementById('mp3Player');
+    if(audioEl) {
+        audioEl.onplay = () => { if(document.getElementById('songStatus')) document.getElementById('songStatus').textContent = '▶ Reproduciendo'; };
+        audioEl.onpause = () => { if(document.getElementById('songStatus')) document.getElementById('songStatus').textContent = '⏸ Pausado'; };
+        audioEl.onended = () => { if(document.getElementById('songStatus')) document.getElementById('songStatus').textContent = '✓ Finalizado'; };
     }
-
-    function delItem(i) {
-        if (confirm('¿Eliminar?')) {
-            inventory.splice(i, 1);
-            renderInv();
-        }
-    }
-
-    function addToBag(i) {
-        const qty = +document.getElementById(`use-${i}`).value;
-        if (qty <= 0 || qty > inventory[i].stock) return;
-        
-        const existing = bag.find(b => b.name === inventory[i].name);
-        if (existing) existing.qty += qty;
-        else bag.push({ name: inventory[i].name, qty, idx: i });
-        
-        renderBag();
-    }
-
-    function renderBag() {
-        const div = document.getElementById('bag-items');
-        if (bag.length === 0) {
-            div.innerHTML = '<p style="color:var(--text-muted); font-size:0.9rem">Sin materiales seleccionados</p>';
-            return;
-        }
-        div.innerHTML = bag.map(item => 
-            `<div class="bag-item"><span>${item.name}</span><strong>${item.qty} un</strong></div>`
-        ).join('');
-    }
-
-    function generateFile() {
-        if (bag.length === 0) return alert('Selecciona materiales primero');
-        
-        const proj = document.getElementById('install-proj').value.trim() || 'Salida';
-        const date = new Date().toLocaleDateString('es-CL');
-        
-        let content = `LINSTELEC CHILE\nGuía de Materiales\nProyecto: ${proj}\nFecha: ${date}\n${'─'.repeat(30)}\n\n`;
-        
-        bag.forEach(item => {
-            content += `• ${item.name}: ${item.qty}\n`;
-            inventory[item.idx].stock -= item.qty;
-        });
-        
-        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${proj.replace(/\s+/g, '_')}_Materiales.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        bag = [];
-        renderBag();
-        renderInv();
-        alert('✓ Archivo generado y stock actualizado');
-    }
-
-    // ===== AI =====
-    function initAI() {
-        if (!window.chatbase) {
-            window.chatbase = (...args) => {
-                if (!window.chatbase.q) window.chatbase.q = [];
-                window.chatbase.q.push(args);
-            };
-            window.chatbase = new Proxy(window.chatbase, {
-                get: (t, p) => p === 'q' ? t.q : (...args) => t(p, ...args)
-            });
-        }
-        const s = document.createElement('script');
-        s.src = 'https://www.chatbase.co/embed.min.js';
-        s.id = 'HZBhzPxQtpDaw6ZlcBzEA';
-        s.domain = 'www.chatbase.co';
-        document.body.appendChild(s);
-    }
-
-    function loadPDF(url) {
-        document.getElementById('pdf-view').src = url || 'about:blank';
-    }
-
-    // ===== CONTROLES VENTANA MUSICA =====
-    function toggleMusica() {
-        document.getElementById('ventanaAres').classList.toggle('visible');
-    }
-
-    function cerrarVentanaMusica() {
-        document.getElementById('ventanaAres').classList.remove('visible');
-    }
-
-    function minimizarVentana() {
-        const contenido = document.getElementById('contenidoVentanaAres');
-        const estado = document.getElementById('barraEstadoAres');
-        contenido.style.display = contenido.style.display === 'none' ? 'block' : 'none';
-        estado.style.display = estado.style.display === 'none' ? 'flex' : 'none';
-    }
-
-    // ===== DRAG & DROP =====
-    const ventanaAres = document.getElementById("ventanaAres");
-    const barraTituloAres = document.getElementById("barraTituloAres");
-
-    let isDragging = false;
-    let offsetX, offsetY;
-
-    barraTituloAres?.addEventListener("mousedown", (e) => {
-        isDragging = true;
-        offsetX = e.clientX - ventanaAres.offsetLeft;
-        offsetY = e.clientY - ventanaAres.offsetTop;
-        ventanaAres.style.transition = 'none';
-    });
-
-    document.addEventListener("mousemove", (e) => {
-        if (isDragging) {
-            ventanaAres.style.left = `${e.clientX - offsetX}px`;
-            ventanaAres.style.top = `${e.clientY - offsetY}px`;
-            ventanaAres.style.right = 'auto';
-        }
-    });
-
-    document.addEventListener("mouseup", () => {
-        isDragging = false;
-        ventanaAres.style.transition = '';
-    });
-
-    // ===== AUDIO EVENTS =====
-    const audioPlayer = document.getElementById('mp3Player');
-    const songStatus = document.getElementById('songStatus');
-    
-    if (audioPlayer) {
-        audioPlayer.addEventListener('play', () => {
-            songStatus.textContent = '▶ Reproduciendo...';
-        });
-        
-        audioPlayer.addEventListener('pause', () => {
-            songStatus.textContent = '⏸ Pausado';
-        });
-        
-        audioPlayer.addEventListener('ended', () => {
-            songStatus.textContent = '✓ Canción finalizada';
-        });
-        
-        audioPlayer.addEventListener('error', () => {
-            songStatus.textContent = '✗ Error al cargar MP3';
-        });
-    }
-
-    // ===== INIT =====
-    document.getElementById('passInput').addEventListener('keypress', e => {
-        if (e.key === 'Enter') checkLogin();
-    });
 </script>
 </body>
 </html>
