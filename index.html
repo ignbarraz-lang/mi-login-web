@@ -1026,6 +1026,51 @@
 
         .ohm-content { display: none; }
         .ohm-content.active { display: block; }
+
+        /* ===== ESTILOS PARA SECCIÓN DE INTERRUPTOR ===== */
+        .interruptor-card {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f9ff;
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .interruptor-card.warning {
+            background: #fffbeb;
+            border-left-color: var(--warning);
+        }
+
+        .interruptor-card.danger {
+            background: #fef2f2;
+            border-left-color: var(--danger);
+        }
+
+        .interruptor-valor {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--success);
+            display: inline-block;
+            margin: 5px 0;
+        }
+
+        .interruptor-valor.warning { color: var(--warning); }
+        .interruptor-valor.danger { color: var(--danger); }
+
+        .curva-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .curva-B { background: #d1fae5; color: #065f46; }
+        .curva-C { background: #dbeafe; color: #1e40af; }
+        .curva-D { background: #fef3c7; color: #92400e; }
     </style>
 </head>
 <body>
@@ -1372,6 +1417,18 @@
                         </select>
                         <small>Afecta la capacidad de corriente</small>
                     </div>
+
+                    <div class="form-group">
+                        <label>Tipo de Carga / Curva del Interruptor:</label>
+                        <select id="curva-interruptor-ohm">
+                            <option value="B">Curva B - Carga Resistiva (iluminación, enchufes)</option>
+                            <option value="C" selected>Curva C - Carga Mixta (motores pequeños, equipos)</option>
+                            <option value="D">Curva D - Carga Inductiva (motores grandes, transformadores)</option>
+                        </select>
+                        <small style="display: block; margin-top: 5px; color: #64748b;">
+                            💡 Curva B: disparo 3-5×In | Curva C: 5-10×In | Curva D: 10-20×In
+                        </small>
+                    </div>
                 </div>
 
                 <button class="btn-calc" onclick="calcularOhmDirecto()">
@@ -1419,6 +1476,15 @@
                             <option value="D1">D1 - Enterrado</option>
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label>Tipo de Carga / Curva:</label>
+                        <select id="curva-interruptor-inv-ohm">
+                            <option value="B">Curva B - Resistiva</option>
+                            <option value="C" selected>Curva C - Mixta</option>
+                            <option value="D">Curva D - Inductiva</option>
+                        </select>
+                    </div>
                 </div>
 
                 <button class="btn-calc" onclick="calcularOhmInverso()">
@@ -1459,6 +1525,29 @@
                             <tr><td>50</td><td>108 A</td><td>125 A</td><td>149 A</td><td>167 A</td><td>185 A</td></tr>
                         </tbody>
                     </table>
+                </div>
+                
+                <!-- Tabla de Curvas de Interruptores -->
+                <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 10px;">
+                    <h4 style="margin: 0 0 10px 0;"><i class="fas fa-shield-alt"></i> Curvas de Disparo - Interruptores Termomagnéticos</h4>
+                    <table class="tabla-ampacidad" style="font-size: 0.8rem;">
+                        <thead>
+                            <tr>
+                                <th>Curva</th>
+                                <th>Rango de Disparo</th>
+                                <th>Aplicación Típica</th>
+                                <th>Ejemplos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><span class="curva-info curva-B">B</span></td><td>3-5 × In</td><td>Cargas resistivas puras</td><td>Iluminación LED, calefacción, enchufes</td></tr>
+                            <tr><td><span class="curva-info curva-C">C</span></td><td>5-10 × In</td><td>Cargas mixtas / motores pequeños</td><td>Motores monofásicos, equipos de oficina</td></tr>
+                            <tr><td><span class="curva-info curva-D">D</span></td><td>10-20 × In</td><td>Cargas inductivas / alta inrush</td><td>Motores trifásicos, transformadores, soldadoras</td></tr>
+                        </tbody>
+                    </table>
+                    <small style="color: #64748b; display: block; margin-top: 8px;">
+                        💡 In = Corriente nominal del interruptor. La curva determina la sensibilidad al arranque de motores.
+                    </small>
                 </div>
             </div>
         </div>
@@ -1973,6 +2062,58 @@
 
     let sistemaOhmActual = 'monofasico';
     let modoOhmActual = 'directo';
+
+    /* ========== RECOMENDACIÓN DE INTERRUPTOR TERMOMAGNÉTICO ========== */
+    function recomendarInterruptor(corrienteCalculada, ampacidadCable, metodo, seccion, curva) {
+        // Calibres estándar de interruptores termomagnéticos bipolar/unipolar (A)
+        const calibresEstandar = [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125];
+        
+        // Regla RIC 05: In >= Ib (corriente de diseño)
+        const calibreMinimo = calibresEstandar.find(c => c >= corrienteCalculada);
+        
+        if (!calibreMinimo) {
+            return {
+                recomendado: null,
+                mensaje: '⚠️ Corriente muy alta - Requiere proyecto especial',
+                valido: false,
+                alternativa: 'Consultar interruptor industrial'
+            };
+        }
+        
+        // Verificar coordinación con ampacidad del cable: In <= Iz
+        const protegeCable = calibreMinimo <= ampacidadCable;
+        
+        // Buscar siguiente calibre por si necesita margen
+        const idxActual = calibresEstandar.indexOf(calibreMinimo);
+        const calibreSiguiente = calibresEstandar[idxActual + 1] || null;
+        
+        // Verificar si el siguiente calibre también protege el cable
+        const siguienteProtege = calibreSiguiente && calibreSiguiente <= ampacidadCable;
+        
+        // Información de curva
+        const curvasInfo = {
+            'B': { nombre: 'Curva B', rango: '3-5×In', uso: 'Cargas resistivas' },
+            'C': { nombre: 'Curva C', rango: '5-10×In', uso: 'Cargas mixtas/motores' },
+            'D': { nombre: 'Curva D', rango: '10-20×In', uso: 'Motores grandes/transformadores' }
+        };
+        
+        return {
+            recomendado: calibreMinimo,
+            calibreSiguiente: siguienteProtege ? calibreSiguiente : null,
+            protegeCable: protegeCable,
+            ampacidadCable: ampacidadCable,
+            corrienteCalculada: corrienteCalculada,
+            curva: curva,
+            curvaInfo: curvasInfo[curva] || curvasInfo['C'],
+            mensaje: protegeCable 
+                ? `✅ Interruptor ${calibreMinimo}A ${curva} coordina con cable y carga` 
+                : `⚠️ Cable ${seccion}mm² (${ampacidadCable}A) no soporta interruptor ${calibreMinimo}A`,
+            valido: protegeCable,
+            alternativa: !protegeCable && calibreSiguiente 
+                ? `Usar cable ${SECCIONES_DISPONIBLES.find(s => TABLA_AMPACIDAD[s]?.[metodo] >= calibreMinimo) || 'mayor'} mm²`
+                : 'Revisar diseño del circuito'
+        };
+    }
 
     /* ========== ACTUALIZAR RELOJ DASHBOARD ========== */
     function updateDashboardTime() {
@@ -3066,6 +3207,7 @@
         const seccion = parseFloat(document.getElementById('seccion-ohm').value);
         const metodo = document.getElementById('metodo-instalacion-ohm').value;
         const cosPhi = getCosPhiOhm();
+        const curva = document.getElementById('curva-interruptor-ohm').value;
 
         if (!distancia || !seccion) {
             alert('Por favor ingrese distancia y sección del conductor');
@@ -3142,6 +3284,42 @@
         } else {
             alertaDiv.classList.remove('show');
         }
+
+        // === RECOMENDACIÓN DE INTERRUPTOR ===
+        if (corriente > 0) {
+            const interruptor = recomendarInterruptor(corriente, ampacidad.ampacidadMax, metodo, seccion, curva);
+            
+            const claseCard = interruptor.valido ? 'interruptor-card' : (interruptor.protegeCable ? 'interruptor-card warning' : 'interruptor-card danger');
+            const colorValor = interruptor.valido ? 'success' : (interruptor.protegeCable ? 'warning' : 'danger');
+            
+            let htmlInterruptor = `
+                <div class="${claseCard}">
+                    <h4 style="margin: 0 0 10px 0; color: var(--dark); display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-shield-alt"></i> 🔌 Protección Recomendada (RIC 05)
+                        <span class="curva-info curva-${curva}">${interruptor.curvaInfo.nombre}</span>
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; font-size: 0.9rem;">
+                        <div><strong>Corriente carga:</strong><br>${corriente.toFixed(2)} A</div>
+                        <div><strong>Interruptor:</strong><br><span class="interruptor-valor ${colorValor}">${interruptor.recomendado ? interruptor.recomendado + ' A' : 'N/A'}</span></div>
+                        <div><strong>Ampacidad cable:</strong><br>${ampacidad.ampacidadMax} A</div>
+                        <div><strong>Curva disparo:</strong><br>${interruptor.curvaInfo.rango}</div>
+                    </div>
+                    <p style="margin: 12px 0 0 0; font-weight: ${interruptor.valido ? '600' : 'bold'}; color: ${interruptor.valido ? 'var(--success)' : (interruptor.protegeCable ? '#92400e' : 'var(--danger)')}; font-size: 0.95rem;">
+                        ${interruptor.mensaje}
+                    </p>
+                    ${!interruptor.valido ? `
+                        <p style="margin: 8px 0 0 0; font-size: 0.85rem; color: #64748b; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px;">
+                            💡 <strong>Solución:</strong> ${interruptor.alternativa}
+                        </p>
+                    ` : ''}
+                    <small style="display: block; margin-top: 10px; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 8px;">
+                        <i class="fas fa-info-circle"></i> ${interruptor.curvaInfo.uso}
+                    </small>
+                </div>
+            `;
+            
+            resultadoDiv.innerHTML += htmlInterruptor;
+        }
     }
 
     function calcularOhmInverso() {
@@ -3151,6 +3329,7 @@
         const distancia = parseFloat(document.getElementById('distancia-inv-ohm').value);
         const cosPhi = parseFloat(document.getElementById('cosphi-inv-ohm').value);
         const metodo = document.getElementById('metodo-instalacion-inv-ohm').value;
+        const curva = document.getElementById('curva-interruptor-inv-ohm').value;
 
         if (!potencia || !distancia) {
             alert('Por favor ingrese potencia y distancia');
@@ -3204,11 +3383,19 @@
                 </div>
             `;
             
+            // Calcular interruptor recomendado para la sección encontrada
+            const interruptorInv = recomendarInterruptor(corriente, TABLA_AMPACIDAD[seccionRecomendada]?.[metodo] || 0, metodo, seccionRecomendada, curva);
+            
             seccionDiv.innerHTML = `
                 <h3><i class="fas fa-check-circle"></i> Sección Recomendada</h3>
                 <span class="numero">${seccionRecomendada} mm²</span>
                 <p>Capacidad: ${seccionAmpacidad} A | Método: ${metodo}</p>
                 <small>Caída de tensión ≤ 3% según RIC 04</small>
+                ${interruptorInv.recomendado ? `
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.3);">
+                    <small><i class="fas fa-shield-alt"></i> Protección: <strong>${interruptorInv.recomendado} A</strong> <span class="curva-info curva-${curva}" style="margin-left: 5px;">${curva}</span></small>
+                </div>
+                ` : ''}
             `;
             seccionDiv.className = 'seccion-recomendada show';
             resultadoDiv.className = 'resultado res-ok show';
