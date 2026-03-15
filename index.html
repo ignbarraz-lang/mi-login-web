@@ -9,33 +9,1917 @@
         :root { 
             --primary: #3498db; --dark: #2c3e50; --success: #27ae60; 
             --danger: #e74c3c; --bg: #f8fafc; --white: #ffffff; --luis: #8e44ad;
+            --warning: #f39c12;
         }
-        
+
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; color: var(--dark); }
         
-        /* LOGIN */
-        #login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--dark) 0%, #1a252f 100%); }
-        .login-card { background: var(--white); padding: 40px; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); text-align: center; width: 100%; max-width: 350px; }
-        .login-logo { width: 120px; height: auto; margin-bottom: 10px; background: white; padding: 10px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .welcome-text { color: var(--dark); font-weight: bold; margin-bottom: 20px; font-size: 1.2rem; }
-        .login-card input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
+        /* ===== LOGIN ===== */
+        #login-wrapper {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--dark) 0%, #1a252f 50%, #0f172a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-decoration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+        }
+        .circuit-line {
+            position: absolute;
+            border: 1px solid var(--primary);
+            border-radius: 50%;
+            animation: pulseRing 8s infinite ease-out;
+        }
+        .circuit-line:nth-child(1) { width: 300px; height: 300px; top: 10%; right: 10%; }
+        .circuit-line:nth-child(2) { width: 500px; height: 500px; bottom: 5%; left: 5%; animation-delay: -4s; }
+        .circuit-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: floatDot 6s infinite ease-in-out;
+        }
+        .circuit-dot:nth-child(3) { top: 20%; left: 15%; animation-delay: -2s; }
+        .circuit-dot:nth-child(4) { bottom: 25%; right: 20%; animation-delay: -4s; }
+
+        @keyframes pulseRing {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.2; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
+        @keyframes floatDot {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .login-card {
+            background: var(--white);
+            padding: 45px 40px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+            text-align: center;
+            width: 90%;
+            max-width: 420px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-brand { margin-bottom: 30px; }
+        .login-logo {
+            width: 100px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            transition: transform 0.3s ease;
+        }
+        .login-logo:hover { transform: scale(1.05); }
+        .company-name {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            letter-spacing: -0.5px;
+        }
+        .company-country { color: var(--primary); font-weight: 300; }
+        .company-tagline {
+            margin: 8px 0 0;
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .login-form { display: flex; flex-direction: column; gap: 18px; }
+        
+        .input-group { position: relative; width: 100%; box-sizing: border-box; }
+        
+        .input-group i.input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1rem;
+            pointer-events: none;
+            transition: color 0.3s;
+            z-index: 3;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px 45px 14px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+            box-sizing: border-box;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+        }
+        
+        .input-group input:focus ~ i.input-icon { color: var(--primary); }
+
+        .toggle-pass {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .toggle-pass:hover { color: var(--dark); background: #f1f5f9; }
+        .toggle-pass:active { transform: translateY(-50%) scale(0.95); }
+
+        .btn-calc {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            border: none;
+            padding: 16px;
+            width: 100%;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+            box-shadow: 0 4px 14px rgba(52, 152, 219, 0.3);
+        }
+        .btn-calc:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(135deg, #2980b9, var(--primary));
+        }
+        .btn-calc:active { transform: translateY(0); }
+
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin: 15px 0 0;
+            padding: 10px 15px;
+            background: #fef2f2;
+            border-radius: 10px;
+            border-left: 4px solid var(--danger);
+            display: none;
+            animation: shake 0.4s ease;
+        }
+        .error-msg.show { display: block; }
+
+        .login-footer {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+        }
+        .login-footer small { color: #94a3b8; font-size: 0.8rem; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
         
         /* NAVBAR */
-        .navbar { background: var(--dark); color: white; padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .navbar { 
+            background: var(--dark); 
+            color: white; 
+            padding: 0.8rem 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
+        }
         .nav-brand { display: flex; align-items: center; }
         .nav-logo { height: 40px; width: auto; background: white; padding: 4px; border-radius: 6px; }
 
         /* CONTAINER & TABS */
-        .main-container { max-width: 900px; margin: 20px auto; padding: 0 20px; display: none; }
+        .main-container { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: none; }
         .calc-tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-        .tab-btn { padding: 12px 20px; border: none; border-radius: 12px; background: var(--white); cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.05); white-space: nowrap; }
+        .tab-btn { 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 12px; 
+            background: var(--white); 
+            cursor: pointer; 
+            font-weight: 600; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            transition: 0.3s; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            white-space: nowrap; 
+        }
         .tab-btn.active { background: var(--primary); color: white; }
         
         /* CARDS */
-        .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); margin-bottom: 20px; display: none; }
+        .card { 
+            background: var(--white); 
+            padding: 25px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); 
+            margin-bottom: 20px; 
+            display: none; 
+        }
         .card.active { display: block; }
         .card h2 { margin-top: 0; font-size: 1.25rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 20px; }
         
-        /* FORM ELEMENTS */
+        .btn-back {
+            background: var(--dark);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        .btn-back:hover { background: #1a252f; transform: translateX(-3px); }
+        
         .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+        select, input[type="number"], input[type="text"] { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 10px; 
+            font-size: 1rem; 
+            box-sizing: border-box; 
+        }
+        
+        .radio-group { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .radio-option { flex: 1; min-width: 150px; }
+        .radio-option input[type="radio"] { display: none; }
+        .radio-option label {
+            display: block;
+            padding: 12px 20px;
+            background: var(--white);
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .radio-option input[type="radio"]:checked + label {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
+        }
+        .radio-option label:hover { border-color: var(--primary); }
+        .radio-icon { font-size: 1.5rem; margin-bottom: 5px; display: block; }
+        
+        .resultado { margin-top: 20px; padding: 15px; border-radius: 10px; font-weight: bold; border-left: 5px solid; }
+        .res-ok { background: #f0fdf4; color: #166534; border-color: var(--success); }
+        .res-fail { background: #fef2f2; color: #991b1b; border-color: var(--danger); }
+        .res-warn { background: #eff6ff; color: #1e40af; border-color: var(--primary); }
+        
+        .nodo-box { background: #f1f5f9; padding: 15px; border-radius: 10px; margin-bottom: 15px; border-left: 5px solid var(--primary); }
+        .nodo-title { font-weight: bold; margin-bottom: 10px; color: #1e293b; text-transform: uppercase; font-size: 0.85rem; }
+        .grid-nodos { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px; }
+        .ecuacion-box { display: none; margin-top: 15px; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; font-family: 'Courier New', monospace; font-size: 0.85rem; color: #334155; line-height: 1.5; }
+        .math-res { color: var(--danger); font-weight: bold; }
+
+        .inv-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+        .inv-table th, .inv-table td { padding: 10px; border: 1px solid #e2e8f0; text-align: left; }
+        .inv-table th { background: #f8fafc; }
+        .qty-input { width: 70px !important; padding: 5px !important; text-align: center; margin: 0 !important; }
+        .install-list { background: #f0f9ff; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #bae6fd; }
+
+        .search-box { position: relative; margin-bottom: 15px; }
+        .search-box input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        .search-box input:focus { outline: none; border-color: var(--primary); }
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        .search-results { font-size: 12px; color: #64748b; margin-top: 5px; text-align: right; }
+        .no-results { text-align: center; padding: 20px; color: #64748b; font-style: italic; }
+
+        iframe { width: 100%; height: 70vh; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 15px; }
+
+        /* ===== PANEL FLOTANTE MÚSICA ===== */
+        #floating-panel {
+            position: fixed;
+            top: 80px;
+            right: 25px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 9999;
+            align-items: flex-end;
+        }
+        #floating-panel.visible { display: flex !important; }
+
+        .bubble {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            color: white;
+            font-size: 1.3rem;
+        }
+        .bubble:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+        .bubble:active { transform: scale(0.95); }
+
+        .bubble-tooltip {
+            position: absolute;
+            right: 70px;
+            background: var(--dark);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+            pointer-events: none;
+        }
+        .bubble:hover .bubble-tooltip { opacity: 1; visibility: visible; right: 65px; }
+
+        .bubble-music {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            animation: float 3s ease-in-out infinite;
+        }
+        .bubble-music:hover { background: linear-gradient(135deg, #2980b9, var(--primary)); }
+        .bubble-music.playing {
+            background: linear-gradient(135deg, var(--success), #27ae60);
+            animation: pulse 1.5s infinite;
+        }
+        .bubble-music .bubble-status {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            background: var(--success);
+            border-radius: 50%;
+            border: 2px solid white;
+            display: none;
+        }
+        .bubble-music.playing .bubble-status { display: block; animation: blink 1s infinite; }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4); } 50% { box-shadow: 0 4px 25px rgba(39, 174, 96, 0.7); } }
+        @keyframes blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.9); } }
+
+        /* 🎵 VENTANA REPRODUCTOR MP3 */
+        .floating-window {
+            position: fixed;
+            top: 160px;
+            right: 25px;
+            width: 280px;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 9998;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+        .floating-window.visible { display: flex !important; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .window-header {
+            background: linear-gradient(90deg, var(--primary), var(--luis));
+            color: white;
+            padding: 12px 15px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .window-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .window-close:hover { background: rgba(255,255,255,0.35); }
+
+        .window-content {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+        }
+        .song-info { margin-bottom: 15px; }
+        .song-info strong { display: block; font-size: 1.1rem; color: var(--dark); margin-bottom: 4px; }
+        .song-info span { font-size: 0.85rem; color: #64748b; }
+        
+        .music-controls { display: flex; justify-content: center; gap: 10px; margin-top: 10px; }
+        .btn-play {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-play:hover { transform: scale(1.05); background: #2980b9; }
+        .btn-play:active { transform: scale(0.95); }
+
+        /* DASHBOARD */
+        #dashboard { display: none; }
+        #dashboard.active { display: block; }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--dark), #34495e);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: center;
+        }
+        .dashboard-welcome h1 { margin: 0 0 10px 0; font-size: 1.8rem; }
+        .dashboard-welcome p { margin: 0; opacity: 0.9; font-size: 1rem; }
+        .dashboard-datetime {
+            text-align: right;
+            background: rgba(255,255,255,0.1);
+            padding: 15px 20px;
+            border-radius: 10px;
+        }
+        .dashboard-datetime .time { font-size: 2rem; font-weight: bold; display: block; }
+        .dashboard-datetime .date { font-size: 0.9rem; opacity: 0.8; }
+
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 25px; }
+
+        .quick-access-card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+            text-align: center;
+        }
+        .quick-access-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); }
+        .quick-access-card i { font-size: 2.5rem; color: var(--primary); margin-bottom: 15px; }
+        .quick-access-card h3 { margin: 0 0 10px 0; font-size: 1.1rem; color: var(--dark); }
+        .quick-access-card p { margin: 0; font-size: 0.85rem; color: #64748b; }
+        .quick-access-card.danger { border-left-color: var(--danger); }
+        .quick-access-card.danger i { color: var(--danger); }
+        .quick-access-card.success { border-left-color: var(--success); }
+        .quick-access-card.success i { color: var(--success); }
+        .quick-access-card.warning { border-left-color: var(--warning); }
+        .quick-access-card.warning i { color: var(--warning); }
+        .quick-access-card.luis { border-left-color: var(--luis); }
+        .quick-access-card.luis i { color: var(--luis); }
+
+        .stats-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .stats-card h3 { margin: 0 0 15px 0; font-size: 1rem; color: #64748b; display: flex; align-items: center; gap: 8px; }
+        .stats-value { font-size: 2.5rem; font-weight: bold; color: var(--primary); }
+        .stats-subtitle { font-size: 0.85rem; color: #64748b; margin-top: 5px; }
+
+        .alert-box { background: var(--white); border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); overflow: hidden; }
+        .alert-header {
+            background: linear-gradient(90deg, var(--warning), #e67e22);
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .alert-body { padding: 20px; }
+        .alert-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .alert-item:last-child { border-bottom: none; }
+        .alert-item-info { display: flex; align-items: center; gap: 12px; }
+        .alert-item-icon {
+            width: 40px; height: 40px; background: #fef3c7; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: var(--warning);
+        }
+        .alert-item-name { font-weight: 600; color: var(--dark); }
+        .alert-item-stock { font-size: 0.85rem; color: #64748b; }
+        .alert-item-qty {
+            background: var(--danger); color: white; padding: 5px 12px;
+            border-radius: 20px; font-size: 0.85rem; font-weight: bold;
+        }
+        .alert-item-qty.low { background: var(--warning); }
+
+        .recent-tools {
+            background: var(--white); border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 20px; margin-bottom: 20px;
+        }
+        .recent-tools h3 { margin: 0 0 15px 0; font-size: 1rem; color: #64748b; display: flex; align-items: center; gap: 8px; }
+        .recent-tools-list { display: flex; gap: 10px; flex-wrap: wrap; }
+        .recent-tool-item {
+            background: #f1f5f9; padding: 10px 15px; border-radius: 8px; font-size: 0.85rem;
+            color: var(--dark); display: flex; align-items: center; gap: 8px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .recent-tool-item:hover { background: var(--primary); color: white; }
+
+        .sync-status {
+            font-size: 12px; padding: 5px 10px; border-radius: 20px;
+            display: inline-flex; align-items: center; gap: 5px; margin-left: 10px;
+        }
+        .sync-ok { background: #d1fae5; color: #065f46; }
+        .sync-pending { background: #fef3c7; color: #92400e; }
+        .sync-error { background: #fee2e2; color: #991b1b; }
+
+        #tension { position: relative; }
+        #successImg {
+            position: absolute; left: -100px; top: 50%;
+            transform: translateY(-50%); width: 80px;
+            display: none; animation: popIn 0.4s ease;
+            pointer-events: none; z-index: 10;
+        }
+        @keyframes popIn {
+            0% { transform: translateY(-50%) scale(0) rotate(-10deg); opacity: 0; }
+            60% { transform: translateY(-50%) scale(1.3) rotate(5deg); }
+            100% { transform: translateY(-50%) scale(1) rotate(0); opacity: 1; }
+        }
+        #dangerOverlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(231, 76, 60, 0.9);
+            display: none; justify-content: center; align-items: center;
+            flex-direction: column; z-index: 10000;
+            animation: flashRed 0.25s infinite; pointer-events: none;
+        }
+        @keyframes flashRed {
+            0%, 100% { background: rgba(231, 76, 60, 0.9); }
+            50% { background: rgba(192, 57, 43, 0.95); }
+        }
+        .danger-icon {
+            font-size: 100px; color: white; text-shadow: 0 0 30px rgba(0,0,0,0.6);
+            animation: shake 0.4s infinite;
+        }
+        .danger-text { color: white; font-size: 28px; font-weight: bold; margin-top: 20px; text-align: center; text-shadow: 0 3px 6px rgba(0,0,0,0.4); }
+        .danger-subtext { color: rgba(255,255,255,0.9); font-size: 16px; margin-top: 10px; }
+        @keyframes confettiFall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
+        #cosphi-container { transition: all 0.3s ease; animation: slideDown 0.2s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        #cosphi-value:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); outline: none; }
+
+        .cable-info {
+            background: #f8fafc; padding: 10px; border-radius: 8px;
+            margin-top: 10px; font-size: 0.9rem; border-left: 3px solid var(--primary);
+        }
+        .cable-info strong { color: var(--dark); }
+
+        @media (max-width: 768px) {
+            .dashboard-header { grid-template-columns: 1fr; text-align: center; }
+            .dashboard-datetime { text-align: center; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            #floating-panel { top: 70px; right: 15px; gap: 10px; }
+            .bubble { width: 50px; height: 50px; font-size: 1.1rem; }
+            .bubble-tooltip { display: none; }
+            .floating-window { right: 15px; left: 15px; width: auto; top: 140px; }
+            .card-header { flex-direction: column; gap: 10px; text-align: center; }
+            .btn-back { width: 100%; justify-content: center; }
+            .login-card { padding: 35px 25px; max-width: 95%; }
+            .input-group input { padding: 12px 40px 12px 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-wrapper">
+    <div class="login-card">
+        <div class="login-brand">
+            <img src="logo.png" alt="LINSTELEC" class="login-logo">
+            <h1 class="company-name">LINSTELEC <span class="company-country">CHILE</span></h1>
+            <p class="company-tagline">Soluciones Eléctricas Inteligentes</p>
+        </div>
+        
+        <form onsubmit="checkLogin(); return false;" class="login-form">
+            <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="userInput" placeholder="Usuario" autocomplete="username" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="passInput" placeholder="Contraseña" autocomplete="current-password" required>
+                <button type="button" class="toggle-pass" onclick="togglePassword()" title="Mostrar/Ocultar contraseña">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            
+            <button type="submit" class="btn-calc">
+                <i class="fas fa-sign-in-alt"></i> Ingresar al Sistema
+            </button>
+        </form>
+        
+        <p id="error-msg" class="error-msg">
+            <i class="fas fa-exclamation-circle"></i> Credenciales incorrectas
+        </p>
+        
+        <div class="login-footer">
+            <small>© 2026 LINSTELEC • Acceso restringido</small>
+        </div>
+    </div>
+    
+    <div class="login-decoration">
+        <div class="circuit-line"></div>
+        <div class="circuit-line"></div>
+        <div class="circuit-dot"></div>
+        <div class="circuit-dot"></div>
+    </div>
+</div>
+
+<!-- APP PRINCIPAL -->
+<div id="main-app">
+    <nav class="navbar">
+        <div class="nav-brand"><img src="logo.png" alt="Logo Linstelec" class="nav-logo"></div>
+        <div id="user-display" style="font-size: 14px; opacity: 0.9;"></div>
+        <a href="#" onclick="location.reload()" style="color:white; text-decoration:none;"><i class="fas fa-sign-out-alt"></i></a>
+    </nav>
+
+    <div class="main-container" id="container">
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="card active">
+            <div class="dashboard-header">
+                <div class="dashboard-welcome">
+                    <h1 id="dash-greeting">👷 ¡Hola!</h1>
+                    <p id="dash-user-info">Cargando información...</p>
+                </div>
+                <div class="dashboard-datetime">
+                    <span class="time" id="dash-time">--:--</span>
+                    <span class="date" id="dash-date">Cargando...</span>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 15px; color: #64748b;"><i class="fas fa-bolt"></i> Herramientas Rápidas</h3>
+            <div class="dashboard-grid">
+                <div class="quick-access-card" onclick="showTabFromDashboard('tension')">
+                    <i class="fas fa-wave-square"></i>
+                    <h3>Caída de Tensión</h3>
+                    <p>Calcula según RIC 04</p>
+                </div>
+                <div class="quick-access-card warning" onclick="showTabFromDashboard('tuberia')">
+                    <i class="fas fa-circle"></i>
+                    <h3>Ductos EMT</h3>
+                    <p>Análisis RIC 07</p>
+                </div>
+                <div class="quick-access-card danger" onclick="showTabFromDashboard('inventario')">
+                    <i class="fas fa-boxes"></i>
+                    <h3>Inventario</h3>
+                    <p>Gestión de bodega</p>
+                </div>
+                <div class="quick-access-card success" onclick="showTabFromDashboard('biblioteca')">
+                    <i class="fas fa-book"></i>
+                    <h3>Biblioteca RIC</h3>
+                    <p>Pliegos 01-19</p>
+                </div>
+                <div class="quick-access-card luis" onclick="showTabFromDashboard('luis-ia')">
+                    <i class="fas fa-robot"></i>
+                    <h3>Luis IA</h3>
+                    <p>Asistente experto</p>
+                </div>
+                <div class="quick-access-card" onclick="showTabFromDashboard('ohm')">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Ley de Ohm</h3>
+                    <p>Cálculos básicos</p>
+                </div>
+                <div class="quick-access-card danger" onclick="showTabFromDashboard('cortocircuito')">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Cortocircuito</h3>
+                    <p>Cálculo Icc según RIC 05</p>
+                </div>
+            </div>
+
+            <div class="alert-box" style="margin-bottom: 20px;">
+                <div class="alert-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Alertas de Stock Bajo</span>
+                </div>
+                <div class="alert-body" id="stock-alerts">
+                    <p style="color: #64748b; text-align: center;">Cargando inventario...</p>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div>
+                    <div class="stats-card">
+                        <h3><i class="fas fa-chart-line"></i> Estadísticas del Mes</h3>
+                        <div class="stats-value" id="stats-month">0</div>
+                        <div class="stats-subtitle">Cálculos realizados</div>
+                    </div>
+                    <div class="stats-card">
+                        <h3><i class="fas fa-sync"></i> Última Sincronización</h3>
+                        <div class="stats-value" style="font-size: 1.5rem;" id="last-sync">--:--</div>
+                        <div class="stats-subtitle" id="sync-status-text">Sin sincronizar</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="recent-tools">
+                        <h3><i class="fas fa-history"></i> Herramientas Recientes</h3>
+                        <div class="recent-tools-list" id="recent-tools-list">
+                            <span style="color: #64748b;">Sin historial aún</span>
+                        </div>
+                    </div>
+                    <div class="recent-tools">
+                        <h3><i class="fas fa-info-circle"></i> Información</h3>
+                        <p style="font-size: 0.85rem; color: #64748b; line-height: 1.6;">
+                            <strong>Versión:</strong> 2.0.1<br>
+                            <strong>Usuario:</strong> <span id="dash-user-class">--</span><br>
+                            <strong>Estado:</strong> <span style="color: var(--success);">● En línea</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="calc-tabs">
+            <button class="tab-btn" onclick="showTab(event, 'tension')"><i class="fas fa-wave-square"></i> Caída Tensión</button>
+            <button class="tab-btn" onclick="showTab(event, 'ohm')"><i class="fas fa-bolt"></i> Ley de Ohm</button>
+            <button class="tab-btn" onclick="showTab(event, 'cortocircuito')"><i class="fas fa-bolt"></i> Cortocircuito</button>
+            <button class="tab-btn" onclick="showTab(event, 'nodos')"><i class="fas fa-network-wired"></i> Calculadora Nodos</button>
+            <button class="tab-btn" onclick="showTab(event, 'tuberia')"><i class="fas fa-circle"></i> Ductos RIC 07</button>
+            <button class="tab-btn" onclick="showTab(event, 'sgc')"><i class="fas fa-project-diagram"></i> Esquema SGC</button>
+            <button class="tab-btn" onclick="showTab(event, 'biblioteca')"><i class="fas fa-book"></i> Biblioteca RIC</button>
+            <button class="tab-btn" onclick="showTab(event, 'inventario')"><i class="fas fa-boxes"></i> Inventario</button>
+            <button class="tab-btn" style="background:var(--luis); color:white;" onclick="showTab(event, 'luis-ia')"><i class="fas fa-robot"></i> PREGÚNTALE A LUIS</button>
+        </div>
+
+        <!-- CONTENIDO DE TABS CON BOTÓN VOLVER -->
+        
+        <!-- Caída de Tensión -->
+        <div id="tension" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Calculadora Caída de Tensión (RIC 04)</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <p style="font-size: 0.8rem; color: #64748b; margin: -15px 0 15px 0;"><i class="fas fa-info-circle"></i> Cálculo basado en resistividad del cobre ρ = 0.018</p>
+            
+            <div class="form-group">
+                <label>Tipo de Sistema:</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="monofasico" name="tipoSistema" value="monofasico" checked>
+                        <label for="monofasico">
+                            <span class="radio-icon">⚡</span>
+                            Monofásico<br>
+                            <small>(220V - 2 conductores)</small>
+                        </label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="trifasico" name="tipoSistema" value="trifasico">
+                        <label for="trifasico">
+                            <span class="radio-icon">🔺</span>
+                            Trifásico<br>
+                            <small>(380V - √3)</small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group"><label>Distancia (m):</label><input type="number" id="dist" value="10"></div>
+            <div class="form-group"><label>Corriente (A):</label><input type="number" id="amp" value="16"></div>
+            <div class="form-group"><label>Sección Conductor (mm²):</label>
+                <select id="sec">
+                    <option value="1.5">1.5 mm²</option>
+                    <option value="2.5">2.5 mm²</option>
+                    <option value="4">4 mm²</option>
+                    <option value="6" selected>6 mm²</option>
+                    <option value="10">10 mm²</option>
+                    <option value="16">16 mm²</option>
+                    <option value="25">25 mm²</option>
+                    <option value="35">35 mm²</option>
+                    <option value="50">50 mm²</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="cosphi-check" onchange="toggleCosPhi()" style="width: auto; margin: 0;">
+                    <strong>Usar Factor de Potencia (cos φ) - Cálculo AC avanzado</strong>
+                </label>
+                
+                <div id="cosphi-container" style="display: none; margin-top: 12px; padding: 12px; background: #f8fafc; border-radius: 10px; border-left: 4px solid var(--primary);">
+                    <label>Factor de Potencia (cos φ):</label>
+                    <input type="number" id="cosphi-value" value="0.8" min="0.1" max="1" step="0.01" style="max-width: 150px;">
+                    <small style="display: block; margin-top: 5px; color: #64748b;">
+                        💡 Valores típicos: Iluminación LED: 0.9 | Motores: 0.8 | Resistivo puro: 1.0
+                    </small>
+                </div>
+            </div>
+            
+            <button class="btn-calc" onclick="calcTension()">Calcular Pérdida</button>
+            <div id="res-tension"></div>
+        </div>
+
+        <img id="successImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2327ae60'/%3E%3Cpath d='M30 50 L45 65 L70 35' stroke='white' stroke-width='8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" alt="✓">
+
+        <div id="dangerOverlay">
+            <div class="danger-icon">⚠️</div>
+            <div class="danger-text">¡FUERA DE NORMA!</div>
+            <div class="danger-subtext">Revisar instalación eléctrica</div>
+        </div>
+
+        <!-- Ley de Ohm -->
+        <div id="ohm" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Calculadora Ley de Ohm</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <div class="form-group"><label>Potencia (Watts):</label><input type="number" id="watt-ohm" placeholder="Ej: 3680"></div>
+            <div class="form-group"><label>Voltaje (V):</label><input type="number" id="volt-ohm" value="220"></div>
+            <button class="btn-calc" style="background:var(--dark)" onclick="calcOhm()">Calcular Amperaje</button>
+            <div id="res-ohm"></div>
+        </div>
+
+        <!-- Cortocircuito -->
+        <div id="cortocircuito" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Calculadora de Cortocircuito (RIC 05)</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <p style="font-size: 0.8rem; color: #64748b; margin: -15px 0 15px 0;">
+                <i class="fas fa-info-circle"></i> Método de impedancia simplificada • ρ Cu = 0.018 Ω·mm²/m
+            </p>
+            
+            <div class="form-group">
+                <label>Tipo de Sistema:</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="cc-monofasico" name="ccTipoSistema" value="monofasico" checked>
+                        <label for="cc-monofasico">
+                            <span class="radio-icon">⚡</span>
+                            Monofásico<br><small>(220V - Fase/Neutro)</small>
+                        </label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="cc-trifasico" name="ccTipoSistema" value="trifasico">
+                        <label for="cc-trifasico">
+                            <span class="radio-icon">🔺</span>
+                            Trifásico<br><small>(380V - Entre fases)</small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Corriente de Cortocircuito en Origen (kA):</label>
+                <input type="number" id="cc-icc-origen" value="6" min="0.1" step="0.1" placeholder="Ej: 6 kA">
+                <small style="color: #64748b; display: block; margin-top: 5px;">
+                    💡 Valor típico empalme SEC: 3-10 kA • Consultar con distribuidora
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label>Material del Conductor:</label>
+                <select id="cc-material">
+                    <option value="cobre" selected>Cobre (ρ = 0.018 Ω·mm²/m)</option>
+                    <option value="aluminio">Aluminio (ρ = 0.028 Ω·mm²/m)</option>
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Longitud del Cable (m):</label>
+                    <input type="number" id="cc-longitud" value="15" min="0.1" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Sección del Conductor (mm²):</label>
+                    <select id="cc-seccion">
+                        <option value="1.5">1.5 mm²</option>
+                        <option value="2.5">2.5 mm²</option>
+                        <option value="4">4 mm²</option>
+                        <option value="6" selected>6 mm²</option>
+                        <option value="10">10 mm²</option>
+                        <option value="16">16 mm²</option>
+                        <option value="25">25 mm²</option>
+                        <option value="35">35 mm²</option>
+                        <option value="50">50 mm²</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="cc-reactancia-check" onchange="toggleReactancia()" style="width: auto; margin: 0;">
+                    <strong>Incluir Reactancia (X) - Cálculo más preciso</strong>
+                </label>
+                <div id="cc-reactancia-container" style="display: none; margin-top: 12px; padding: 12px; background: #f8fafc; border-radius: 10px; border-left: 4px solid var(--primary);">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label>Reactancia Origen (mΩ):</label>
+                            <input type="number" id="cc-x-origen" value="15" min="0" step="0.1">
+                        </div>
+                        <div>
+                            <label>Reactancia Cable (mΩ/m):</label>
+                            <input type="number" id="cc-x-cable" value="0.08" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <small style="display: block; margin-top: 8px; color: #64748b;">
+                        💡 Valores típicos: Cable unipolar en ducto: 0.08-0.12 mΩ/m
+                    </small>
+                </div>
+            </div>
+            
+            <button class="btn-calc" style="background: linear-gradient(135deg, var(--danger), #c0392b);" onclick="calcCortocircuito()">
+                <i class="fas fa-calculator"></i> Calcular Icc
+            </button>
+            
+            <div id="res-cortocircuito"></div>
+            
+            <div style="margin-top: 25px; padding: 15px; background: #fffbeb; border-left: 4px solid var(--warning); border-radius: 8px; font-size: 0.85rem;">
+                <strong>📋 Según RIC 05 - Protecciones:</strong>
+                <ul style="margin: 10px 0 0 20px; padding: 0;">
+                    <li>La corriente de cortocircuito mínima debe ser ≥ 1.45× la corriente nominal del interruptor</li>
+                    <li>El interruptor debe interrumpir la Icc máxima sin dañarse</li>
+                    <li>Verificar poder de corte (kA) de las protecciones instaladas</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Calculadora Nodos -->
+        <div id="nodos" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Cálculo de Impedancia y Cortocircuito</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <div class="nodo-box" style="border-color: #f59e0b;"><div class="nodo-title">a) Nodo 1 (Empalme)</div><div class="grid-nodos"><div><label>Icc n.1 (kA):</label><input type="number" id="icc1" value="6.00" step="0.01"></div><div><label>Zcc n.1 (mΩ):</label><input type="number" id="zcc1" value="36.67" step="0.01"></div></div></div>
+            <div class="nodo-box"><div class="nodo-title">b) Nodo 2 (TDF Voltex)</div><div class="grid-nodos"><div><label>L AL-01 (m):</label><input type="number" id="L2" value="2"></div><div><label>Sección (mm²):</label><input type="number" id="S2" value="6"></div></div><button class="btn-calc" onclick="calcNodoInteractivo(2)">CALCULAR Y VER ECUACIÓN</button><div id="ecu-2" class="ecuacion-box"></div></div>
+            <div class="nodo-box"><div class="nodo-title">c) Nodo 3 (SAVE.01)</div><div class="grid-nodos"><div><label>L CR-01 (m):</label><input type="number" id="L3" value="12"></div><div><label>Sección (mm²):</label><input type="number" id="S3" value="6"></div></div><button class="btn-calc" onclick="calcNodoInteractivo(3)">CALCULAR Y VER ECUACIÓN</button><div id="ecu-3" class="ecuacion-box"></div></div>
+            <div class="nodo-box"><div class="nodo-title">d) Nodo 4 (TDA Hogar)</div><div class="grid-nodos"><div><label>L Sub-alim (m):</label><input type="number" id="L4" value="2"></div><div><label>Sección (mm²):</label><input type="number" id="S4" value="6"></div></div><button class="btn-calc" onclick="calcNodoInteractivo(4)">CALCULAR Y VER ECUACIÓN</button><div id="ecu-4" class="ecuacion-box"></div></div>
+        </div>
+
+        <!-- Ductos EMT -->
+        <div id="tuberia" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Análisis de Ductos EMT (RIC 07 - SEC Chile)</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <p style="font-size: 0.8rem; color: #64748b; margin: -15px 0 15px 0;">
+                <i class="fas fa-info-circle"></i> Factor de llenado: 1 cable=53% | 2 cables=31% | 3+ cables=40%
+            </p>
+            
+            <div class="form-group">
+                <label>Tipo de Cable:</label>
+                <select id="cable-tipo" onchange="actualizarCalculadoraDuctos()">
+                    <optgroup label="📡 MULTICONDUCTOR RVK (0.6/1kV)">
+                        <option value="multirvk_3x6" data-diametro="12.0" data-cantidad="1">RVK 3×6 mm² (Ø 12.0 mm)</option>
+                        <option value="multirvk_3x10" data-diametro="14.0" data-cantidad="1">RVK 3×10 mm² (Ø 14.0 mm)</option>
+                        <option value="multirvk_3x16" data-diametro="17.5" data-cantidad="1">RVK 3×16 mm² (Ø 17.5 mm)</option>
+                    </optgroup>
+                    <optgroup label="🔌 UNIPOLAR RVK (Cordón)">
+                        <option value="unirvk_1x6" data-diametro="6.5" data-cantidad="variable">Unipolar RVK 1×6 mm² (Ø 6.5 mm)</option>
+                        <option value="unirvk_1x10" data-diametro="7.3" data-cantidad="variable">Unipolar RVK 1×10 mm² (Ø 7.3 mm)</option>
+                        <option value="unirvk_1x16" data-diametro="8.5" data-cantidad="variable">Unipolar RVK 1×16 mm² (Ø 8.5 mm)</option>
+                    </optgroup>
+                    <optgroup label="🔥 UNIPOLAR H07Z1-K (EVA/Flex)">
+                        <option value="h07_1x1.5" data-diametro="3.1" data-cantidad="variable">H07Z1-K 1×1.5 mm² (Ø 3.1 mm)</option>
+                        <option value="h07_1x2.5" data-diametro="3.8" data-cantidad="variable">H07Z1-K 1×2.5 mm² (Ø 3.8 mm)</option>
+                    </optgroup>
+                </select>
+                <div id="cable-info" class="cable-info"></div>
+            </div>
+            
+            <div class="form-group" id="cantidad-group" style="display: none;">
+                <label>Cantidad de Cables:</label>
+                <input type="number" id="cable-cant" value="3" min="1" max="20" onchange="actualizarCalculadoraDuctos()">
+                <small style="color: #64748b; display: block; margin-top: 5px;">
+                    💡 Para circuitos monofásicos: 2-3 cables | Trifásicos: 4-5 cables
+                </small>
+            </div>
+            
+            <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="utp-check" onchange="actualizarCalculadoraDuctos()" style="width: auto; margin: 0;">
+                    <strong>Incluir Cable UTP Cat6 (Ø 6.0 mm)</strong>
+                </label>
+                <div id="utp-cantidad-group" style="display: none; margin-top: 10px;">
+                    <label style="font-size: 0.9rem;">Cantidad de cables UTP:</label>
+                    <input type="number" id="utp-cant" value="1" min="1" max="10" onchange="actualizarCalculadoraDuctos()">
+                </div>
+            </div>
+            
+            <button class="btn-calc" style="background:var(--success)" onclick="calcDucto()">Analizar Tubería EMT</button>
+            <div id="res-ducto"></div>
+        </div>
+
+        <!-- Esquema SGC -->
+        <div id="sgc" class="card" style="text-align:center;">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Esquema de Control SGC</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style="background:#fff; border-radius:10px;"><text x="95" y="30" font-weight="bold">SGC</text><text x="310" y="30" font-weight="bold">CARGADOR</text><circle cx="35" cy="100" r="7" fill="#2ecc71"/><circle cx="75" cy="100" r="7" fill="#3498db"/><circle cx="115" cy="100" r="7" fill="#2ecc71"/><circle cx="155" cy="100" r="7" fill="#8b4513"/><circle cx="250" cy="100" r="7" fill="#bdc3c7"/><circle cx="290" cy="100" r="7" fill="#8b4513"/><circle cx="330" cy="100" r="7" fill="#2ecc71"/><circle cx="370" cy="100" r="7" fill="#3498db"/><path d="M 35 100 L 35 130 L 115 130 L 115 100" stroke="#2ecc71" fill="none" stroke-width="3"/><path d="M 155 107 L 155 160 L 290 160 L 290 107" stroke="#8b4513" fill="none" stroke-width="2"/><path d="M 115 130 L 115 200 L 330 200 L 330 107" stroke="#2ecc71" fill="none" stroke-width="2"/><path d="M 75 107 L 75 235 L 370 235 L 370 107" stroke="#3498db" fill="none" stroke-width="2"/></svg>
+        </div>
+
+        <!-- Biblioteca RIC -->
+        <div id="biblioteca" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Biblioteca Pliegos RIC (01-19 + 15.1)</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <select onchange="document.getElementById('pdf-view').src = this.value">
+                <option value="">-- Seleccionar Pliego --</option>
+                <option value="RIC01.pdf">RIC 01: Empalmes</option><option value="RIC02.pdf">RIC 02: Tableros Electricos</option>
+                <option value="RIC03.pdf">RIC 03: Alimentadores y interruptores</option><option value="RIC04.pdf">RIC 04: Conductores y canalizaciones</option>
+                <option value="RIC05.pdf">RIC 05: Protecciones</option><option value="RIC06.pdf">RIC 06: Puesta a Tierra</option>
+                <option value="RIC07.pdf">RIC 07: Instalaciones de equipos</option><option value="RIC08.pdf">RIC 08: Sistemas de Emergencia y corte en punta</option>
+                <option value="RIC09.pdf">RIC 09: Sistemas de autogeneracion</option><option value="RIC10.pdf">RIC 10: Instalaciones de uso general</option>
+                <option value="RIC11.pdf">RIC 11: Instalaciones especiales</option><option value="RIC12.pdf">RIC 12: Instalaciones en ambientes explosivos</option>
+                <option value="RIC13.pdf">RIC 13: Subestaciones y salas electricas</option><option value="RIC14.pdf">RIC 14: Alumbrado Público</option>
+                <option value="RIC15.pdf">RIC 15: Infraestructura para la recarga de vehiculos electricos</option><option value="RIC15.1.pdf">RIC 15.1: IRVE 2026</option>
+                <option value="RIC16.pdf">RIC 16: Subsistemas de distribucion</option><option value="RIC17.pdf">RIC 17: Operacion y mantenimiento</option>
+                <option value="RIC18.pdf">RIC 18: Presentacion de proyectos</option><option value="RIC19.pdf">RIC 19: Puesta en Servicio</option>
+            </select>
+            <iframe id="pdf-view" src=""></iframe>
+        </div>
+
+        <!-- Inventario -->
+        <div id="inventario" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Gestión de Bodega LINSTELEC 
+                    <span id="sync-status" class="sync-status sync-pending">
+                        <i class="fas fa-circle"></i> Sin sincronizar
+                    </span>
+                </h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                <button class="tab-btn" onclick="downloadInventory()" style="background:var(--success); color:white;">
+                    <i class="fas fa-download"></i> Descargar Lista
+                </button>
+                <button class="tab-btn" onclick="printInventory()" style="background:var(--dark); color:white;">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+                <button class="tab-btn" onclick="exportForShare()" style="background:var(--primary); color:white;">
+                    <i class="fas fa-share-alt"></i> Exportar para Compartir
+                </button>
+                <button class="tab-btn" onclick="importFromShare()" style="background:var(--luis); color:white;">
+                    <i class="fas fa-upload"></i> Importar Lista
+                </button>
+                <button class="tab-btn" onclick="refreshInventory()" style="background:#95a5a6; color:white;">
+                    <i class="fas fa-sync"></i> Actualizar
+                </button>
+            </div>
+            <input type="file" id="importFile" accept=".txt,.json" style="display:none;" onchange="handleImport(this)">
+            
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-inv" placeholder="🔍 Buscar material..." oninput="filterInventory()">
+                <div class="search-results" id="search-count"></div>
+            </div>
+            
+            <div class="form-group" style="display: grid; grid-template-columns: 1fr 100px 80px; gap: 10px;">
+                <input type="text" id="new-item-name" placeholder="Nombre Material"><input type="number" id="new-item-qty" placeholder="Stock Inicial"><button onclick="addMaterial()" class="btn-calc" style="padding:0;">+</button>
+            </div>
+            <table class="inv-table">
+                <thead><tr><th>Material</th><th>Stock Bodega</th><th>Cant. a Usar</th><th>Acción</th></tr></thead>
+                <tbody id="inv-body"></tbody>
+            </table>
+            <div class="install-list">
+                <h3>Plantilla de Salida (Instalación)</h3>
+                <input type="text" id="install-proj" placeholder="Nombre Proyecto / Cliente" style="margin-bottom:10px; width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
+                <div id="bag-items"></div><hr>
+                <button class="btn-calc btn-success" style="background:var(--success);" onclick="generateFile()">Generar Archivo y Descontar Stock</button>
+            </div>
+        </div>
+
+        <!-- Luis IA -->
+        <div id="luis-ia" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">🤖 PREGÚNTALE A LUIS (Experto RIC)</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <iframe src="https://brayaton-asistente-ric-pro.hf.space"></iframe>
+        </div>
+    </div>
+</div>
+
+<!-- 🎵 PANEL FLOTANTE MÚSICA - ARRIBA DERECHA (OCULTO HASTA LOGIN) -->
+<div id="floating-panel">
+    <!-- Burbuja Música -->
+    <div class="bubble bubble-music" id="musicBubble" onclick="toggleMusicPanel()" title="Reproductor MP3">
+        <i class="fas fa-music" id="musicIcon"></i>
+        <span class="bubble-tooltip">Música</span>
+        <span class="bubble-status"></span>
+    </div>
+</div>
+
+<!-- 🎵 VENTANA REPRODUCTOR MP3 (OCULTA HASTA LOGIN) -->
+<div id="musicPanel" class="floating-window">
+    <div class="window-header">
+        <span>🎵 Reproductor MP3</span>
+        <button class="window-close" onclick="closeMusicPanel()">✕</button>
+    </div>
+    <div class="window-content">
+        <div class="song-info">
+            <strong id="songTitle">OldSkul</strong>
+            <span id="songStatus">Listo</span>
+        </div>
+        <audio id="mp3Player" src="oldskul.mp3" preload="auto"></audio>
+        <div class="music-controls">
+            <button onclick="togglePlayPause()" class="btn-play">
+                <i class="fas fa-play" id="playIcon"></i>
+            </button>
+        </div>
+        <p id="audioError" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px; display: none;">
+            ⚠️ No se encontró el archivo de audio
+        </p>
+    </div>
+</div>
+
+<script>
+    /* ========== CONFIGURACIÓN JSONBIN ========== */
+    const JSONBIN_CONFIG = {
+        masterKey: "$2a$10$d5wiwzZ.u1m2caXKKtWSGuo4.hnU4mEWvEiCaj9XFa6IpBOA0UP0a",
+        binId: "69b37960c3097a1dd51edd41",
+        baseUrl: "https://api.jsonbin.io/v3/b"
+    };
+
+    /* ========== USUARIOS ========== */
+    const USERS = [
+        { id: "Rodrigo", pass: "1648", name: "Rodrigo Padilla", clase: "Clase D" },
+        { id: "Luis", pass: "2507", name: "Luis Rojo", clase: "Clase C" },
+        { id: "Isaias", pass: "2071", name: "Isaias Echeverria", clase: "Clase C" },
+        { id: "Brayan", pass: "2025", name: "Brayan Barraza", clase: "Clase D" }
+    ];
+
+    let inventory = JSON.parse(localStorage.getItem('linstelec_inv_v2')) || [];
+    let bag = [];
+    let isSyncing = false;
+    let currentUser = null;
+    let recentTools = JSON.parse(localStorage.getItem('linstelec_recent_tools')) || [];
+    let calcCount = parseInt(localStorage.getItem('linstelec_calc_count')) || 0;
+
+    /* ========== ACTUALIZAR RELOJ DASHBOARD ========== */
+    function updateDashboardTime() {
+        const now = new Date();
+        const timeEl = document.getElementById('dash-time');
+        const dateEl = document.getElementById('dash-date');
+        if (timeEl) timeEl.textContent = now.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+        if (dateEl) dateEl.textContent = now.toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    /* ========== FUNCIONES JSONBIN ========== */
+    function updateSyncStatus(status, message) {
+        const el = document.getElementById('sync-status');
+        if(!el) return;
+        const statuses = {
+            ok: { class: 'sync-status sync-ok', icon: 'fa-check-circle', text: 'Sincronizado' },
+            pending: { class: 'sync-status sync-pending', icon: 'fa-circle', text: 'Sin sincronizar' },
+            error: { class: 'sync-status sync-error', icon: 'fa-exclamation-circle', text: 'Error' },
+            syncing: { class: 'sync-status sync-pending', icon: 'fa-spinner fa-spin', text: 'Sincronizando...' }
+        };
+        const s = statuses[status] || statuses.pending;
+        el.className = s.class;
+        el.innerHTML = `<i class="fas ${s.icon}"></i> ${message || s.text}`;
+        const syncStatusText = document.getElementById('sync-status-text');
+        const lastSyncEl = document.getElementById('last-sync');
+        if (syncStatusText) syncStatusText.textContent = message || s.text;
+        if (lastSyncEl && status === 'ok') {
+            lastSyncEl.textContent = new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+        }
+    }
+
+    async function loadInventoryFromCloud() {
+        if(!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI') || 
+           !JSONBIN_CONFIG.binId || JSONBIN_CONFIG.binId.includes('TU_BIN_ID')) {
+            updateSyncStatus('pending', 'Sin configurar');
+            return;
+        }
+        isSyncing = true;
+        updateSyncStatus('syncing', 'Cargando...');
+        try {
+            const url = `${JSONBIN_CONFIG.baseUrl}/${JSONBIN_CONFIG.binId}/latest`;
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey, 'Content-Type': 'application/json' }
+            });
+            if(!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`${response.status}: ${errorData.message || 'Error'}`);
+            }
+            const data = await response.json();
+            if(data.record && data.record.inventory) {
+                inventory = data.record.inventory;
+                localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+                renderInv();
+                updateStockAlerts();
+                updateSyncStatus('ok', `✅ ${new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}`);
+            } else {
+                inventory = [];
+                await saveInventoryToCloud();
+                updateSyncStatus('ok', '✅ Bin inicializado');
+            }
+        } catch(error) {
+            console.error("❌ Error:", error);
+            updateSyncStatus('error', 'Error de conexión');
+            inventory = JSON.parse(localStorage.getItem('linstelec_inv_v2')) || [];
+            renderInv();
+        } finally { isSyncing = false; }
+    }
+
+    async function saveInventoryToCloud() {
+        if(!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI')) return;
+        if(isSyncing) return;
+        try {
+            const payload = { inventory: inventory, lastUpdate: new Date().toISOString(), updatedBy: currentUser?.name || 'Unknown' };
+            const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/${JSONBIN_CONFIG.binId}`, {
+                method: 'PUT',
+                headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if(!response.ok) throw new Error(`HTTP ${response.status}`);
+            updateSyncStatus('ok', `Guardado ${new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}`);
+        } catch(error) {
+            console.error("❌ Error al guardar:", error);
+            updateSyncStatus('error', 'Error al guardar');
+        }
+    }
+
+    async function refreshInventory() {
+        updateSyncStatus('syncing', 'Actualizando...');
+        await loadInventoryFromCloud();
+        alert("📡 Inventario actualizado desde la nube");
+    }
+
+    function filterInventory() {
+        const searchTerm = document.getElementById('search-inv').value.toLowerCase().trim();
+        const rows = document.querySelectorAll('#inv-body tr');
+        let visibleCount = 0;
+        rows.forEach(row => {
+            const materialName = row.cells[0]?.textContent.toLowerCase() || '';
+            if(materialName.includes(searchTerm)) { row.style.display = ''; visibleCount++; }
+            else { row.style.display = 'none'; }
+        });
+        const countEl = document.getElementById('search-count');
+        if(searchTerm) {
+            countEl.textContent = `${visibleCount} resultado${visibleCount !== 1 ? 's' : ''} encontrado${visibleCount !== 1 ? 's' : ''}`;
+            if(visibleCount === 0) countEl.textContent = '❌ Sin resultados';
+        } else { countEl.textContent = ''; }
+    }
+
+    function downloadInventory() {
+        if(inventory.length === 0) return alert("⚠️ No hay materiales en el inventario para descargar");
+        let csv = "MATERIAL;STOCK DISPONIBLE\n";
+        inventory.forEach(item => { csv += `"${item.name}";${item.stock}\n`; });
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.setAttribute('href', URL.createObjectURL(blob));
+        link.setAttribute('download', `Inventario_LINSTELEC_${new Date().toISOString().slice(0,10)}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function printInventory() {
+        if(inventory.length === 0) return alert("⚠️ No hay materiales para imprimir");
+        let content = `<html><head><title>Inventario LINSTELEC</title><style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+            th { background: #3498db; color: white; }
+            tr:nth-child(even) { background: #f9f9f9; }
+            .footer { margin-top: 30px; font-size: 12px; color: #666; text-align: center; }
+            @media print { body { padding: 0; } }
+        </style></head><body>
+        <h1>📦 Inventario de Materiales - LINSTELEC CHILE</h1>
+        <p><strong>Fecha:</strong> ${new Date().toLocaleDateString('es-CL')} | <strong>Hora:</strong> ${new Date().toLocaleTimeString('es-CL')}</p>
+        <table><thead><tr><th>#</th><th>Material</th><th>Stock en Bodega</th></tr></thead><tbody>`;
+        inventory.forEach((item, idx) => {
+            content += `<tr><td>${idx + 1}</td><td>${item.name}</td><td><strong>${item.stock}</strong></td></tr>`;
+        });
+        content += `</tbody></table><div class="footer">Documento generado desde Sistema LINSTELEC - Uso interno<br>Total de materiales: ${inventory.length}</div></body></html>`;
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        printWindow.document.write(content);
+        printWindow.document.close();
+        printWindow.onload = () => { setTimeout(() => { printWindow.print(); }, 500); };
+    }
+
+    function exportForShare() {
+        if(inventory.length === 0) return alert("⚠️ No hay materiales para exportar");
+        const exportData = { version: "1.0", date: new Date().toISOString(), inventory: inventory };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.setAttribute('href', URL.createObjectURL(blob));
+        link.setAttribute('download', `LINSTELEC_Inventario_Compartir_${new Date().toISOString().slice(0,10)}.json`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        alert("✅ Archivo exportado exitosamente.");
+    }
+
+    function importFromShare() { document.getElementById('importFile').click(); }
+
+    function handleImport(input) {
+        const file = input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if(data.inventory && Array.isArray(data.inventory)) {
+                    if(confirm(`⚠️ IMPORTAR INVENTARIO\n\nEsto reemplazará tu inventario actual con ${data.inventory.length} materiales.\n\n¿Deseas continuar?`)) {
+                        inventory = data.inventory;
+                        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+                        renderInv();
+                        updateStockAlerts();
+                        saveInventoryToCloud();
+                        alert("✅ Inventario actualizado correctamente con " + inventory.length + " materiales");
+                    }
+                } else { alert("❌ Formato de archivo no válido."); }
+            } catch(err) { alert("❌ Error al leer el archivo: " + err.message); }
+            input.value = '';
+        };
+        reader.readAsText(file);
+    }
+
+    function addMaterial() {
+        const n = document.getElementById('new-item-name').value, q = parseInt(document.getElementById('new-item-qty').value);
+        if(n && !isNaN(q)) { 
+            inventory.push({ name: n, stock: q }); 
+            document.getElementById('new-item-name').value = ""; 
+            document.getElementById('new-item-qty').value = ""; 
+            renderInv();
+            updateStockAlerts();
+            saveInventoryToCloud();
+        }
+    }
+    
+    function renderInv() {
+        const body = document.getElementById('inv-body'); 
+        body.innerHTML = "";
+        if(inventory.length === 0) {
+            body.innerHTML = `<tr><td colspan="4" class="no-results">📦 No hay materiales registrados. ¡Agrega el primero!</td></tr>`;
+            document.getElementById('search-count').textContent = '';
+            return;
+        }
+        inventory.forEach((item, idx) => {
+            body.innerHTML += `<tr><td>${item.name}</td><td><input type="number" value="${item.stock}" onchange="updateStock(${idx}, this.value)" class="qty-input"></td><td><input type="number" id="use-qty-${idx}" value="1" min="1" class="qty-input"></td><td><button onclick="addToBag(${idx})" class="tab-btn" style="padding:5px 10px; font-size:12px; background:var(--primary); color:white;">Ocupar</button> <button onclick="delMat(${idx})" style="background:var(--danger); border:none; color:white; padding:5px 8px; border-radius:5px; cursor:pointer;"><i class="fas fa-trash"></i></button></td></tr>`;
+        });
+        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+        filterInventory();
+    }
+
+    function updateStockAlerts() {
+        const alertsContainer = document.getElementById('stock-alerts');
+        if (!alertsContainer) return;
+        const lowStock = inventory.filter(item => item.stock <= 5);
+        if (lowStock.length === 0) {
+            alertsContainer.innerHTML = `<div style="text-align: center; color: var(--success); padding: 20px;"><i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i><p>✅ Todo el inventario está en niveles óptimos</p></div>`;
+            return;
+        }
+        let html = '';
+        lowStock.forEach(item => {
+            const isCritical = item.stock <= 2;
+            html += `<div class="alert-item"><div class="alert-item-info"><div class="alert-item-icon"><i class="fas fa-box"></i></div><div><div class="alert-item-name">${item.name}</div><div class="alert-item-stock">Stock actual</div></div></div><div class="alert-item-qty ${isCritical ? '' : 'low'}">${item.stock} un</div></div>`;
+        });
+        alertsContainer.innerHTML = html;
+    }
+    
+    function updateStock(idx, val) { 
+        inventory[idx].stock = parseInt(val); 
+        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+        updateStockAlerts();
+        saveInventoryToCloud();
+    }
+    
+    function delMat(idx) { 
+        if(confirm("¿Eliminar?")) { 
+            inventory.splice(idx, 1); 
+            renderInv();
+            updateStockAlerts();
+            saveInventoryToCloud();
+        } 
+    }
+    
+    function addToBag(idx) {
+        const useQty = parseInt(document.getElementById(`use-qty-${idx}`).value);
+        if(isNaN(useQty) || useQty <= 0) return;
+        const exist = bag.find(b => b.name === inventory[idx].name);
+        if(exist) exist.qty += useQty; else bag.push({ name: inventory[idx].name, qty: useQty, originIdx: idx });
+        renderBag();
+    }
+    
+    function renderBag() {
+        const div = document.getElementById('bag-items'); 
+        div.innerHTML = "";
+        bag.forEach(item => { 
+            div.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px; background:white; padding:5px; border-radius:5px; font-size:0.9rem;"><span>${item.name}</span><strong>Cant: ${item.qty}</strong></div>`; 
+        });
+    }
+    
+    function generateFile() {
+        if(bag.length === 0) return alert("Selecciona materiales primero");
+        const proj = document.getElementById('install-proj').value || "Salida_Materiales";
+        let txt = `LINSTELEC CHILE - GUIA DE MATERIALES\nPROYECTO: ${proj}\nFECHA: ${new Date().toLocaleDateString()}\n-------------------\n`;
+        bag.forEach(item => {
+            txt += `- ${item.name}: ${item.qty}\n`;
+            inventory[item.originIdx].stock -= item.qty;
+        });
+        const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.setAttribute('href', URL.createObjectURL(blob));
+        link.setAttribute('download', `${proj}_Materiales.txt`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        bag = []; 
+        renderBag(); 
+        renderInv();
+        updateStockAlerts();
+        saveInventoryToCloud();
+        alert("Archivo generado y stock actualizado.");
+    }
+
+    /* ========== FUNCIONES DEL SISTEMA ========== */
+    function checkLogin() {
+        const u = document.getElementById('userInput').value.trim();
+        const p = document.getElementById('passInput').value;
+        const errorMsg = document.getElementById('error-msg');
+        const found = USERS.find(user => user.id === u && user.pass === p);
+        const btn = document.querySelector('.btn-calc');
+        const originalBtn = btn.innerHTML;
+        
+        if(found) {
+            btn.innerHTML = '<i class="fas fa-check"></i> Accediendo...';
+            btn.style.background = 'linear-gradient(135deg, var(--success), #27ae60)';
+            setTimeout(() => {
+                currentUser = found;
+                document.getElementById('login-wrapper').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('login-wrapper').style.display = 'none';
+                    document.getElementById('container').style.display = 'block';
+                    document.getElementById('user-display').innerHTML = "👷 " + found.name + " - <strong>" + found.clase + "</strong>";
+                    document.getElementById('dash-greeting').textContent = getGreeting() + ", " + found.name.split(' ')[0] + "!";
+                    document.getElementById('dash-user-info').textContent = found.clase + " | LINSTELEC CHILE";
+                    document.getElementById('dash-user-class').textContent = found.clase;
+                    
+                    document.getElementById('floating-panel').classList.add('visible');
+                    
+                    renderInv();
+                    updateStockAlerts();
+                    updateDashboardTime();
+                    updateRecentToolsDisplay();
+                    updateStatsDisplay();
+                    iniciarChatbase();
+                    loadInventoryFromCloud();
+                    setInterval(updateDashboardTime, 1000);
+                }, 300);
+            }, 800);
+        } else { 
+            errorMsg.classList.add('show');
+            btn.innerHTML = originalBtn;
+            btn.style.background = '';
+            const card = document.querySelector('.login-card');
+            card.style.animation = 'none';
+            setTimeout(() => { card.style.animation = 'shake 0.4s ease'; }, 10);
+            setTimeout(() => { errorMsg.classList.remove('show'); }, 3500);
+        }
+    }
+
+    function togglePassword() {
+        const input = document.getElementById('passInput');
+        const icon = document.querySelector('.toggle-pass i');
+        if (input.type === 'password') { input.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+        else { input.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+    }
+
+    function getGreeting() {
+        const hour = new Date().getHours();
+        if (hour < 12) return "☀️ Buenos días";
+        if (hour < 18) return "🌤️ Buenas tardes";
+        return "🌙 Buenas noches";
+    }
+
+    function showTabFromDashboard(tabName) { addToRecentTools(tabName); showTool(tabName); }
+    function showTool(name) {
+        document.getElementById('dashboard').classList.remove('active');
+        document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+        const tabBtn = document.querySelector(`.tab-btn[onclick*="'${name}'"]`);
+        if(tabBtn) tabBtn.classList.add('active');
+    }
+    function showTab(evt, name) { if (evt) addToRecentTools(name); showTool(name); }
+    function showDashboard() {
+        document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('dashboard').classList.add('active');
+    }
+
+    function addToRecentTools(toolName) {
+        const toolNames = { 'tension': 'Caída de Tensión', 'ohm': 'Ley de Ohm', 'nodos': 'Calculadora Nodos', 'tuberia': 'Ductos EMT', 'sgc': 'Esquema SGC', 'biblioteca': 'Biblioteca RIC', 'inventario': 'Inventario', 'luis-ia': 'Luis IA', 'cortocircuito': 'Cortocircuito' };
+        const toolLabel = toolNames[toolName] || toolName;
+        recentTools = recentTools.filter(t => t !== toolLabel);
+        recentTools.unshift(toolLabel);
+        recentTools = recentTools.slice(0, 5);
+        localStorage.setItem('linstelec_recent_tools', JSON.stringify(recentTools));
+        updateRecentToolsDisplay();
+    }
+
+    function updateRecentToolsDisplay() {
+        const container = document.getElementById('recent-tools-list');
+        if (!container) return;
+        if (recentTools.length === 0) { container.innerHTML = '<span style="color: #64748b;">Sin historial aún</span>'; return; }
+        container.innerHTML = recentTools.map(tool => `<div class="recent-tool-item"><i class="fas fa-clock"></i> ${tool}</div>`).join('');
+    }
+
+    function updateStatsDisplay() { const statsEl = document.getElementById('stats-month'); if (statsEl) statsEl.textContent = calcCount; }
+    function incrementCalcCount() { calcCount++; localStorage.setItem('linstelec_calc_count', calcCount); updateStatsDisplay(); }
+
+    function calcNodoInteractivo(nodo) {
+        incrementCalcCount();
+        const rho = 0.0185, V = 220, zcc1 = parseFloat(document.getElementById('zcc1').value);
+        const calcZ = (L, S) => ((rho / S) * L * 2) * 1000;
+        let resHTML = "", z_acum = 0, z_cable = 0, icc = 0, label_cable = "";
+        if (nodo === 2) {
+            z_cable = calcZ(parseFloat(document.getElementById('L2').value), parseFloat(document.getElementById('S2').value));
+            z_acum = zcc1 + z_cable; icc = V / (z_acum / 1000) / 1000; label_cable = "AL-01";
+            resHTML = `<strong>PASO 1: Resistencia Conductor (${label_cable})</strong><br>R = (ρ / S) * L * 2 = (0.0185 / ${document.getElementById('S2').value}) * ${document.getElementById('L2').value} * 2<br>R = ${z_cable.toFixed(2)} mΩ<br><br><strong>PASO 2: Impedancia Acumulada</strong><br>Zcc = Zcc_n1 + R = ${zcc1} + ${z_cable.toFixed(2)}<br>Zcc = <span class="math-res">${z_acum.toFixed(2)} mΩ</span><br><br><strong>PASO 3: Cortocircuito Nodo 2</strong><br>Icc = V / Zcc = 220 / (${z_acum.toFixed(2)} / 1000)<br>Icc = <span class="math-res">${icc.toFixed(2)} kA</span>`;
+        } else {
+            const z_tdf = zcc1 + calcZ(parseFloat(document.getElementById('L2').value), parseFloat(document.getElementById('S2').value));
+            let L = document.getElementById(nodo === 3 ? 'L3' : 'L4').value, S = document.getElementById(nodo === 3 ? 'S3' : 'S4').value;
+            z_cable = calcZ(parseFloat(L), parseFloat(S)); z_acum = z_tdf + z_cable; icc = V / (z_acum / 1000) / 1000; label_cable = (nodo === 3) ? "CR-01" : "Sub-alim";
+            resHTML = `<strong>PASO 1: Resistencia Conductor (${label_cable})</strong><br>R = (0.0185 / ${S}) * ${L} * 2 = ${z_cable.toFixed(2)} mΩ<br><br><strong>PASO 2: Impedancia Acumulada (desde TDF)</strong><br>Zcc = Zcc_TDF (${z_tdf.toFixed(2)}) + R<br>Zcc = <span class="math-res">${z_acum.toFixed(2)} mΩ</span><br><br><strong>PASO 3: Cortocircuito Nodo ${nodo}</strong><br>Icc = 220 / (${z_acum.toFixed(2)} / 1000) = <span class="math-res">${icc.toFixed(2)} kA</span>`;
+        }
+        document.getElementById(`ecu-${nodo}`).innerHTML = resHTML; document.getElementById(`ecu-${nodo}`).style.display = 'block';
+    }
+
+    function calcOhm() {
+        incrementCalcCount();
+        let w = parseFloat(document.getElementById('watt-ohm').value), v = parseFloat(document.getElementById('volt-ohm').value);
+        if (w && v) { document.getElementById('res-ohm').className = "resultado res-ok"; document.getElementById('res-ohm').innerHTML = `Corriente Resultante: ${(w/v).toFixed(2)} Amperes`; }
+        else { document.getElementById('res-ohm').className = "resultado res-fail"; document.getElementById('res-ohm').innerHTML = "Ingrese Potencia y Voltaje"; }
+    }
+
+    function toggleCosPhi() {
+        const check = document.getElementById('cosphi-check');
+        const container = document.getElementById('cosphi-container');
+        container.style.display = check.checked ? 'block' : 'none';
+    }
+
+    function mostrarResultado(mensaje, clase) {
+        const res = document.getElementById('res-tension');
+        res.className = `resultado ${clase}`;
+        res.innerHTML = mensaje;
+    }
+
+    function lanzarConfeti() {
+        const emojis = ['🎉','✨','⚡','','✅'];
+        for(let i = 0; i < 12; i++) {
+            setTimeout(() => {
+                const c = document.createElement('span');
+                c.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                c.style.cssText = `position: fixed; left: ${Math.random() * 100}vw; top: -20px; font-size: ${16 + Math.random() * 12}px; animation: confettiFall ${2 + Math.random() * 2}s linear forwards; pointer-events: none; z-index: 9999; text-shadow: 0 2px 4px rgba(0,0,0,0.3);`;
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 4000);
+            }, i * 80);
+        }
+    }
+
+    function actualizarCalculadoraDuctos() {
+        const select = document.getElementById('cable-tipo');
+        const selectedOption = select.options[select.selectedIndex];
+        const diametro = selectedOption.getAttribute('data-diametro');
+        const cantidad = selectedOption.getAttribute('data-cantidad');
+        const texto = selectedOption.text;
+        const cantidadGroup = document.getElementById('cantidad-group');
+        if (cantidad === 'variable') { cantidadGroup.style.display = 'block'; } else { cantidadGroup.style.display = 'none'; }
+        const infoDiv = document.getElementById('cable-info');
+        infoDiv.innerHTML = `<strong>Cable seleccionado:</strong> ${texto}<br><strong>Diámetro exterior:</strong> Ø ${diametro} mm<br>${cantidad === '1' ? '<span style="color: var(--success);">✓ Multiconductor (1 solo cable en tubería)</span>' : '<span style="color: var(--primary);">📊 Ingrese cantidad de cables unipolares</span>'}`;
+        const utpCheck = document.getElementById('utp-check');
+        const utpCantidadGroup = document.getElementById('utp-cantidad-group');
+        utpCantidadGroup.style.display = utpCheck.checked ? 'block' : 'none';
+    }
+
+    function calcDucto() {
+        incrementCalcCount();
+        const select = document.getElementById('cable-tipo');
+        const selectedOption = select.options[select.selectedIndex];
+        const diametroCable = parseFloat(selectedOption.getAttribute('data-diametro'));
+        const tipoCantidad = selectedOption.getAttribute('data-cantidad');
+        const textoCable = selectedOption.text.toLowerCase();
+        const esH07 = textoCable.includes('h07z1-k');
+        const esMulticonductor = textoCable.includes('multiconductor') || selectedOption.value.startsWith('multirvk');
+        let cantidadCables = 1;
+        if (tipoCantidad === 'variable') { cantidadCables = parseInt(document.getElementById('cable-cant').value) || 1; }
+        const areaCablePrincipal = Math.PI * Math.pow(diametroCable / 2, 2);
+        const areaTotalPrincipal = areaCablePrincipal * cantidadCables;
+        const utpCheck = document.getElementById('utp-check');
+        let areaTotalUTP = 0, cantidadUTP = 0;
+        if (utpCheck.checked) {
+            cantidadUTP = parseInt(document.getElementById('utp-cant').value) || 1;
+            const diametroUTP = 6.0;
+            const areaUTP = Math.PI * Math.pow(diametroUTP / 2, 2);
+            areaTotalUTP = areaUTP * cantidadUTP;
+        }
+        const areaTotalRequerida = areaTotalPrincipal + areaTotalUTP;
+        const totalCables = cantidadCables + cantidadUTP;
+        let factorLlenado, textoFactor;
+        if (totalCables === 1) { factorLlenado = 0.53; textoFactor = "53% (1 cable)"; }
+        else if (totalCables === 2) { factorLlenado = 0.31; textoFactor = "31% (2 cables)"; }
+        else { factorLlenado = 0.40; textoFactor = "40% (3+ cables)"; }
+        const tubosEMT = [{ nominal: 16, interior: 15.3 }, { nominal: 20, interior: 19.3 }, { nominal: 25, interior: 24.5 }, { nominal: 32, interior: 31.0 }, { nominal: 40, interior: 37.5 }, { nominal: 50, interior: 46.5 }];
+        const limitesPracticos = { 16: { max: 5, ideal: 3, descripcion: "Máximo 5 cables (ideal 3)" }, 20: { max: 7, ideal: 5, descripcion: "Máximo 7 cables (ideal 5)" }, 25: { max: 9, ideal: 6, descripcion: "Máximo 9 cables (ideal 6)" }, 32: { max: 12, ideal: 9, descripcion: "Máximo 12 cables (ideal 9)" }, 40: { max: 15, ideal: 12, descripcion: "Máximo 15 cables (ideal 12)" }, 50: { max: 20, ideal: 15, descripcion: "Máximo 20 cables (ideal 15)" } };
+        let rangoRecomendado = esH07 ? { min: 16, max: 25, texto: "16mm - 25mm (instalación domiciliaria)" } : { min: 32, max: 50, texto: "32mm - 50mm (alimentadores y circuitos)" };
+        let html = `<div class="resultado res-warn" style="margin-bottom: 15px;"><strong>📊 Resumen de Cables:</strong><br>• Tipo: ${esH07 ? 'H07Z1-K (domiciliario)' : (esMulticonductor ? 'RVK Multiconductor' : 'RVK Unipolar')}<br>• Cables principales: ${cantidadCables} × Ø${diametroCable}mm = ${areaTotalPrincipal.toFixed(2)} mm²<br>${utpCheck.checked ? `• Cables UTP: ${cantidadUTP} × Ø6.0mm = ${areaTotalUTP.toFixed(2)} mm²<br>` : ''}• <strong>Área total: ${areaTotalRequerida.toFixed(2)} mm²</strong><br>• Total cables: ${totalCables}<br>• Factor RIC 07: ${textoFactor}<br>• <strong>Rango recomendado: Tubos ${rangoRecomendado.texto}</strong></div><h3 style="margin: 15px 0 10px 0; font-size: 1.1rem;">📐 Análisis por Tubo EMT:</h3>`;
+        let tuboRecomendado = null;
+        tubosEMT.forEach(tubo => {
+            const areaInterna = Math.PI * Math.pow(tubo.interior / 2, 2);
+            const capacidadMaxima = areaInterna * factorLlenado;
+            const ocupacionPorcentaje = (areaTotalRequerida / capacidadMaxima) * 100;
+            const margenDisponible = capacidadMaxima - areaTotalRequerida;
+            const dentroRango = tubo.nominal >= rangoRecomendado.min && tubo.nominal <= rangoRecomendado.max;
+            const limite = limitesPracticos[tubo.nominal];
+            const excedeLimitePractico = totalCables > limite.max;
+            const sobreOcupacion = ocupacionPorcentaje > 70;
+            if (capacidadMaxima >= areaTotalRequerida && !excedeLimitePractico) {
+                if (!tuboRecomendado && dentroRango) {
+                    tuboRecomendado = tubo;
+                    let claseResultado = 'res-ok', icono = '✅', textoExtra = '';
+                    if (sobreOcupacion) { claseResultado = 'res-warn'; icono = '⚠️'; textoExtra = '<br><span style="color: #856404;"><strong>⚠️ Ocupación alta - Instalación difícil</strong></span>'; }
+                    html += `<div class="resultado ${claseResultado}" style="margin-bottom: 10px; border: 2px solid ${sobreOcupacion ? '#ffc107' : '#28a745'};"><strong>${icono} Tubo EMT ${tubo.nominal}mm - RECOMENDADO</strong><br>• Diámetro interior: ${tubo.interior}mm<br>• Capacidad máxima (${textoFactor}): ${capacidadMaxima.toFixed(2)} mm²<br>• Área requerida: ${areaTotalRequerida.toFixed(2)} mm²<br>• Ocupación del factor: ${ocupacionPorcentaje.toFixed(1)}%<br>• Margen disponible: ${margenDisponible.toFixed(2)} mm²<br>• Límite práctico: ${limite.descripcion}${textoExtra}</div>`;
+                } else if (dentroRango) { html += `<div class="resultado res-warn" style="margin-bottom: 10px;"><strong>🔵 Tubo EMT ${tubo.nominal}mm - EXCESIVO</strong><br>• Ocupación: ${ocupacionPorcentaje.toFixed(1)}%<br>• Sobredimensionado</div>`; }
+                else { html += `<div class="resultado res-warn" style="margin-bottom: 10px; opacity: 0.7;"><strong>🔸 Tubo EMT ${tubo.nominal}mm - NO RECOMENDADO</strong><br>• Cumple matemáticamente pero <strong>no es práctica habitual</strong><br>• Para ${esH07 ? 'H07Z1-K' : 'RVK'} use tubos ${rangoRecomendado.texto}</div>`; }
+            } else if (excedeLimitePractico) {
+                html += `<div class="resultado res-fail" style="margin-bottom: 10px; background: #f8d7da; border-color: #dc3545;"><strong>❌ Tubo EMT ${tubo.nominal}mm - NO VIABLE</strong><br>• Aunque cumple matemáticamente (${ocupacionPorcentaje.toFixed(1)}%)<br>• <strong>Límite práctico excedido: ${totalCables} cables > ${limite.max} máx</strong><br>• Imposible de instalar en obra real<br>• Use mínimo tubo ${Object.keys(limitesPracticos).find(t => limitesPracticos[t].max >= totalCables) || 32}mm</div>`;
+            } else {
+                html += `<div class="resultado res-fail" style="margin-bottom: 10px;"><strong>❌ Tubo EMT ${tubo.nominal}mm - SOBRECARGADO</strong><br>• Capacidad máxima (${textoFactor}): ${capacidadMaxima.toFixed(2)} mm²<br>• Área requerida: ${areaTotalRequerida.toFixed(2)} mm²<br>• Ocupación: ${ocupacionPorcentaje.toFixed(1)}%<br>• <strong style="color: var(--danger);">Excede norma RIC 07</strong></div>`;
+            }
+        });
+        if (totalCables >= 7 && esH07) {
+            html += `<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; margin: 15px 0; border-radius: 5px;"><strong>🌡️ ADVERTENCIA - Factor de Corrección por Temperatura:</strong><br>• Con ${totalCables} cables juntos, debe aplicar factor de corrección (RIC 04 Tabla 4.3)<br>• La capacidad de corriente de los cables se reduce<br>• Considere aumentar sección o usar más tuberías</div>`;
+        }
+        if (!tuboRecomendado) {
+            html += `<div class="resultado res-fail" style="margin-top: 15px; background: #f8d7da; border-color: #dc3545;"><strong>⚠️ SIN SOLUCIÓN ADECUADA</strong><br>Opciones:<br>1. Reducir cantidad de cables por tubería<br>2. Usar cables de menor diámetro<br>3. Instalar múltiples tuberías paralelas<br>4. Aumentar diámetro de tubo (si es posible)</div>`;
+        }
+        document.getElementById('res-ducto').innerHTML = html;
+    }
+
+    function calcTension() {
+        incrementCalcCount();
+        document.getElementById('successImg').style.display = 'none';
+        const danger = document.getElementById('dangerOverlay');
+        danger.style.display = 'none';
+        const tipoSistema = document.querySelector('input[name="tipoSistema"]:checked')?.value;
+        if (!tipoSistema) { mostrarResultado('⚠️ Seleccione tipo de sistema (Monofásico/Trifásico)', 'res-fail'); return; }
+        const esMonofasico = tipoSistema === 'monofasico';
+        const rho = 0.018, V_nominal = esMonofasico ? 220 : 380, limitePorcentaje = 3;
+        const distancia = parseFloat(document.getElementById('dist')?.value), corriente = parseFloat(document.getElementById('amp')?.value), seccion = parseFloat(document.getElementById('sec')?.value);
+        if (isNaN(distancia) || isNaN(corriente) || isNaN(seccion) || distancia <= 0 || corriente <= 0 || seccion <= 0) { mostrarResultado('⚠️ Ingrese valores válidos mayores a cero', 'res-fail'); return; }
+        const factor = esMonofasico ? 2 : Math.sqrt(3);
+        const usarCosPhi = document.getElementById('cosphi-check')?.checked;
+        const cosPhi = usarCosPhi ? parseFloat(document.getElementById('cosphi-value')?.value) : 1;
+        if (usarCosPhi && (isNaN(cosPhi) || cosPhi <= 0 || cosPhi > 1)) { mostrarResultado('⚠️ Factor de potencia debe estar entre 0.1 y 1.0', 'res-fail'); return; }
+        const divisor = seccion * (usarCosPhi ? cosPhi : 1);
+        const deltaV = (factor * distancia * corriente * rho) / divisor;
+        const porcentaje = (deltaV / V_nominal) * 100;
+        const sistemaTexto = esMonofasico ? "MONOFÁSICO 220V" : "TRIFÁSICO 380V";
+        const factorTexto = esMonofasico ? "2 (ida + vuelta)" : "√3 = 1.732 (entre fases)";
+        const cosPhiTexto = usarCosPhi ? ` | cos φ: ${cosPhi}` : '';
+        if (porcentaje <= limitePorcentaje) {
+            mostrarResultado(`<strong>✅ Sistema ${sistemaTexto}</strong><br>🔹 Factor aplicado: ${factorTexto}${cosPhiTexto}<br>🔹 Caída de tensión: <strong>${deltaV.toFixed(2)} V</strong><br>🔹 Porcentaje: <strong>${porcentaje.toFixed(2)} %</strong><br>🔹 Límite RIC 04: ≤ ${limitePorcentaje}%<br><span style="color:var(--success); font-weight:bold;">✓ CUMPLE NORMA</span>`, 'res-ok');
+            document.getElementById('successImg').style.display = 'block';
+            lanzarConfeti();
+        } else {
+            mostrarResultado(`<strong>❌ Sistema ${sistemaTexto}</strong><br>🔹 Factor aplicado: ${factorTexto}${cosPhiTexto}<br>🔹 Caída de tensión: <strong>${deltaV.toFixed(2)} V</strong><br>🔹 Porcentaje: <strong>${porcentaje.toFixed(2)} %</strong><br>🔹 Límite RIC 04: ≤ ${limitePorcentaje}%<br><span style="color:var(--danger); font-weight:bold;">✗ FUERA DE NORMA</span><br><small>💡 Solución: Aumentar sección, reducir distancia o mejorar cos φ</small>`, 'res-fail');
+            danger.style.display = 'flex';
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+            setTimeout(() => { danger.style.display = 'none'; }, 5000);
+        }
+    }
+
+    function iniciarChatbase() {
+        if(!window.chatbase){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}});}
+        const s = document.createElement("script"); s.src = "https://www.chatbase.co/embed.min.js"; s.id = "HZBhzPxQtpDaw6ZlcBzEA"; s.domain = "www.chatbase.co"; document.body.appendChild(s);
+    }
+
+    /* ===== 🎵 FUNCIONES PANEL MÚSICA - CORREGIDAS ===== */
+    function toggleMusicPanel() {
+        const panel = document.getElementById('musicPanel');
+        panel.classList.toggle('visible');
+    }
+    function closeMusicPanel() {
+        document.getElementById('musicPanel').classList.remove('visible');
+    }
+    function togglePlayPause() {
+        const audio = document.getElementById('mp3Player');
+        const bubble = document.getElementById('musicBubble');
+        const playIcon = document.getElementById('playIcon');
+        const status = document.getElementById('songStatus');
+        const errorMsg = document.getElementById('audioError');
+        if (errorMsg) errorMsg.style.display = 'none';
+        if (audio.paused) {
+            audio.play().then(() => {
+                bubble?.classList.add('playing');
+                playIcon?.classList.replace('fa-play', 'fa-pause');
+                if (status) status.textContent = '▶ Reproduciendo';
+            }).catch(err => {
+                console.error("❌ Error al reproducir:", err);
+                if (errorMsg) {
+                    errorMsg.style.display = 'block';
+                    errorMsg.textContent = '⚠️ Error: Verifica que oldskul.mp3 esté en la carpeta';
+                }
+                if (status) status.textContent = '❌ Error';
+            });
+        } else {
+            audio.pause();
+            bubble?.classList.remove('playing');
+            playIcon?.classList.replace('fa-pause', 'fa-play');
+            if (status) status.textContent = '⏸ Pausado';
+        }
+    }
+    const audioEl = document.getElementById('mp3Player');
+    if (audioEl) {
+        audioEl.addEventListener('play', () => {
+            document.getElementById('musicBubble')?.classList.add('playing');
+            document.getElementById('playIcon')?.classList.replace('fa-play', 'fa-pause');
+            document.getElementById('songStatus') && (document.getElementById('songStatus').textContent = '▶ Reproduciendo');
+        });
+        audioEl.addEventListener('pause', () => {
+            document.getElementById('musicBubble')?.classList.remove('playing');
+            document.getElementById('playIcon')?.classList.replace('fa-pause', 'fa-play');
+            document.getElementById('songStatus') && (document.getElementById('songStatus').textContent = '⏸ Pausado');
+        });
+        audioEl.addEventListener('ended', () => {
+            document.getElementById('musicBubble')?.classList.remove('playing');
+            document.getElementById('playIcon')?.classList.replace('fa-pause', 'fa-play');
+            document.getElementById('songStatus') && (document.getElementById('songStatus').textContent = '✓ Finalizado');
+        });
+        audioEl.addEventListener('error', () => {
+            const errorMsg = document.getElementById('audioError');
+            if (errorMsg) {
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = '⚠️ No se pudo cargar oldskul.mp3';
+            }
+            document.getElementById('songStatus') && (document.getElementById('songStatus').textContent = '❌ Error');
+        });
+    }
+
+    /* ========== CALCULADORA CORTOCIRCUITO ========== */
+    function toggleReactancia() {
+        const check = document.getElementById('cc-reactancia-check');
+        const container = document.getElementById('cc-reactancia-container');
+        container.style.display = check.checked ? 'block' : 'none';
+    }
+
+    function calcCortocircuito() {
+        incrementCalcCount();
+        const tipoSistema = document.querySelector('input[name="ccTipoSistema"]:checked')?.value;
+        if (!tipoSistema) {
+            mostrarResultadoCC('⚠️ Seleccione tipo de sistema', 'res-fail');
+            return;
+        }
+        const esMonofasico = tipoSistema === 'monofasico';
+        const V_nominal = esMonofasico ? 220 : 380;
+        const factorSistema = esMonofasico ? 2 : Math.sqrt(3);
+        const iccOrigen_kA = parseFloat(document.getElementById('cc-icc-origen')?.value);
+        const material = document.getElementById('cc-material')?.value;
+        const rho = material === 'cobre' ? 0.018 : 0.028;
+        const longitud = parseFloat(document.getElementById('cc-longitud')?.value);
+        const seccion = parseFloat(document.getElementById('cc-seccion')?.value);
+        if (isNaN(iccOrigen_kA) || iccOrigen_kA <= 0 || isNaN(longitud) || longitud <= 0 || isNaN(seccion) || seccion <= 0) {
+            mostrarResultadoCC('⚠️ Ingrese valores válidos mayores a cero', 'res-fail');
+            return;
+        }
+        const Z_origen = (V_nominal / (iccOrigen_kA * 1000)) * 1000;
+        const R_cable_mOhm = (rho * longitud * factorSistema / seccion) * 1000;
+        const incluirX = document.getElementById('cc-reactancia-check')?.checked;
+        let Z_total, X_total = 0;
+        if (incluirX) {
+            const X_origen = parseFloat(document.getElementById('cc-x-origen')?.value) || 0;
+            const xCablePorMetro = parseFloat(document.getElementById('cc-x-cable')?.value) || 0;
+            const X_cable = xCablePorMetro * longitud;
+            X_total = X_origen + X_cable;
+            const R_total = (Z_origen * Z_origen / (Z_origen * Z_origen + X_origen * X_origen)) * Z_origen + R_cable_mOhm;
+            Z_total = Math.sqrt(Math.pow(Z_origen + R_cable_mOhm/1000, 2) + Math.pow(X_total/1000, 2)) * 1000;
+        } else {
+            Z_total = Z_origen + R_cable_mOhm;
+        }
+        const icc_punto = V_nominal / (Z_total / 1000) / 1000;
+        const poderCorteMinimo = icc_punto * 1.25;
+        const interruptorTipico = 25;
+        const iccMinParaActuacion = interruptorTipico * 1.45 / 1000;
+        const materialTexto = material === 'cobre' ? 'Cobre' : 'Aluminio';
+        const reactanciaTexto = incluirX ? `<br>• Reactancia total: ${X_total.toFixed(2)} mΩ` : '';
+        const metodoTexto = incluirX ? 'Impedancia (R+X)' : 'Resistivo simplificado';
+        let html = `
+            <div class="resultado res-warn" style="margin-bottom: 15px;">
+                <strong>📊 Datos del Cálculo:</strong><br>
+                • Sistema: ${esMonofasico ? 'Monofásico 220V' : 'Trifásico 380V'}<br>
+                • Icc en origen: ${iccOrigen_kA} kA<br>
+                • Conductor: ${materialTexto} ${seccion} mm² × ${longitud} m<br>
+                • Método: ${metodoTexto}${reactanciaTexto}<br>
+                • Impedancia total: <strong>${Z_total.toFixed(2)} mΩ</strong>
+            </div>
+            <div class="resultado ${icc_punto >= iccMinParaActuacion ? 'res-ok' : 'res-fail'}" style="margin-bottom: 15px;">
+                <strong>⚡ Resultado - Cortocircuito en Punto de Falla:</strong><br>
+                <span style="font-size: 1.8rem; display: block; margin: 10px 0;">${icc_punto.toFixed(2)} kA</span>
+                • Corriente de falla calculada<br>
+                • Mínimo para actuación protección (25A): ${iccMinParaActuacion.toFixed(3)} kA<br>
+                <strong style="color: ${icc_punto >= iccMinParaActuacion ? 'var(--success)' : 'var(--danger)'}">
+                    ${icc_punto >= iccMinParaActuacion ? '✓ La protección actuará correctamente' : '✗ Riesgo: Protección podría no actuar'}
+                </strong>
+            </div>
+            <div class="resultado res-warn">
+                <strong>🛡️ Recomendaciones RIC 05:</strong><br>
+                • Poder de corte mínimo recomendado: <strong>${poderCorteMinimo.toFixed(2)} kA</strong><br>
+                • Verificar que interruptores instalados tengan Icn ≥ ${poderCorteMinimo.toFixed(1)} kA<br>
+                • Para selectividad, coordinar curvas tiempo-corriente<br>
+                <small style="display:block; margin-top:8px; color:#64748b;">
+                    💡 Tip: En instalaciones largas, la Icc disminuye. Considere protecciones con mayor sensibilidad.
+                </small>
+            </div>
+        `;
+        document.getElementById('res-cortocircuito').innerHTML = html;
+    }
+
+    function mostrarResultadoCC(mensaje, clase) {
+        const res = document.getElementById('res-cortocircuito');
+        res.className = `resultado ${clase}`;
+        res.innerHTML = mensaje;
+    }
+</script>
+</body>
+</html>
