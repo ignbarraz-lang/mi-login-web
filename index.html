@@ -827,6 +827,205 @@
             .cotizacion-table .action-cell { width: 40px; }
             .btn-remove { width: 24px; height: 24px; font-size: 0.8rem; }
         }
+
+        /* ===== NUEVOS ESTILOS PARA CALCULADORA OHM MEJORADA ===== */
+        .mode-selector {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .toggle-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .toggle-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        .toggle-btn:hover:not(.active) {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .toggle-btn small {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .resultado .valor-principal {
+            font-size: 2.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 8px;
+        }
+
+        .resultado .detalles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .resultado .detalle-item {
+            padding: 8px 10px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 6px;
+        }
+
+        .alerta-ampacidad {
+            background: #fef2f2;
+            border: 2px solid var(--danger);
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+
+        .alerta-ampacidad.show { display: block; }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+        }
+
+        .seccion-recomendada {
+            background: linear-gradient(135deg, var(--success), #27ae60);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .seccion-recomendada.show { display: block; animation: slideIn 0.3s ease; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .seccion-recomendada .numero {
+            font-size: 2.8rem;
+            font-weight: bold;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .tabla-ampacidad {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .tabla-ampacidad th,
+        .tabla-ampacidad td {
+            padding: 10px 8px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .tabla-ampacidad th {
+            background: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .tabla-ampacidad tr:hover {
+            background: #f8fafc;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .info-box h4 {
+            margin-bottom: 8px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ohm-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        .ohm-tab {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+        }
+
+        .ohm-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .ohm-tab:hover:not(.active) {
+            color: var(--primary);
+            background: #f1f5f9;
+        }
+
+        .ohm-content { display: none; }
+        .ohm-content.active { display: block; }
     </style>
 </head>
 <body>
@@ -926,8 +1125,8 @@
                 </div>
                 <div class="quick-access-card" onclick="showTabFromDashboard('ohm')">
                     <i class="fas fa-bolt"></i>
-                    <h3>Ley de Ohm</h3>
-                    <p>Cálculos básicos</p>
+                    <h3>Ley de Ohm PRO</h3>
+                    <p>Cálculos avanzados RIC 04</p>
                 </div>
                 <div class="quick-access-card danger" onclick="showTabFromDashboard('cortocircuito')">
                     <i class="fas fa-exclamation-triangle"></i>
@@ -974,7 +1173,7 @@
                     <div class="recent-tools">
                         <h3><i class="fas fa-info-circle"></i> Información</h3>
                         <p style="font-size: 0.85rem; color: #64748b; line-height: 1.6;">
-                            <strong>Versión:</strong> 2.0.1<br>
+                            <strong>Versión:</strong> 2.1.0<br>
                             <strong>Usuario:</strong> <span id="dash-user-class">--</span><br>
                             <strong>Estado:</strong> <span style="color: var(--success);">● En línea</span>
                         </p>
@@ -986,7 +1185,7 @@
         <!-- TABS -->
         <div class="calc-tabs">
             <button class="tab-btn" onclick="showTab(event, 'tension')"><i class="fas fa-wave-square"></i> Caída Tensión</button>
-            <button class="tab-btn" onclick="showTab(event, 'ohm')"><i class="fas fa-bolt"></i> Ley de Ohm</button>
+            <button class="tab-btn" onclick="showTab(event, 'ohm')"><i class="fas fa-bolt"></i> Ley de Ohm PRO</button>
             <button class="tab-btn" onclick="showTab(event, 'cortocircuito')"><i class="fas fa-bolt"></i> Cortocircuito</button>
             <button class="tab-btn" onclick="showTab(event, 'nodos')"><i class="fas fa-network-wired"></i> Calculadora Nodos</button>
             <button class="tab-btn" onclick="showTab(event, 'tuberia')"><i class="fas fa-circle"></i> Ductos RIC 07</button>
@@ -1074,16 +1273,194 @@
             <div class="danger-subtext">Revisar instalación eléctrica</div>
         </div>
 
-        <!-- Ley de Ohm -->
+        <!-- ===== LEY DE OHM MEJORADA ===== -->
         <div id="ohm" class="card">
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 style="margin: 0;">Calculadora Ley de Ohm</h2>
+                <h2 style="margin: 0;"><i class="fas fa-bolt"></i> Calculadora Ley de Ohm PRO</h2>
                 <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
             </div>
-            <div class="form-group"><label>Potencia (Watts):</label><input type="number" id="watt-ohm" placeholder="Ej: 3680"></div>
-            <div class="form-group"><label>Voltaje (V):</label><input type="number" id="volt-ohm" value="220"></div>
-            <button class="btn-calc" style="background:var(--dark)" onclick="calcOhm()">Calcular Amperaje</button>
-            <div id="res-ohm"></div>
+            
+            <!-- Selector de Modo -->
+            <div class="mode-selector">
+                <div class="toggle-container">
+                    <button class="toggle-btn active" onclick="cambiarModoOhm('directo', this)">
+                        <i class="fas fa-calculator"></i>
+                        Cálculo Directo<br>
+                        <small>Verificar caída de tensión</small>
+                    </button>
+                    <button class="toggle-btn" onclick="cambiarModoOhm('inverso', this)">
+                        <i class="fas fa-search"></i>
+                        Cálculo Inverso<br>
+                        <small>¿Qué cable necesito?</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Selector de Sistema -->
+            <div class="form-group">
+                <label>Tipo de Sistema Eléctrico:</label>
+                <div class="toggle-container">
+                    <button class="toggle-btn active" id="btn-mono-ohm" onclick="setSistemaOhm('monofasico', this)">
+                        <i class="fas fa-bolt"></i>
+                        Monofásico<br>
+                        <small>220V - Factor 2</small>
+                    </button>
+                    <button class="toggle-btn" id="btn-tri-ohm" onclick="setSistemaOhm('trifasico', this)">
+                        <i class="fas fa-cube"></i>
+                        Trifásico<br>
+                        <small>380V - Factor √3</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modo Directo -->
+            <div id="modo-directo-ohm" class="ohm-content active">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Potencia (Watts):</label>
+                        <input type="number" id="potencia-ohm" placeholder="Ej: 3680" min="1">
+                        <small>Deje en blanco si ingresa corriente</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Factor de Potencia (cos φ):</label>
+                        <select id="cosphi-ohm" onchange="actualizarCosPhiOhm()">
+                            <option value="1.0">1.0 - Carga Resistiva</option>
+                            <option value="0.9">0.9 - Iluminación LED</option>
+                            <option value="0.85" selected>0.85 - Motor/Clima</option>
+                            <option value="0.8">0.8 - Motor (bajo)</option>
+                            <option value="custom">Personalizado...</option>
+                        </select>
+                        <input type="number" id="cosphi-custom-ohm" placeholder="0.1 - 1.0" 
+                               style="display: none; margin-top: 8px;" min="0.1" max="1" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Corriente (A):</label>
+                        <input type="number" id="corriente-ohm" placeholder="Se calcula automáticamente" min="0.1" step="0.1">
+                        <small>Se calcula si ingresa potencia</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Distancia (metros):</label>
+                        <input type="number" id="distancia-ohm" value="10" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sección del Conductor (mm²):</label>
+                        <select id="seccion-ohm">
+                            <option value="1.5">1.5 mm²</option>
+                            <option value="2.5">2.5 mm²</option>
+                            <option value="4">4 mm²</option>
+                            <option value="6" selected>6 mm²</option>
+                            <option value="10">10 mm²</option>
+                            <option value="16">16 mm²</option>
+                            <option value="25">25 mm²</option>
+                            <option value="35">35 mm²</option>
+                            <option value="50">50 mm²</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Método de Instalación (RIC 04):</label>
+                        <select id="metodo-instalacion-ohm">
+                            <option value="B1">B1 - Tubería empotrada</option>
+                            <option value="B2">B2 - Tubería sobrepuesta</option>
+                            <option value="C">C - Cable unipolar en pared</option>
+                            <option value="E" selected>E - Al aire libre</option>
+                            <option value="D1">D1 - Enterrado directo</option>
+                        </select>
+                        <small>Afecta la capacidad de corriente</small>
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calcularOhmDirecto()">
+                    <i class="fas fa-calculator"></i> Calcular Caída de Tensión
+                </button>
+
+                <div id="resultado-ohm-directo" class="resultado"></div>
+                <div id="alerta-ampacidad-ohm" class="alerta-ampacidad"></div>
+            </div>
+
+            <!-- Modo Inverso -->
+            <div id="modo-inverso-ohm" class="ohm-content">
+                <div class="info-box">
+                    <h4><i class="fas fa-info-circle"></i> Modo Profesional</h4>
+                    <p>Ingrese la potencia y distancia, y la calculadora le recomendará automáticamente la sección mínima del cable para no superar el 3% de caída de tensión según RIC 04.</p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Potencia (Watts):</label>
+                        <input type="number" id="potencia-inv-ohm" placeholder="Ej: 5000" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Factor de Potencia (cos φ):</label>
+                        <select id="cosphi-inv-ohm">
+                            <option value="1.0">1.0 - Resistivo</option>
+                            <option value="0.9">0.9 - LED</option>
+                            <option value="0.85" selected>0.85 - Motor</option>
+                            <option value="0.8">0.8 - Motor bajo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Distancia (metros):</label>
+                        <input type="number" id="distancia-inv-ohm" value="15" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Método de Instalación:</label>
+                        <select id="metodo-instalacion-inv-ohm">
+                            <option value="B1">B1 - Empotrado</option>
+                            <option value="B2">B2 - Sobrepuesto</option>
+                            <option value="E" selected>E - Aire libre</option>
+                            <option value="D1">D1 - Enterrado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calcularOhmInverso()">
+                    <i class="fas fa-search"></i> Calcular Sección Recomendada
+                </button>
+
+                <div id="resultado-ohm-inverso" class="resultado"></div>
+                <div id="seccion-recomendada-ohm" class="seccion-recomendada"></div>
+            </div>
+
+            <!-- Tabla de Referencia -->
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f1f5f9;">
+                <h3 style="margin-bottom: 15px;"><i class="fas fa-table"></i> Tabla de Ampacidad - Conductores de Cobre (RIC 04)</h3>
+                <p style="margin-bottom: 15px; color: #64748b; font-size: 0.9rem;">
+                    Capacidad máxima de corriente según método de instalación (70°C)
+                </p>
+                <div style="overflow-x: auto;">
+                    <table class="tabla-ampacidad">
+                        <thead>
+                            <tr>
+                                <th>Sección<br>(mm²)</th>
+                                <th>B1<br>Empotrado</th>
+                                <th>B2<br>Sobrepuesto</th>
+                                <th>C<br>Unipolar</th>
+                                <th>E<br>Aire libre</th>
+                                <th>D1<br>Enterrado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1.5</td><td>13.5 A</td><td>15.5 A</td><td>17.5 A</td><td>20 A</td><td>22 A</td></tr>
+                            <tr><td>2.5</td><td>18 A</td><td>21 A</td><td>24 A</td><td>27 A</td><td>30 A</td></tr>
+                            <tr><td>4</td><td>24 A</td><td>28 A</td><td>32 A</td><td>36 A</td><td>40 A</td></tr>
+                            <tr><td>6</td><td>31 A</td><td>36 A</td><td>41 A</td><td>46 A</td><td>51 A</td></tr>
+                            <tr><td>10</td><td>42 A</td><td>49 A</td><td>57 A</td><td>63 A</td><td>70 A</td></tr>
+                            <tr><td>16</td><td>56 A</td><td>65 A</td><td>76 A</td><td>85 A</td><td>94 A</td></tr>
+                            <tr><td>25</td><td>73 A</td><td>85 A</td><td>100 A</td><td>112 A</td><td>124 A</td></tr>
+                            <tr><td>35</td><td>90 A</td><td>104 A</td><td>123 A</td><td>138 A</td><td>153 A</td></tr>
+                            <tr><td>50</td><td>108 A</td><td>125 A</td><td>149 A</td><td>167 A</td><td>185 A</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <!-- Cortocircuito -->
@@ -1577,6 +1954,26 @@
     let quoteItems = [];
     let quoteNumber = generateQuoteNumber();
 
+    /* ========== TABLA DE AMPACIDAD RIC 04 ========== */
+    const TABLA_AMPACIDAD = {
+        '1.5': { B1: 13.5, B2: 15.5, C: 17.5, E: 20, D1: 22 },
+        '2.5': { B1: 18, B2: 21, C: 24, E: 27, D1: 30 },
+        '4': { B1: 24, B2: 28, C: 32, E: 36, D1: 40 },
+        '6': { B1: 31, B2: 36, C: 41, E: 46, D1: 51 },
+        '10': { B1: 42, B2: 49, C: 57, E: 63, D1: 70 },
+        '16': { B1: 56, B2: 65, C: 76, E: 85, D1: 94 },
+        '25': { B1: 73, B2: 85, C: 100, E: 112, D1: 124 },
+        '35': { B1: 90, B2: 104, C: 123, E: 138, D1: 153 },
+        '50': { B1: 108, B2: 125, C: 149, E: 167, D1: 185 }
+    };
+
+    const SECCIONES_DISPONIBLES = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50];
+    const RHO = 0.018; // Resistividad del cobre (Ω·mm²/m)
+    const LIMITE_CAIDA = 3; // 3% según RIC 04
+
+    let sistemaOhmActual = 'monofasico';
+    let modoOhmActual = 'directo';
+
     /* ========== ACTUALIZAR RELOJ DASHBOARD ========== */
     function updateDashboardTime() {
         const now = new Date();
@@ -1953,7 +2350,7 @@
     function addToRecentTools(toolName) {
         const toolNames = { 
             'tension': 'Caída de Tensión', 
-            'ohm': 'Ley de Ohm', 
+            'ohm': 'Ley de Ohm PRO', 
             'nodos': 'Calculadora Nodos', 
             'tuberia': 'Ductos EMT', 
             'sgc': 'Esquema SGC', 
@@ -2593,6 +2990,240 @@
         doc.save(filename);
         
         alert('✅ PDF generado exitosamente');
+    }
+
+    /* ========== FUNCIONES CALCULADORA OHM MEJORADA ========== */
+    
+    function cambiarModoOhm(modo, btn) {
+        modoOhmActual = modo;
+        
+        // Actualizar botones de modo
+        document.querySelectorAll('.mode-selector .toggle-btn').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        
+        // Mostrar/ocultar contenidos
+        document.getElementById('modo-directo-ohm').classList.toggle('active', modo === 'directo');
+        document.getElementById('modo-inverso-ohm').classList.toggle('active', modo === 'inverso');
+    }
+
+    function setSistemaOhm(sistema, btn) {
+        sistemaOhmActual = sistema;
+        
+        // Actualizar botones de sistema
+        document.getElementById('btn-mono-ohm').classList.toggle('active', sistema === 'monofasico');
+        document.getElementById('btn-tri-ohm').classList.toggle('active', sistema === 'trifasico');
+    }
+
+    function actualizarCosPhiOhm() {
+        const select = document.getElementById('cosphi-ohm');
+        const input = document.getElementById('cosphi-custom-ohm');
+        input.style.display = select.value === 'custom' ? 'block' : 'none';
+    }
+
+    function getCosPhiOhm() {
+        const select = document.getElementById('cosphi-ohm');
+        if (select.value === 'custom') {
+            return parseFloat(document.getElementById('cosphi-custom-ohm').value) || 0.85;
+        }
+        return parseFloat(select.value);
+    }
+
+    function calcularCorrienteOhm(potencia, cosPhi) {
+        const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
+        const factor = sistemaOhmActual === 'monofasico' ? 1 : Math.sqrt(3);
+        return potencia / (voltaje * factor * cosPhi);
+    }
+
+    function validarAmpacidadOhm(seccion, corriente, metodo) {
+        const ampacidadMax = TABLA_AMPACIDAD[seccion]?.[metodo] || 0;
+        return {
+            cumple: corriente <= ampacidadMax,
+            ampacidadMax: ampacidadMax,
+            porcentaje: ampacidadMax > 0 ? (corriente / ampacidadMax) * 100 : 0
+        };
+    }
+
+    function calcularCaidaTensionOhm(corriente, distancia, seccion, cosPhi) {
+        const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
+        const factor = sistemaOhmActual === 'monofasico' ? 2 : Math.sqrt(3);
+        
+        const caidaVoltios = (factor * distancia * corriente * RHO) / (seccion * cosPhi);
+        const porcentaje = (caidaVoltios / voltaje) * 100;
+        
+        return {
+            voltios: caidaVoltios,
+            porcentaje: porcentaje,
+            cumple: porcentaje <= LIMITE_CAIDA
+        };
+    }
+
+    function calcularOhmDirecto() {
+        incrementCalcCount();
+        
+        const potencia = parseFloat(document.getElementById('potencia-ohm').value);
+        const corrienteInput = parseFloat(document.getElementById('corriente-ohm').value);
+        const distancia = parseFloat(document.getElementById('distancia-ohm').value);
+        const seccion = parseFloat(document.getElementById('seccion-ohm').value);
+        const metodo = document.getElementById('metodo-instalacion-ohm').value;
+        const cosPhi = getCosPhiOhm();
+
+        if (!distancia || !seccion) {
+            alert('Por favor ingrese distancia y sección del conductor');
+            return;
+        }
+
+        let corriente;
+        if (potencia) {
+            corriente = calcularCorrienteOhm(potencia, cosPhi);
+        } else if (corrienteInput) {
+            corriente = corrienteInput;
+        } else {
+            alert('Ingrese potencia o corriente');
+            return;
+        }
+
+        // Calcular caída de tensión
+        const caida = calcularCaidaTensionOhm(corriente, distancia, seccion, cosPhi);
+        
+        // Validar ampacidad
+        const ampacidad = validarAmpacidadOhm(seccion, corriente, metodo);
+
+        // Mostrar resultados
+        const resultadoDiv = document.getElementById('resultado-ohm-directo');
+        const alertaDiv = document.getElementById('alerta-ampacidad-ohm');
+        
+        const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
+        const factor = sistemaOhmActual === 'monofasico' ? '2' : '√3 (1.732)';
+        
+        let html = `
+            <h3><i class="fas fa-chart-line"></i> Resultados del Cálculo</h3>
+            <div class="valor-principal">${caida.voltios.toFixed(2)} V (${caida.porcentaje.toFixed(2)}%)</div>
+            <div class="detalles">
+                <div class="detalle-item"><strong>Corriente:</strong> ${corriente.toFixed(2)} A</div>
+                <div class="detalle-item"><strong>Voltaje:</strong> ${voltaje}V</div>
+                <div class="detalle-item"><strong>Factor:</strong> ${factor}</div>
+                <div class="detalle-item"><strong>cos φ:</strong> ${cosPhi}</div>
+                <div class="detalle-item"><strong>Distancia:</strong> ${distancia} m</div>
+                <div class="detalle-item"><strong>Sección:</strong> ${seccion} mm²</div>
+            </div>
+        `;
+
+        if (caida.cumple) {
+            html += `
+                <div style="margin-top: 15px; padding: 15px; background: #d1fae5; border-radius: 8px; text-align: center; font-weight: bold; color: #065f46;">
+                    <i class="fas fa-check-circle"></i> ✓ CUMPLE RIC 04 - Caída ≤ 3%
+                </div>
+            `;
+            resultadoDiv.className = 'resultado res-ok show';
+        } else {
+            html += `
+                <div style="margin-top: 15px; padding: 15px; background: #fee2e2; border-radius: 8px; text-align: center; font-weight: bold; color: #991b1b;">
+                    <i class="fas fa-exclamation-triangle"></i> ✗ NO CUMPLE - Supera 3%
+                    <br><small>Se recomienda aumentar la sección del conductor</small>
+                </div>
+            `;
+            resultadoDiv.className = 'resultado res-fail show';
+        }
+
+        resultadoDiv.innerHTML = html;
+
+        // Alerta de ampacidad
+        if (!ampacidad.cumple && ampacidad.ampacidadMax > 0) {
+            alertaDiv.innerHTML = `
+                <h4><i class="fas fa-fire"></i> ¡ALERTA DE AMPACIDAD!</h4>
+                <p><strong>El conductor de ${seccion} mm² NO soporta ${corriente.toFixed(1)} A</strong></p>
+                <p>Capacidad máxima (${metodo}): ${ampacidad.ampacidadMax} A</p>
+                <p>Sobrecarga: ${ampacidad.porcentaje.toFixed(1)}%</p>
+                <p style="margin-top: 10px; font-weight: bold;">
+                    ⚠️ El cable se puede quemar independientemente de la caída de tensión
+                </p>
+            `;
+            alertaDiv.classList.add('show');
+        } else {
+            alertaDiv.classList.remove('show');
+        }
+    }
+
+    function calcularOhmInverso() {
+        incrementCalcCount();
+        
+        const potencia = parseFloat(document.getElementById('potencia-inv-ohm').value);
+        const distancia = parseFloat(document.getElementById('distancia-inv-ohm').value);
+        const cosPhi = parseFloat(document.getElementById('cosphi-inv-ohm').value);
+        const metodo = document.getElementById('metodo-instalacion-inv-ohm').value;
+
+        if (!potencia || !distancia) {
+            alert('Por favor ingrese potencia y distancia');
+            return;
+        }
+
+        const corriente = calcularCorrienteOhm(potencia, cosPhi);
+        const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
+        const factor = sistemaOhmActual === 'monofasico' ? 2 : Math.sqrt(3);
+        
+        // Calcular sección mínima por caída de tensión
+        const caidaMaxVoltios = (LIMITE_CAIDA / 100) * voltaje;
+        const seccionMinimaCaida = (factor * distancia * corriente * RHO) / (caidaMaxVoltios * cosPhi);
+        
+        // Buscar sección comercial que cumpla
+        let seccionRecomendada = null;
+        let seccionAmpacidad = null;
+        
+        for (const seccion of SECCIONES_DISPONIBLES) {
+            // Verificar caída de tensión
+            const caida = calcularCaidaTensionOhm(corriente, distancia, seccion, cosPhi);
+            
+            // Verificar ampacidad
+            const ampacidad = validarAmpacidadOhm(seccion, corriente, metodo);
+            
+            if (caida.cumple && ampacidad.cumple && !seccionRecomendada) {
+                seccionRecomendada = seccion;
+                seccionAmpacidad = ampacidad.ampacidadMax;
+                break;
+            }
+        }
+
+        const resultadoDiv = document.getElementById('resultado-ohm-inverso');
+        const seccionDiv = document.getElementById('seccion-recomendada-ohm');
+        
+        let html = `
+            <h3><i class="fas fa-calculator"></i> Análisis del Cálculo</h3>
+            <div class="detalles">
+                <div class="detalle-item"><strong>Corriente calculada:</strong> ${corriente.toFixed(2)} A</div>
+                <div class="detalle-item"><strong>Distancia:</strong> ${distancia} m</div>
+                <div class="detalle-item"><strong>cos φ:</strong> ${cosPhi}</div>
+                <div class="detalle-item"><strong>Sección mínima teórica:</strong> ${seccionMinimaCaida.toFixed(2)} mm²</div>
+            </div>
+        `;
+
+        if (seccionRecomendada) {
+            html += `
+                <div style="margin-top: 15px; padding: 15px; background: #d1fae5; border-radius: 8px;">
+                    <strong><i class="fas fa-check-circle"></i> Solución encontrada:</strong><br>
+                    Cable de ${seccionRecomendada} mm² cumple con caída de tensión y ampacidad
+                </div>
+            `;
+            
+            seccionDiv.innerHTML = `
+                <h3><i class="fas fa-check-circle"></i> Sección Recomendada</h3>
+                <span class="numero">${seccionRecomendada} mm²</span>
+                <p>Capacidad: ${seccionAmpacidad} A | Método: ${metodo}</p>
+                <small>Caída de tensión ≤ 3% según RIC 04</small>
+            `;
+            seccionDiv.className = 'seccion-recomendada show';
+            resultadoDiv.className = 'resultado res-ok show';
+        } else {
+            html += `
+                <div style="margin-top: 15px; padding: 15px; background: #fee2e2; border-radius: 8px;">
+                    <strong><i class="fas fa-exclamation-triangle"></i> Advertencia:</strong><br>
+                    Se requiere cable mayor a 50 mm² o reducir distancia/potencia
+                </div>
+            `;
+            seccionDiv.classList.remove('show');
+            resultadoDiv.className = 'resultado res-warn show';
+        }
+
+        resultadoDiv.innerHTML = html;
     }
 
     /* ========== INICIALIZACIÓN ========== */
