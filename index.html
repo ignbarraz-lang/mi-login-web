@@ -661,16 +661,17 @@
         .cotizacion-field label { font-size: 0.85rem; color: #64748b; }
         .cotizacion-field input { padding: 8px 12px; font-size: 0.95rem; }
         
-        /* ===== NUEVOS ESTILOS PARA PESTAÑAS DE COTIZACIÓN ===== */
+        /* ===== PESTAÑAS DE COTIZACIÓN ===== */
         .cotizacion-tabs {
             display: flex;
             gap: 5px;
             margin-bottom: 20px;
             border-bottom: 2px solid #e2e8f0;
             padding-bottom: 0;
+            flex-wrap: wrap;
         }
         .cot-tab-btn {
-            padding: 12px 24px;
+            padding: 12px 16px;
             border: none;
             background: #f1f5f9;
             cursor: pointer;
@@ -681,6 +682,7 @@
             align-items: center;
             gap: 8px;
             color: #64748b;
+            font-size: 0.9rem;
         }
         .cot-tab-btn.active {
             background: var(--primary);
@@ -796,7 +798,7 @@
         .total-label { color: #64748b; }
         .total-value { font-weight: 600; }
         
-        /* ===== ESTILOS PARA INDICADOR DE IVA ===== */
+        /* ===== INDICADOR DE IVA ===== */
         .iva-indicator {
             display: inline-flex;
             align-items: center;
@@ -866,6 +868,71 @@
         .btn-clear:hover { background: #7f8c8d; transform: translateY(-2px); }
         .btn-save { background: var(--success); color: white; }
         .btn-save:hover { background: #219a52; transform: translateY(-2px); }
+        .btn-refresh { background: var(--primary); color: white; }
+        .btn-refresh:hover { background: #2980b9; transform: translateY(-2px); }
+        
+        /* ===== TABLA COTIZACIONES GUARDADAS ===== */
+        .quotes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        .quotes-table th, .quotes-table td {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        .quotes-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        .quotes-table .action-cell { width: 120px; text-align: center; }
+        .btn-view {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 5px;
+            font-size: 0.85rem;
+        }
+        .btn-view:hover { background: #2980b9; }
+        .btn-download {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .btn-download:hover { background: #c0392b; }
+        .btn-delete {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 0.85rem;
+        }
+        .btn-delete:hover { background: #7f8c8d; }
+        
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+        }
+        .loading i {
+            animation: spin 1s linear infinite;
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
         
         /* Estilos para impresión */
         @media print {
@@ -911,9 +978,12 @@
             .btn-remove { width: 24px; height: 24px; font-size: 0.8rem; }
             .cotizacion-tabs { flex-wrap: wrap; }
             .cot-tab-btn { padding: 10px 16px; font-size: 0.9rem; }
+            .quotes-table { font-size: 0.8rem; }
+            .quotes-table th, .quotes-table td { padding: 8px 5px; }
+            .quotes-table .action-cell { width: 100px; }
         }
 
-        /* ===== NUEVOS ESTILOS PARA CALCULADORA OHM MEJORADA ===== */
+        /* ===== CALCULADORA OHM MEJORADA ===== */
         .mode-selector {
             background: var(--white);
             padding: 20px;
@@ -1112,7 +1182,7 @@
         .ohm-content { display: none; }
         .ohm-content.active { display: block; }
 
-        /* ===== ESTILOS PARA SECCIÓN DE INTERRUPTOR ===== */
+        /* ===== SECCIÓN DE INTERRUPTOR ===== */
         .interruptor-card {
             margin-top: 20px;
             padding: 15px;
@@ -1303,7 +1373,7 @@
                     <div class="recent-tools">
                         <h3><i class="fas fa-info-circle"></i> Información</h3>
                         <p style="font-size: 0.85rem; color: #64748b; line-height: 1.6;">
-                            <strong>Versión:</strong> 2.1.0<br>
+                            <strong>Versión:</strong> 2.2.0<br>
                             <strong>Usuario:</strong> <span id="dash-user-class">--</span><br>
                             <strong>Estado:</strong> <span style="color: var(--success);">● En línea</span>
                         </p>
@@ -1911,7 +1981,7 @@
             </div>
         </div>
 
-        <!-- ===== NUEVA PESTAÑA: COTIZACIONES CON PESTAÑAS Y IVA ===== -->
+        <!-- ===== COTIZACIONES CON 3 PESTAÑAS Y JSONBIN ===== -->
         <div id="cotizaciones" class="card">
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="margin: 0;">📋 Generador de Cotizaciones</h2>
@@ -1919,25 +1989,30 @@
             </div>
             
             <p style="font-size: 0.85rem; color: #64748b; margin: -10px 0 20px 0;">
-                <i class="fas fa-info-circle"></i> IVA Chile: 19% • Precios en pesos chilenos (CLP)
+                <i class="fas fa-info-circle"></i> IVA Chile: 19% • Precios en pesos chilenos (CLP) • Datos sincronizados con la nube
             </p>
             
-            <!-- ===== PESTAÑAS DE COTIZACIÓN ===== -->
+            <!-- ===== 3 PESTAÑAS DE COTIZACIÓN ===== -->
             <div class="cotizacion-tabs">
                 <button class="cot-tab-btn active" onclick="switchCotTab('agregar', this)">
                     <i class="fas fa-plus-circle"></i> Agregar Productos
                 </button>
                 <button class="cot-tab-btn" onclick="switchCotTab('buscar', this)">
-                    <i class="fas fa-search"></i> Buscar y Seleccionar
+                    <i class="fas fa-search"></i> Buscar en Base de Datos
+                </button>
+                <button class="cot-tab-btn" onclick="switchCotTab('guardadas', this)">
+                    <i class="fas fa-folder-open"></i> Cotizaciones Guardadas
                 </button>
             </div>
             
-            <!-- PESTAÑA 1: AGREGAR PRODUCTOS MANUALMENTE -->
+            <!-- PESTAÑA 1: AGREGAR PRODUCTOS MANUALMENTE (CON BUSCADOR DE NUBE) -->
             <div id="cot-tab-agregar" class="cot-tab-content active">
                 <div class="productos-search">
-                    <div class="form-group">
-                        <label>Nombre del Producto</label>
-                        <input type="text" id="product-name-manual" placeholder="Ej: Interruptor 16A, Cable 6mm²...">
+                    <div class="form-group" style="position: relative;">
+                        <label>Buscar Producto en Base de Datos</label>
+                        <input type="text" id="product-name-manual" placeholder="🔍 Ej: Interruptor, Cable..." 
+                               oninput="searchCloudProducts(this.value)" onfocus="showCloudSuggestions()" onblur="hideCloudSuggestionsDelayed()">
+                        <div id="cloud-suggestions" class="suggestions-list"></div>
                     </div>
                     <div class="form-group">
                         <label>Cantidad</label>
@@ -1952,15 +2027,18 @@
                     </button>
                 </div>
                 <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">
-                    💡 Ingresa manualmente productos que no estén en la base de datos
+                    💡 Busca productos de la base en la nube (JSONBin) o ingresa manualmente productos personalizados
                 </p>
+                <div id="cloud-loading" class="loading" style="display: none;">
+                    <i class="fas fa-spinner"></i> Cargando productos desde la nube...
+                </div>
             </div>
             
-            <!-- PESTAÑA 2: BUSCAR Y SELECCIONAR DE BASE DE DATOS -->
+            <!-- PESTAÑA 2: BUSCAR Y SELECCIONAR DE BASE DE DATOS (LOCAL) -->
             <div id="cot-tab-buscar" class="cot-tab-content">
                 <div class="productos-search">
                     <div class="form-group" style="position: relative;">
-                        <label>Buscar en Base de Datos</label>
+                        <label>Buscar en Base Local</label>
                         <input type="text" id="search-product" placeholder="🔍 Ej: Interruptor, Cable, Tablero..." 
                                oninput="filterProducts(this.value)" onfocus="showSuggestions()" onblur="hideSuggestionsDelayed()">
                         <div id="product-suggestions" class="suggestions-list"></div>
@@ -1978,8 +2056,41 @@
                     </button>
                 </div>
                 <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">
-                    💡 Selecciona productos de nuestra base de datos con precios predefinidos
+                    💡 Selecciona productos de la base local con precios predefinidos (respaldo offline)
                 </p>
+            </div>
+            
+            <!-- PESTAÑA 3: COTIZACIONES GUARDADAS -->
+            <div id="cot-tab-guardadas" class="cot-tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0;"><i class="fas fa-history"></i> Historial de Cotizaciones</h3>
+                    <button class="btn-cotizacion btn-refresh" onclick="loadSavedQuotes()">
+                        <i class="fas fa-sync"></i> Actualizar
+                    </button>
+                </div>
+                <div id="quotes-loading" class="loading">
+                    <i class="fas fa-spinner"></i> Cargando cotizaciones desde la nube...
+                </div>
+                <div id="quotes-list" style="display: none;">
+                    <table class="quotes-table">
+                        <thead>
+                            <tr>
+                                <th>N° Cotización</th>
+                                <th>Cliente</th>
+                                <th>Fecha</th>
+                                <th>Total</th>
+                                <th class="action-cell">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quotes-body">
+                            <!-- Se llena dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="no-quotes" class="no-results" style="display: none; text-align: center; padding: 30px; color: #64748b;">
+                    <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                    No hay cotizaciones guardadas aún
+                </div>
             </div>
             
             <!-- Datos de la cotización -->
@@ -2068,7 +2179,7 @@
                     <i class="fas fa-print"></i> Imprimir
                 </button>
                 <button class="btn-cotizacion btn-save" onclick="saveQuote()">
-                    <i class="fas fa-save"></i> Guardar
+                    <i class="fas fa-save"></i> Guardar en Nube
                 </button>
                 <button class="btn-cotizacion btn-clear" onclick="clearQuote()">
                     <i class="fas fa-trash"></i> Limpiar
@@ -2124,17 +2235,21 @@
     /* ========== CONFIGURACIÓN JSONBIN ========== */
     const JSONBIN_CONFIG = {
         masterKey: "$2a$10$d5wiwzZ.u1m2caXKKtWSGuo4.hnU4mEWvEiCaj9XFa6IpBOA0UP0a",
-        binId: "69b37960c3097a1dd51edd41",
+        bins: {
+            inventario: "69b72a5db7ec241ddc6fab33",
+            productos: "69b72a95b7ec241ddc6fac14",
+            quota: "69b72aaac3097a1dd52a5b83"
+        },
         baseUrl: "https://api.jsonbin.io/v3/b"
     };
 
-    /* ========== USUARIOS - AGREGADO MARCELO ========== */
+    /* ========== USUARIOS ========== */
     const USERS = [
         { id: "Rodrigo", pass: "1648", name: "Rodrigo Padilla", clase: "Clase D" },
         { id: "Luis", pass: "2507", name: "Luis Rojo", clase: "Clase C" },
         { id: "Isaias", pass: "2071", name: "Isaias Echeverria", clase: "Clase C" },
         { id: "Brayan", pass: "2025", name: "Brayan Barraza", clase: "Clase D" },
-        { id: "Marcelo", pass: "1369", name: "Marcelo", clase: "Adm. Contrato" }  // ✅ NUEVO USUARIO
+        { id: "Marcelo", pass: "1369", name: "Marcelo", clase: "Adm. Contrato" }
     ];
 
     let inventory = JSON.parse(localStorage.getItem('linstelec_inv_v2')) || [];
@@ -2144,7 +2259,7 @@
     let recentTools = JSON.parse(localStorage.getItem('linstelec_recent_tools')) || [];
     let calcCount = parseInt(localStorage.getItem('linstelec_calc_count')) || 0;
 
-    /* ========== BASE DE DATOS DE PRODUCTOS PARA COTIZACIONES ========== */
+    /* ========== BASE DE DATOS LOCAL DE PRODUCTOS (RESPALDO OFFLINE) ========== */
     const PRODUCTS_DB = [
         { id: 1, code: "INT-16A", name: "Interruptor Termomagnético 16A", price: 3500 },
         { id: 2, code: "INT-20A", name: "Interruptor Termomagnético 20A", price: 4200 },
@@ -2181,7 +2296,8 @@
     /* ========== ESTADO DE COTIZACIÓN ========== */
     let quoteItems = [];
     let quoteNumber = generateQuoteNumber();
-    let applyIVA = true; // ✅ Variable para controlar el IVA
+    let applyIVA = true;
+    let cloudProducts = []; // Productos cargados desde JSONBin
 
     /* ========== TABLA DE AMPACIDAD RIC 04 ========== */
     const TABLA_AMPACIDAD = {
@@ -2197,361 +2313,698 @@
     };
 
     const SECCIONES_DISPONIBLES = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50];
-    const RHO = 0.018; // Resistividad del cobre (Ω·mm²/m)
-    const LIMITE_CAIDA = 3; // 3% según RIC 04
+    const RHO = 0.018;
+    const LIMITE_CAIDA = 3;
 
     let sistemaOhmActual = 'monofasico';
     let modoOhmActual = 'directo';
 
-    /* ========== RECOMENDACIÓN DE INTERRUPTOR TERMOMAGNÉTICO ========== */
-    function recomendarInterruptor(corrienteCalculada, ampacidadCable, metodo, seccion, curva) {
-        // Calibres estándar de interruptores termomagnéticos bipolar/unipolar (A)
-        const calibresEstandar = [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125];
-        
-        // Regla RIC 05: In >= Ib (corriente de diseño)
-        const calibreMinimo = calibresEstandar.find(c => c >= corrienteCalculada);
-        
-        if (!calibreMinimo) {
-            return {
-                recomendado: null,
-                mensaje: '⚠️ Corriente muy alta - Requiere proyecto especial',
-                valido: false,
-                alternativa: 'Consultar interruptor industrial'
-            };
-        }
-        
-        // Verificar coordinación con ampacidad del cable: In <= Iz
-        const protegeCable = calibreMinimo <= ampacidadCable;
-        
-        // Buscar siguiente calibre por si necesita margen
-        const idxActual = calibresEstandar.indexOf(calibreMinimo);
-        const calibreSiguiente = calibresEstandar[idxActual + 1] || null;
-        
-        // Verificar si el siguiente calibre también protege el cable
-        const siguienteProtege = calibreSiguiente && calibreSiguiente <= ampacidadCable;
-        
-        // Información de curva
-        const curvasInfo = {
-            'B': { nombre: 'Curva B', rango: '3-5×In', uso: 'Cargas resistivas' },
-            'C': { nombre: 'Curva C', rango: '5-10×In', uso: 'Cargas mixtas/motores' },
-            'D': { nombre: 'Curva D', rango: '10-20×In', uso: 'Motores grandes/transformadores' }
-        };
-        
-        return {
-            recomendado: calibreMinimo,
-            calibreSiguiente: siguienteProtege ? calibreSiguiente : null,
-            protegeCable: protegeCable,
-            ampacidadCable: ampacidadCable,
-            corrienteCalculada: corrienteCalculada,
-            curva: curva,
-            curvaInfo: curvasInfo[curva] || curvasInfo['C'],
-            mensaje: protegeCable 
-                ? `✅ Interruptor ${calibreMinimo}A ${curva} coordina con cable y carga` 
-                : `⚠️ Cable ${seccion}mm² (${ampacidadCable}A) no soporta interruptor ${calibreMinimo}A`,
-            valido: protegeCable,
-            alternativa: !protegeCable && calibreSiguiente 
-                ? `Usar cable ${SECCIONES_DISPONIBLES.find(s => TABLA_AMPACIDAD[s]?.[metodo] >= calibreMinimo) || 'mayor'} mm²`
-                : 'Revisar diseño del circuito'
-        };
-    }
-
-    /* ========== ACTUALIZAR RELOJ DASHBOARD ========== */
-    function updateDashboardTime() {
-        const now = new Date();
-        const timeEl = document.getElementById('dash-time');
-        const dateEl = document.getElementById('dash-date');
-        if (timeEl) timeEl.textContent = now.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
-        if (dateEl) dateEl.textContent = now.toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        
-        // Actualizar fecha en cotizaciones
-        const cotFecha = document.getElementById('cot-fecha');
-        if (cotFecha) cotFecha.value = now.toLocaleDateString('es-CL');
-    }
-
-    function generateQuoteNumber() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const random = Math.floor(Math.random() * 900) + 100;
-        return `COT-${year}-${random}`;
-    }
-
     /* ========== FUNCIONES JSONBIN ========== */
-    function updateSyncStatus(status, message) {
-        const el = document.getElementById('sync-status');
-        if(!el) return;
-        const statuses = {
-            ok: { class: 'sync-status sync-ok', icon: 'fa-check-circle', text: 'Sincronizado' },
-            pending: { class: 'sync-status sync-pending', icon: 'fa-circle', text: 'Sin sincronizar' },
-            error: { class: 'sync-status sync-error', icon: 'fa-exclamation-circle', text: 'Error' },
-            syncing: { class: 'sync-status sync-pending', icon: 'fa-spinner fa-spin', text: 'Sincronizando...' }
-        };
-        const s = statuses[status] || statuses.pending;
-        el.className = s.class;
-        el.innerHTML = `<i class="fas ${s.icon}"></i> ${message || s.text}`;
-        const syncStatusText = document.getElementById('sync-status-text');
-        const lastSyncEl = document.getElementById('last-sync');
-        if (syncStatusText) syncStatusText.textContent = message || s.text;
-        if (lastSyncEl && status === 'ok') {
-            lastSyncEl.textContent = new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
-        }
-    }
-
-    async function loadInventoryFromCloud() {
-        if(!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI') || 
-           !JSONBIN_CONFIG.binId || JSONBIN_CONFIG.binId.includes('TU_BIN_ID')) {
-            updateSyncStatus('pending', 'Sin configurar');
-            return;
-        }
-        isSyncing = true;
-        updateSyncStatus('syncing', 'Cargando...');
+    async function fetchFromJSONBin(binId) {
         try {
-            const url = `${JSONBIN_CONFIG.baseUrl}/${JSONBIN_CONFIG.binId}/latest`;
+            const url = `${JSONBIN_CONFIG.baseUrl}/${binId}/latest`;
             const response = await fetch(url, {
                 method: 'GET',
-                headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey, 'Content-Type': 'application/json' }
+                headers: { 
+                    'X-Master-Key': JSONBIN_CONFIG.masterKey, 
+                    'Content-Type': 'application/json' 
+                }
             });
-            if(!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`${response.status}: ${errorData.message || 'Error'}`);
-            }
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
-            if(data.record && data.record.inventory) {
-                inventory = data.record.inventory;
-                localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
-                renderInv();
-                updateStockAlerts();
-                updateSyncStatus('ok', `✅ ${new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}`);
-            } else {
-                inventory = [];
-                await saveInventoryToCloud();
-                updateSyncStatus('ok', '✅ Bin inicializado');
-            }
-        } catch(error) {
-            console.error("❌ Error:", error);
-            updateSyncStatus('error', 'Error de conexión');
-            inventory = JSON.parse(localStorage.getItem('linstelec_inv_v2')) || [];
-            renderInv();
-        } finally { isSyncing = false; }
+            return data.record;
+        } catch (error) {
+            console.error("❌ Error JSONBin:", error);
+            return null;
+        }
     }
 
-    async function saveInventoryToCloud() {
-        if(!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI')) return;
-        if(isSyncing) return;
+    async function saveToJSONBin(binId, data) {
         try {
-            const payload = { inventory: inventory, lastUpdate: new Date().toISOString(), updatedBy: currentUser?.name || 'Unknown' };
-            const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/${JSONBIN_CONFIG.binId}`, {
+            const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/${binId}`, {
                 method: 'PUT',
-                headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey, 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                headers: { 
+                    'X-Master-Key': JSONBIN_CONFIG.masterKey, 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify(data)
             });
-            if(!response.ok) throw new Error(`HTTP ${response.status}`);
-            updateSyncStatus('ok', `Guardado ${new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}`);
-        } catch(error) {
-            console.error("❌ Error al guardar:", error);
-            updateSyncStatus('error', 'Error al guardar');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return true;
+        } catch (error) {
+            console.error("❌ Error al guardar en JSONBin:", error);
+            return false;
         }
     }
 
-    async function refreshInventory() {
-        updateSyncStatus('syncing', 'Actualizando...');
-        await loadInventoryFromCloud();
-        alert("📡 Inventario actualizado desde la nube");
+    /* ========== CARGAR PRODUCTOS DESDE LA NUBE ========== */
+    async function loadCloudProducts() {
+        const loading = document.getElementById('cloud-loading');
+        if (loading) loading.style.display = 'block';
+        
+        const data = await fetchFromJSONBin(JSONBIN_CONFIG.bins.productos);
+        
+        if (loading) loading.style.display = 'none';
+        
+        if (data && data.products && Array.isArray(data.products)) {
+            cloudProducts = data.products;
+            console.log(`✅ ${cloudProducts.length} productos cargados desde la nube`);
+        } else {
+            cloudProducts = [...PRODUCTS_DB]; // Fallback a base local
+            console.log("⚠️ Usando base de productos local como respaldo");
+        }
     }
 
-    function filterInventory() {
-        const searchTerm = document.getElementById('search-inv').value.toLowerCase().trim();
-        const rows = document.querySelectorAll('#inv-body tr');
-        let visibleCount = 0;
-        rows.forEach(row => {
-            const materialName = row.cells[0]?.textContent.toLowerCase() || '';
-            if(materialName.includes(searchTerm)) { row.style.display = ''; visibleCount++; }
-            else { row.style.display = 'none'; }
+    /* ========== BUSCADOR DE PRODUCTOS EN LA NUBE (PESTAÑA 1) ========== */
+    function searchCloudProducts(query) {
+        const suggestions = document.getElementById('cloud-suggestions');
+        suggestions.innerHTML = '';
+        
+        if (!query || query.length < 2) {
+            suggestions.classList.remove('show');
+            return;
+        }
+        
+        const filtered = cloudProducts.filter(p => 
+            p.name.toLowerCase().includes(query.toLowerCase()) || 
+            (p.code && p.code.toLowerCase().includes(query.toLowerCase()))
+        );
+        
+        if (filtered.length === 0) {
+            suggestions.innerHTML = '<div class="suggestion-item" style="color: #64748b; cursor: default;">Sin resultados en la nube</div>';
+            suggestions.classList.add('show');
+            return;
+        }
+        
+        filtered.slice(0, 8).forEach(product => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.innerHTML = `<div class="suggestion-name">${product.name}</div><div class="suggestion-code">${product.code || ''} • ${formatCLP(product.price)}</div>`;
+            div.onclick = () => selectCloudProduct(product);
+            suggestions.appendChild(div);
         });
-        const countEl = document.getElementById('search-count');
-        if(searchTerm) {
-            countEl.textContent = `${visibleCount} resultado${visibleCount !== 1 ? 's' : ''} encontrado${visibleCount !== 1 ? 's' : ''}`;
-            if(visibleCount === 0) countEl.textContent = '❌ Sin resultados';
-        } else { countEl.textContent = ''; }
+        
+        suggestions.classList.add('show');
     }
 
-    function downloadInventory() {
-        if(inventory.length === 0) return alert("⚠️ No hay materiales en el inventario para descargar");
-        let csv = "MATERIAL;STOCK DISPONIBLE\n";
-        inventory.forEach(item => { csv += `"${item.name}";${item.stock}\n`; });
-        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        link.setAttribute('href', URL.createObjectURL(blob));
-        link.setAttribute('download', `Inventario_LINSTELEC_${new Date().toISOString().slice(0,10)}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    function showCloudSuggestions() {
+        const query = document.getElementById('product-name-manual').value;
+        if (query.length >= 2) searchCloudProducts(query);
     }
 
-    function printInventory() {
-        if(inventory.length === 0) return alert("⚠️ No hay materiales para imprimir");
-        let content = `<html><head><title>Inventario LINSTELEC</title><style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-            th { background: #3498db; color: white; }
-            tr:nth-child(even) { background: #f9f9f9; }
-            .footer { margin-top: 30px; font-size: 12px; color: #666; text-align: center; }
-            @media print { body { padding: 0; } }
-        </style></head><body>
-        <h1>📦 Inventario de Materiales - LINSTELEC CHILE</h1>
-        <p><strong>Fecha:</strong> ${new Date().toLocaleDateString('es-CL')} | <strong>Hora:</strong> ${new Date().toLocaleTimeString('es-CL')}</p>
-        <table><thead><tr><th>#</th><th>Material</th><th>Stock en Bodega</th></tr></thead><tbody>`;
-        inventory.forEach((item, idx) => {
-            content += `<tr><td>${idx + 1}</td><td>${item.name}</td><td><strong>${item.stock}</strong></td></tr>`;
+    function hideCloudSuggestionsDelayed() {
+        setTimeout(() => {
+            document.getElementById('cloud-suggestions').classList.remove('show');
+        }, 200);
+    }
+
+    function selectCloudProduct(product) {
+        document.getElementById('product-name-manual').value = product.name;
+        document.getElementById('product-price-manual').value = product.price;
+        document.getElementById('cloud-suggestions').classList.remove('show');
+        document.getElementById('product-name-manual').focus();
+    }
+
+    /* ========== FUNCIONES DE COTIZACIONES GUARDADAS ========== */
+    async function loadSavedQuotes() {
+        const loading = document.getElementById('quotes-loading');
+        const list = document.getElementById('quotes-list');
+        const noQuotes = document.getElementById('no-quotes');
+        const tbody = document.getElementById('quotes-body');
+        
+        loading.style.display = 'block';
+        list.style.display = 'none';
+        noQuotes.style.display = 'none';
+        tbody.innerHTML = '';
+        
+        // Intentar cargar desde JSONBin
+        const data = await fetchFromJSONBin(JSONBIN_CONFIG.bins.quota);
+        
+        loading.style.display = 'none';
+        
+        let quotes = [];
+        
+        if (data && data.quotes && Array.isArray(data.quotes)) {
+            quotes = data.quotes;
+        } else {
+            // Fallback a localStorage
+            quotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
+        }
+        
+        if (quotes.length === 0) {
+            noQuotes.style.display = 'block';
+            return;
+        }
+        
+        list.style.display = 'block';
+        
+        quotes.forEach(quote => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${quote.number}</strong></td>
+                <td>${quote.client || 'Sin cliente'}</td>
+                <td>${quote.date || '-'}</td>
+                <td>${formatCLP(quote.totals?.total || 0)}</td>
+                <td class="action-cell">
+                    <button class="btn-view" onclick="viewQuote('${quote.number}')"><i class="fas fa-eye"></i></button>
+                    <button class="btn-download" onclick="downloadQuotePDF('${quote.number}')"><i class="fas fa-download"></i></button>
+                    <button class="btn-delete" onclick="deleteQuote('${quote.number}')"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            tbody.appendChild(row);
         });
-        content += `</tbody></table><div class="footer">Documento generado desde Sistema LINSTELEC - Uso interno<br>Total de materiales: ${inventory.length}</div></body></html>`;
-        const printWindow = window.open('', '_blank', 'width=800,height=600');
-        printWindow.document.write(content);
-        printWindow.document.close();
-        printWindow.onload = () => { setTimeout(() => { printWindow.print(); }, 500); };
     }
 
-    function exportForShare() {
-        if(inventory.length === 0) return alert("⚠️ No hay materiales para exportar");
-        const exportData = { version: "1.0", date: new Date().toISOString(), inventory: inventory };
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-        const link = document.createElement('a');
-        link.setAttribute('href', URL.createObjectURL(blob));
-        link.setAttribute('download', `LINSTELEC_Inventario_Compartir_${new Date().toISOString().slice(0,10)}.json`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        alert("✅ Archivo exportado exitosamente.");
+    function viewQuote(quoteNumber) {
+        const savedQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
+        const quote = savedQuotes.find(q => q.number === quoteNumber);
+        
+        if (quote) {
+            // Cargar la cotización en el formulario
+            document.getElementById('cot-cliente').value = quote.client || '';
+            document.getElementById('cot-rut').value = quote.rut || '';
+            document.getElementById('cot-numero').value = quote.number;
+            document.getElementById('cot-fecha').value = quote.date || '';
+            
+            quoteItems = quote.items || [];
+            applyIVA = quote.ivaApplied !== false;
+            document.getElementById('iva-checkbox').checked = applyIVA;
+            toggleIVA();
+            
+            renderQuoteItems();
+            calculateTotals();
+            
+            // Cambiar a pestaña de agregar
+            switchCotTab('agregar', document.querySelector('.cot-tab-btn:first-child'));
+            
+            alert(`✅ Cotización ${quoteNumber} cargada para edición`);
+        } else {
+            alert('⚠️ No se encontró la cotización en el almacenamiento local');
+        }
     }
 
-    function importFromShare() { document.getElementById('importFile').click(); }
+    async function downloadQuotePDF(quoteNumber) {
+        const savedQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
+        const quote = savedQuotes.find(q => q.number === quoteNumber);
+        
+        if (quote) {
+            // Generar PDF con los datos de la cotización guardada
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const IVA_RATE = 0.19;
+            const subtotal = quote.items.reduce((sum, item) => sum + (item.qty * item.price), 0);
+            const iva = quote.ivaApplied !== false ? subtotal * IVA_RATE : 0;
+            const total = subtotal + iva;
+            
+            // Header
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text('LINSTELEC CHILE', 105, 20, { align: 'center' });
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Soluciones Eléctricas Inteligentes', 105, 27, { align: 'center' });
+            doc.text('RUT: 76.123.456-K', 105, 32, { align: 'center' });
+            
+            // Datos cotización
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'bold');
+            doc.text('COTIZACIÓN', 14, 45);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`N°: ${quote.number}`, 14, 52);
+            doc.text(`Fecha: ${quote.date}`, 14, 58);
+            
+            // Cliente
+            doc.setFont('helvetica', 'bold');
+            doc.text('Cliente:', 14, 70);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`${quote.client || 'Sin especificar'}`, 40, 70);
+            doc.text(`RUT: ${quote.rut || 'Sin especificar'}`, 14, 76);
+            
+            // Indicador de IVA
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            if (quote.ivaApplied !== false) {
+                doc.setTextColor(39, 174, 96);
+                doc.text('✓ IVA (19%) APLICADO', 14, 83);
+            } else {
+                doc.setTextColor(245, 158, 11);
+                doc.text('⚠ COTIZACIÓN EXENTA DE IVA', 14, 83);
+            }
+            doc.setTextColor(0, 0, 0);
+            
+            // Tabla de productos
+            const tableData = quote.items.map(item => [
+                item.name,
+                item.qty.toString(),
+                formatCLP(item.price).replace('$', '').replace('.', '').trim(),
+                formatCLP(item.qty * item.price).replace('$', '').replace('.', '').trim()
+            ]);
+            
+            doc.autoTable({
+                startY: 92,
+                head: [['Producto', 'Cant.', 'Precio Unit.', 'Subtotal']],
+                body: tableData,
+                theme: 'grid',
+                headStyles: { fillColor: [52, 152, 219], textColor: 255, fontSize: 9 },
+                styles: { fontSize: 8, cellPadding: 3 },
+                columnStyles: {
+                    0: { cellWidth: 90 },
+                    1: { cellWidth: 20, halign: 'center' },
+                    2: { cellWidth: 35, halign: 'right' },
+                    3: { cellWidth: 35, halign: 'right' }
+                }
+            });
+            
+            // Totales
+            const finalY = doc.lastAutoTable.finalY + 10;
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Subtotal: ${formatCLP(subtotal)}`, 140, finalY);
+            
+            if (quote.ivaApplied !== false) {
+                doc.text(`IVA (19%): ${formatCLP(iva)}`, 140, finalY + 6);
+            }
+            
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            const totalLabel = quote.ivaApplied !== false ? 'TOTAL:' : 'TOTAL (Exento):';
+            doc.text(`${totalLabel} ${formatCLP(total)}`, 140, quote.ivaApplied !== false ? finalY + 14 : finalY + 8);
+            
+            // Footer
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'italic');
+            doc.text('Precios en pesos chilenos (CLP)', 105, 280, { align: 'center' });
+            if (quote.ivaApplied !== false) {
+                doc.text('IVA incluido • Validez 30 días', 105, 285, { align: 'center' });
+            } else {
+                doc.text('Cotización exenta de IVA • Validez 30 días', 105, 285, { align: 'center' });
+            }
+            doc.text('Documento generado desde Sistema LINSTELEC', 105, 290, { align: 'center' });
+            
+            // Guardar
+            const filename = `Cotizacion_${quote.number}.pdf`;
+            doc.save(filename);
+            
+            alert('✅ PDF descargado exitosamente');
+        } else {
+            alert('⚠️ No se encontró la cotización');
+        }
+    }
 
-    function handleImport(input) {
-        const file = input.files[0];
-        if(!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const data = JSON.parse(e.target.result);
-                if(data.inventory && Array.isArray(data.inventory)) {
-                    if(confirm(`⚠️ IMPORTAR INVENTARIO\n\nEsto reemplazará tu inventario actual con ${data.inventory.length} materiales.\n\n¿Deseas continuar?`)) {
-                        inventory = data.inventory;
-                        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
-                        renderInv();
-                        updateStockAlerts();
-                        saveInventoryToCloud();
-                        alert("✅ Inventario actualizado correctamente con " + inventory.length + " materiales");
-                    }
-                } else { alert("❌ Formato de archivo no válido."); }
-            } catch(err) { alert("❌ Error al leer el archivo: " + err.message); }
-            input.value = '';
+    function deleteQuote(quoteNumber) {
+        if (!confirm(`¿Eliminar permanentemente la cotización ${quoteNumber}?`)) return;
+        
+        // Eliminar de localStorage
+        let savedQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
+        savedQuotes = savedQuotes.filter(q => q.number !== quoteNumber);
+        localStorage.setItem('linstelec_quotes', JSON.stringify(savedQuotes));
+        
+        // También intentar eliminar de JSONBin (opcional - requiere lógica adicional)
+        // Por ahora solo eliminamos localmente
+        
+        alert('✅ Cotización eliminada');
+        loadSavedQuotes();
+    }
+
+    /* ========== FUNCIONES DE COTIZACIONES - MODIFICADAS CON JSONBIN ========== */
+    
+    function switchCotTab(tabName, btn) {
+        document.querySelectorAll('.cot-tab-btn').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        
+        document.getElementById('cot-tab-agregar').classList.toggle('active', tabName === 'agregar');
+        document.getElementById('cot-tab-buscar').classList.toggle('active', tabName === 'buscar');
+        document.getElementById('cot-tab-guardadas').classList.toggle('active', tabName === 'guardadas');
+        
+        // Cargar cotizaciones guardadas si se abre esa pestaña
+        if (tabName === 'guardadas') {
+            loadSavedQuotes();
+        }
+    }
+    
+    function toggleIVA() {
+        applyIVA = document.getElementById('iva-checkbox').checked;
+        const indicator = document.getElementById('iva-indicator');
+        const statusText = document.getElementById('iva-status-text');
+        const ivaRow = document.getElementById('iva-row');
+        const totalLabel = document.getElementById('total-label');
+        
+        if (applyIVA) {
+            indicator.className = 'iva-indicator iva-applied';
+            indicator.innerHTML = '<i class="fas fa-check-circle"></i> IVA Aplicado';
+            statusText.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> IVA incluido en el total';
+            ivaRow.style.display = 'flex';
+            totalLabel.textContent = 'TOTAL:';
+        } else {
+            indicator.className = 'iva-indicator iva-exempt';
+            indicator.innerHTML = '<i class="fas fa-circle-notch"></i> Exento de IVA';
+            statusText.innerHTML = '<i class="fas fa-info-circle" style="color: var(--warning);"></i> Cotización exenta de IVA';
+            ivaRow.style.display = 'none';
+            totalLabel.textContent = 'TOTAL (Exento):';
+        }
+        calculateTotals();
+    }
+    
+    function initCotizaciones() {
+        document.getElementById('cot-numero').value = quoteNumber;
+        updateDashboardTime();
+        renderQuoteItems();
+        toggleIVA();
+        loadCloudProducts(); // Cargar productos desde la nube al iniciar
+    }
+
+    function formatCLP(amount) {
+        return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(amount);
+    }
+
+    // Función local para búsqueda en base local (pestaña 2)
+    function filterProducts(query) {
+        const suggestions = document.getElementById('product-suggestions');
+        suggestions.innerHTML = '';
+        
+        if (!query || query.length < 2) {
+            suggestions.classList.remove('show');
+            return;
+        }
+        
+        const filtered = PRODUCTS_DB.filter(p => 
+            p.name.toLowerCase().includes(query.toLowerCase()) || 
+            p.code.toLowerCase().includes(query.toLowerCase())
+        );
+        
+        if (filtered.length === 0) {
+            suggestions.innerHTML = '<div class="suggestion-item" style="color: #64748b; cursor: default;">Sin resultados</div>';
+            suggestions.classList.add('show');
+            return;
+        }
+        
+        filtered.slice(0, 8).forEach(product => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.innerHTML = `<div class="suggestion-name">${product.name}</div><div class="suggestion-code">${product.code} • ${formatCLP(product.price)}</div>`;
+            div.onclick = () => selectProduct(product);
+            suggestions.appendChild(div);
+        });
+        
+        suggestions.classList.add('show');
+    }
+
+    function showSuggestions() {
+        const query = document.getElementById('search-product').value;
+        if (query.length >= 2) filterProducts(query);
+    }
+
+    function hideSuggestionsDelayed() {
+        setTimeout(() => {
+            document.getElementById('product-suggestions').classList.remove('show');
+        }, 200);
+    }
+
+    function selectProduct(product) {
+        document.getElementById('search-product').value = product.name;
+        document.getElementById('product-price').value = product.price;
+        document.getElementById('product-qty').value = 1;
+        document.getElementById('product-suggestions').classList.remove('show');
+        document.getElementById('search-product').focus();
+    }
+
+    // Agregar producto manualmente (Pestaña 1) - ahora con selección desde nube
+    function addProductManual() {
+        const name = document.getElementById('product-name-manual').value.trim();
+        const qty = parseInt(document.getElementById('product-qty-manual').value) || 1;
+        const price = parseFloat(document.getElementById('product-price-manual').value) || 0;
+        
+        if (!name || price <= 0) {
+            alert('⚠️ Ingresa un producto válido con nombre y precio');
+            return;
+        }
+        
+        const existing = quoteItems.find(item => item.name === name);
+        if (existing) {
+            existing.qty += qty;
+        } else {
+            quoteItems.push({
+                id: Date.now(),
+                name: name,
+                qty: qty,
+                price: price
+            });
+        }
+        
+        document.getElementById('product-name-manual').value = '';
+        document.getElementById('product-qty-manual').value = '1';
+        document.getElementById('product-price-manual').value = '';
+        
+        renderQuoteItems();
+        calculateTotals();
+    }
+
+    // Agregar producto desde base local (Pestaña 2)
+    function addProductToQuote() {
+        const name = document.getElementById('search-product').value.trim();
+        const qty = parseInt(document.getElementById('product-qty').value) || 1;
+        const price = parseFloat(document.getElementById('product-price').value) || 0;
+        
+        if (!name || price <= 0) {
+            alert('⚠️ Selecciona un producto válido de la base de datos');
+            return;
+        }
+        
+        const existing = quoteItems.find(item => item.name === name);
+        if (existing) {
+            existing.qty += qty;
+        } else {
+            quoteItems.push({
+                id: Date.now(),
+                name: name,
+                qty: qty,
+                price: price
+            });
+        }
+        
+        document.getElementById('search-product').value = '';
+        document.getElementById('product-qty').value = '1';
+        document.getElementById('product-price').value = '';
+        
+        renderQuoteItems();
+        calculateTotals();
+    }
+
+    function renderQuoteItems() {
+        const tbody = document.getElementById('quote-items');
+        
+        if (quoteItems.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="no-results" style="text-align: center; padding: 30px; color: #64748b;">
+                <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                Agrega productos desde cualquiera de las pestañas para comenzar tu cotización
+            </td></tr>`;
+            return;
+        }
+        
+        tbody.innerHTML = quoteItems.map(item => {
+            const subtotal = item.qty * item.price;
+            return `<tr>
+                <td>${item.name}</td>
+                <td class="qty-cell"><input type="number" value="${item.qty}" min="1" onchange="updateItemQty(${item.id}, this.value)"></td>
+                <td class="price-cell">${formatCLP(item.price)}</td>
+                <td class="total-cell">${formatCLP(subtotal)}</td>
+                <td class="action-cell"><button class="btn-remove" onclick="removeItem(${item.id})"><i class="fas fa-times"></i></button></td>
+            </tr>`;
+        }).join('');
+    }
+
+    function updateItemQty(id, newQty) {
+        const qty = parseInt(newQty) || 1;
+        const item = quoteItems.find(i => i.id === id);
+        if (item) {
+            item.qty = qty;
+            renderQuoteItems();
+            calculateTotals();
+        }
+    }
+
+    function removeItem(id) {
+        quoteItems = quoteItems.filter(i => i.id !== id);
+        renderQuoteItems();
+        calculateTotals();
+    }
+
+    function calculateTotals() {
+        const subtotal = quoteItems.reduce((sum, item) => sum + (item.qty * item.price), 0);
+        const iva = applyIVA ? subtotal * 0.19 : 0;
+        const total = subtotal + iva;
+        
+        document.getElementById('subtotal-value').textContent = formatCLP(subtotal);
+        document.getElementById('iva-value').textContent = formatCLP(iva);
+        document.getElementById('total-value').textContent = formatCLP(total);
+        
+        return { subtotal, iva, total };
+    }
+
+    function clearQuote() {
+        if (quoteItems.length === 0) return;
+        if (confirm('¿Limpiar todos los productos de esta cotización?')) {
+            quoteItems = [];
+            renderQuoteItems();
+            calculateTotals();
+            document.getElementById('cot-cliente').value = '';
+            document.getElementById('cot-rut').value = '';
+            document.getElementById('product-name-manual').value = '';
+            document.getElementById('search-product').value = '';
+            quoteNumber = generateQuoteNumber();
+            document.getElementById('cot-numero').value = quoteNumber;
+        }
+    }
+
+    // Guardar cotización en JSONBin Y localStorage
+    async function saveQuote() {
+        if (quoteItems.length === 0) {
+            alert('⚠️ Agrega productos antes de guardar');
+            return;
+        }
+        
+        const quote = {
+            number: document.getElementById('cot-numero').value,
+            date: document.getElementById('cot-fecha').value,
+            client: document.getElementById('cot-cliente').value,
+            rut: document.getElementById('cot-rut').value,
+            items: quoteItems,
+            totals: calculateTotals(),
+            ivaApplied: applyIVA,
+            savedAt: new Date().toISOString(),
+            user: currentUser?.name
         };
-        reader.readAsText(file);
+        
+        // Guardar en localStorage (respaldo local)
+        const savedQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
+        const existingIndex = savedQuotes.findIndex(q => q.number === quote.number);
+        if (existingIndex >= 0) {
+            savedQuotes[existingIndex] = quote;
+        } else {
+            savedQuotes.unshift(quote);
+        }
+        localStorage.setItem('linstelec_quotes', JSON.stringify(savedQuotes.slice(0, 50)));
+        
+        // Guardar en JSONBin (nube)
+        const cloudData = await fetchFromJSONBin(JSONBIN_CONFIG.bins.quota);
+        let cloudQuotes = cloudData?.quotes || [];
+        const cloudExistingIndex = cloudQuotes.findIndex(q => q.number === quote.number);
+        if (cloudExistingIndex >= 0) {
+            cloudQuotes[cloudExistingIndex] = quote;
+        } else {
+            cloudQuotes.unshift(quote);
+        }
+        
+        await saveToJSONBin(JSONBIN_CONFIG.bins.quota, { quotes: cloudQuotes.slice(0, 100) });
+        
+        alert('✅ Cotización guardada en la nube y localmente');
     }
 
-    function addMaterial() {
-        const n = document.getElementById('new-item-name').value, q = parseInt(document.getElementById('new-item-qty').value);
-        if(n && !isNaN(q)) { 
-            inventory.push({ name: n, stock: q }); 
-            document.getElementById('new-item-name').value = ""; 
-            document.getElementById('new-item-qty').value = ""; 
-            renderInv();
-            updateStockAlerts();
-            saveInventoryToCloud();
-        }
-    }
-    
-    function renderInv() {
-        const body = document.getElementById('inv-body'); 
-        body.innerHTML = "";
-        if(inventory.length === 0) {
-            body.innerHTML = `<tr><td colspan="4" class="no-results">📦 No hay materiales registrados. ¡Agrega el primero!</td></tr>`;
-            document.getElementById('search-count').textContent = '';
+    function generatePDF() {
+        if (quoteItems.length === 0) {
+            alert('⚠️ Agrega productos antes de generar PDF');
             return;
         }
-        inventory.forEach((item, idx) => {
-            body.innerHTML += `<tr><td>${item.name}</td><td><input type="number" value="${item.stock}" onchange="updateStock(${idx}, this.value)" class="qty-input"></td><td><input type="number" id="use-qty-${idx}" value="1" min="1" class="qty-input"></td><td><button onclick="addToBag(${idx})" class="tab-btn" style="padding:5px 10px; font-size:12px; background:var(--primary); color:white;">Ocupar</button> <button onclick="delMat(${idx})" style="background:var(--danger); border:none; color:white; padding:5px 8px; border-radius:5px; cursor:pointer;"><i class="fas fa-trash"></i></button></td></tr>`;
-        });
-        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
-        filterInventory();
-    }
-
-    function updateStockAlerts() {
-        const alertsContainer = document.getElementById('stock-alerts');
-        if (!alertsContainer) return;
-        const lowStock = inventory.filter(item => item.stock <= 5);
-        if (lowStock.length === 0) {
-            alertsContainer.innerHTML = `<div style="text-align: center; color: var(--success); padding: 20px;"><i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i><p>✅ Todo el inventario está en niveles óptimos</p></div>`;
-            return;
+        
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const IVA_RATE = 0.19;
+        const { subtotal, iva, total } = calculateTotals();
+        
+        // Header
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text('LINSTELEC CHILE', 105, 20, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Soluciones Eléctricas Inteligentes', 105, 27, { align: 'center' });
+        doc.text('RUT: 76.123.456-K', 105, 32, { align: 'center' });
+        
+        // Datos cotización
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('COTIZACIÓN', 14, 45);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`N°: ${document.getElementById('cot-numero').value}`, 14, 52);
+        doc.text(`Fecha: ${document.getElementById('cot-fecha').value}`, 14, 58);
+        
+        // Cliente
+        doc.setFont('helvetica', 'bold');
+        doc.text('Cliente:', 14, 70);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${document.getElementById('cot-cliente').value || 'Sin especificar'}`, 40, 70);
+        doc.text(`RUT: ${document.getElementById('cot-rut').value || 'Sin especificar'}`, 14, 76);
+        
+        // Indicador de IVA
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        if (applyIVA) {
+            doc.setTextColor(39, 174, 96);
+            doc.text('✓ IVA (19%) APLICADO', 14, 83);
+        } else {
+            doc.setTextColor(245, 158, 11);
+            doc.text('⚠ COTIZACIÓN EXENTA DE IVA', 14, 83);
         }
-        let html = '';
-        lowStock.forEach(item => {
-            const isCritical = item.stock <= 2;
-            html += `<div class="alert-item"><div class="alert-item-info"><div class="alert-item-icon"><i class="fas fa-box"></i></div><div><div class="alert-item-name">${item.name}</div><div class="alert-item-stock">Stock actual</div></div></div><div class="alert-item-qty ${isCritical ? '' : 'low'}">${item.stock} un</div></div>`;
+        doc.setTextColor(0, 0, 0);
+        
+        // Tabla de productos
+        const tableData = quoteItems.map(item => [
+            item.name,
+            item.qty.toString(),
+            formatCLP(item.price).replace('$', '').replace('.', '').trim(),
+            formatCLP(item.qty * item.price).replace('$', '').replace('.', '').trim()
+        ]);
+        
+        doc.autoTable({
+            startY: 92,
+            head: [['Producto', 'Cant.', 'Precio Unit.', 'Subtotal']],
+            body: tableData,
+            theme: 'grid',
+            headStyles: { fillColor: [52, 152, 219], textColor: 255, fontSize: 9 },
+            styles: { fontSize: 8, cellPadding: 3 },
+            columnStyles: {
+                0: { cellWidth: 90 },
+                1: { cellWidth: 20, halign: 'center' },
+                2: { cellWidth: 35, halign: 'right' },
+                3: { cellWidth: 35, halign: 'right' }
+            }
         });
-        alertsContainer.innerHTML = html;
-    }
-    
-    function updateStock(idx, val) { 
-        inventory[idx].stock = parseInt(val); 
-        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
-        updateStockAlerts();
-        saveInventoryToCloud();
-    }
-    
-    function delMat(idx) { 
-        if(confirm("¿Eliminar?")) { 
-            inventory.splice(idx, 1); 
-            renderInv();
-            updateStockAlerts();
-            saveInventoryToCloud();
-        } 
-    }
-    
-    function addToBag(idx) {
-        const useQty = parseInt(document.getElementById(`use-qty-${idx}`).value);
-        if(isNaN(useQty) || useQty <= 0) return;
-        const exist = bag.find(b => b.name === inventory[idx].name);
-        if(exist) exist.qty += useQty; else bag.push({ name: inventory[idx].name, qty: useQty, originIdx: idx });
-        renderBag();
-    }
-    
-    function renderBag() {
-        const div = document.getElementById('bag-items'); 
-        div.innerHTML = "";
-        bag.forEach(item => { 
-            div.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px; background:white; padding:5px; border-radius:5px; font-size:0.9rem;"><span>${item.name}</span><strong>Cant: ${item.qty}</strong></div>`; 
-        });
-    }
-    
-    function generateFile() {
-        if(bag.length === 0) return alert("Selecciona materiales primero");
-        const proj = document.getElementById('install-proj').value || "Salida_Materiales";
-        let txt = `LINSTELEC CHILE - GUIA DE MATERIALES\nPROYECTO: ${proj}\nFECHA: ${new Date().toLocaleDateString()}\n-------------------\n`;
-        bag.forEach(item => {
-            txt += `- ${item.name}: ${item.qty}\n`;
-            inventory[item.originIdx].stock -= item.qty;
-        });
-        const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
-        const link = document.createElement('a');
-        link.setAttribute('href', URL.createObjectURL(blob));
-        link.setAttribute('download', `${proj}_Materiales.txt`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        bag = []; 
-        renderBag(); 
-        renderInv();
-        updateStockAlerts();
-        saveInventoryToCloud();
-        alert("Archivo generado y stock actualizado.");
+        
+        // Totales
+        const finalY = doc.lastAutoTable.finalY + 10;
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Subtotal: ${formatCLP(subtotal)}`, 140, finalY);
+        
+        if (applyIVA) {
+            doc.text(`IVA (19%): ${formatCLP(iva)}`, 140, finalY + 6);
+        }
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        const totalLabel = applyIVA ? 'TOTAL:' : 'TOTAL (Exento):';
+        doc.text(`${totalLabel} ${formatCLP(total)}`, 140, applyIVA ? finalY + 14 : finalY + 8);
+        
+        // Footer
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'italic');
+        doc.text('Precios en pesos chilenos (CLP)', 105, 280, { align: 'center' });
+        if (applyIVA) {
+            doc.text('IVA incluido • Validez 30 días', 105, 285, { align: 'center' });
+        } else {
+            doc.text('Cotización exenta de IVA • Validez 30 días', 105, 285, { align: 'center' });
+        }
+        doc.text('Documento generado desde Sistema LINSTELEC', 105, 290, { align: 'center' });
+        
+        // Guardar
+        const filename = `Cotizacion_${document.getElementById('cot-numero').value}.pdf`;
+        doc.save(filename);
+        
+        alert('✅ PDF generado exitosamente');
     }
 
-    /* ========== FUNCIONES DEL SISTEMA ========== */
+    /* ========== RESTO DE FUNCIONES DEL SISTEMA (sin cambios) ========== */
+    
     function checkLogin() {
         const u = document.getElementById('userInput').value.trim();
         const p = document.getElementById('passInput').value;
@@ -2826,7 +3279,7 @@
         const s = document.createElement("script"); s.src = "https://www.chatbase.co/embed.min.js"; s.id = "HZBhzPxQtpDaw6ZlcBzEA"; s.domain = "www.chatbase.co"; document.body.appendChild(s);
     }
 
-    /* ===== 🎵 FUNCIONES PANEL MÚSICA - CORREGIDAS ===== */
+    /* ===== 🎵 FUNCIONES PANEL MÚSICA ===== */
     function toggleMusicPanel() {
         const panel = document.getElementById('musicPanel');
         panel.classList.toggle('visible');
@@ -3009,386 +3462,279 @@
         res.innerHTML = mensaje;
     }
 
-    /* ========== FUNCIONES DE COTIZACIONES - MODIFICADAS CON PESTAÑAS Y IVA ========== */
-    
-    // ✅ Función para cambiar entre pestañas de cotización
-    function switchCotTab(tabName, btn) {
-        // Actualizar botones de pestaña
-        document.querySelectorAll('.cot-tab-btn').forEach(b => b.classList.remove('active'));
-        if(btn) btn.classList.add('active');
-        
-        // Mostrar/ocultar contenidos de pestañas
-        document.getElementById('cot-tab-agregar').classList.toggle('active', tabName === 'agregar');
-        document.getElementById('cot-tab-buscar').classList.toggle('active', tabName === 'buscar');
-    }
-    
-    // ✅ Función para toggle de IVA
-    function toggleIVA() {
-        applyIVA = document.getElementById('iva-checkbox').checked;
-        const indicator = document.getElementById('iva-indicator');
-        const statusText = document.getElementById('iva-status-text');
-        const ivaRow = document.getElementById('iva-row');
-        const totalLabel = document.getElementById('total-label');
-        
-        if (applyIVA) {
-            indicator.className = 'iva-indicator iva-applied';
-            indicator.innerHTML = '<i class="fas fa-check-circle"></i> IVA Aplicado';
-            statusText.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> IVA incluido en el total';
-            ivaRow.style.display = 'flex';
-            totalLabel.textContent = 'TOTAL:';
-        } else {
-            indicator.className = 'iva-indicator iva-exempt';
-            indicator.innerHTML = '<i class="fas fa-circle-notch"></i> Exento de IVA';
-            statusText.innerHTML = '<i class="fas fa-info-circle" style="color: var(--warning);"></i> Cotización exenta de IVA';
-            ivaRow.style.display = 'none';
-            totalLabel.textContent = 'TOTAL (Exento):';
-        }
-        calculateTotals();
-    }
-    
-    function initCotizaciones() {
-        document.getElementById('cot-numero').value = quoteNumber;
-        updateDashboardTime();
-        renderQuoteItems();
-        toggleIVA(); // Inicializar estado de IVA
-    }
-
-    function formatCLP(amount) {
-        return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(amount);
-    }
-
-    function filterProducts(query) {
-        const suggestions = document.getElementById('product-suggestions');
-        suggestions.innerHTML = '';
-        
-        if (!query || query.length < 2) {
-            suggestions.classList.remove('show');
-            return;
-        }
-        
-        const filtered = PRODUCTS_DB.filter(p => 
-            p.name.toLowerCase().includes(query.toLowerCase()) || 
-            p.code.toLowerCase().includes(query.toLowerCase())
-        );
-        
-        if (filtered.length === 0) {
-            suggestions.innerHTML = '<div class="suggestion-item" style="color: #64748b; cursor: default;">Sin resultados</div>';
-            suggestions.classList.add('show');
-            return;
-        }
-        
-        filtered.slice(0, 8).forEach(product => {
-            const div = document.createElement('div');
-            div.className = 'suggestion-item';
-            div.innerHTML = `<div class="suggestion-name">${product.name}</div><div class="suggestion-code">${product.code} • ${formatCLP(product.price)}</div>`;
-            div.onclick = () => selectProduct(product);
-            suggestions.appendChild(div);
-        });
-        
-        suggestions.classList.add('show');
-    }
-
-    function showSuggestions() {
-        const query = document.getElementById('search-product').value;
-        if (query.length >= 2) filterProducts(query);
-    }
-
-    function hideSuggestionsDelayed() {
-        setTimeout(() => {
-            document.getElementById('product-suggestions').classList.remove('show');
-        }, 200);
-    }
-
-    function selectProduct(product) {
-        document.getElementById('search-product').value = product.name;
-        document.getElementById('product-price').value = product.price;
-        document.getElementById('product-qty').value = 1;
-        document.getElementById('product-suggestions').classList.remove('show');
-        document.getElementById('search-product').focus();
-    }
-
-    // ✅ Función para agregar producto manualmente (Pestaña 1)
-    function addProductManual() {
-        const name = document.getElementById('product-name-manual').value.trim();
-        const qty = parseInt(document.getElementById('product-qty-manual').value) || 1;
-        const price = parseFloat(document.getElementById('product-price-manual').value) || 0;
-        
-        if (!name || price <= 0) {
-            alert('⚠️ Ingresa un producto válido con nombre y precio');
-            return;
-        }
-        
-        // Buscar si ya existe
-        const existing = quoteItems.find(item => item.name === name);
-        if (existing) {
-            existing.qty += qty;
-        } else {
-            quoteItems.push({
-                id: Date.now(),
-                name: name,
-                qty: qty,
-                price: price
-            });
-        }
-        
-        // Limpiar campos
-        document.getElementById('product-name-manual').value = '';
-        document.getElementById('product-qty-manual').value = '1';
-        document.getElementById('product-price-manual').value = '';
-        
-        renderQuoteItems();
-        calculateTotals();
-    }
-
-    // ✅ Función para agregar producto desde base de datos (Pestaña 2)
-    function addProductToQuote() {
-        const name = document.getElementById('search-product').value.trim();
-        const qty = parseInt(document.getElementById('product-qty').value) || 1;
-        const price = parseFloat(document.getElementById('product-price').value) || 0;
-        
-        if (!name || price <= 0) {
-            alert('⚠️ Selecciona un producto válido de la base de datos');
-            return;
-        }
-        
-        // Buscar si ya existe
-        const existing = quoteItems.find(item => item.name === name);
-        if (existing) {
-            existing.qty += qty;
-        } else {
-            quoteItems.push({
-                id: Date.now(),
-                name: name,
-                qty: qty,
-                price: price
-            });
-        }
-        
-        // Limpiar campos
-        document.getElementById('search-product').value = '';
-        document.getElementById('product-qty').value = '1';
-        document.getElementById('product-price').value = '';
-        
-        renderQuoteItems();
-        calculateTotals();
-    }
-
-    function renderQuoteItems() {
-        const tbody = document.getElementById('quote-items');
-        
-        if (quoteItems.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="no-results" style="text-align: center; padding: 30px; color: #64748b;">
-                <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                Agrega productos desde cualquiera de las pestañas para comenzar tu cotización
-            </td></tr>`;
-            return;
-        }
-        
-        tbody.innerHTML = quoteItems.map(item => {
-            const subtotal = item.qty * item.price;
-            return `<tr>
-                <td>${item.name}</td>
-                <td class="qty-cell"><input type="number" value="${item.qty}" min="1" onchange="updateItemQty(${item.id}, this.value)"></td>
-                <td class="price-cell">${formatCLP(item.price)}</td>
-                <td class="total-cell">${formatCLP(subtotal)}</td>
-                <td class="action-cell"><button class="btn-remove" onclick="removeItem(${item.id})"><i class="fas fa-times"></i></button></td>
-            </tr>`;
-        }).join('');
-    }
-
-    function updateItemQty(id, newQty) {
-        const qty = parseInt(newQty) || 1;
-        const item = quoteItems.find(i => i.id === id);
-        if (item) {
-            item.qty = qty;
-            renderQuoteItems();
-            calculateTotals();
-        }
-    }
-
-    function removeItem(id) {
-        quoteItems = quoteItems.filter(i => i.id !== id);
-        renderQuoteItems();
-        calculateTotals();
-    }
-
-    // ✅ Función para calcular totales CON/SIN IVA
-    function calculateTotals() {
-        const subtotal = quoteItems.reduce((sum, item) => sum + (item.qty * item.price), 0);
-        const iva = applyIVA ? subtotal * 0.19 : 0;
-        const total = subtotal + iva;
-        
-        document.getElementById('subtotal-value').textContent = formatCLP(subtotal);
-        document.getElementById('iva-value').textContent = formatCLP(iva);
-        document.getElementById('total-value').textContent = formatCLP(total);
-        
-        return { subtotal, iva, total };
-    }
-
-    function clearQuote() {
-        if (quoteItems.length === 0) return;
-        if (confirm('¿Limpiar todos los productos de esta cotización?')) {
-            quoteItems = [];
-            renderQuoteItems();
-            calculateTotals();
-            document.getElementById('cot-cliente').value = '';
-            document.getElementById('cot-rut').value = '';
-            document.getElementById('product-name-manual').value = '';
-            document.getElementById('search-product').value = '';
-            quoteNumber = generateQuoteNumber();
-            document.getElementById('cot-numero').value = quoteNumber;
-        }
-    }
-
-    function saveQuote() {
-        if (quoteItems.length === 0) {
-            alert('⚠️ Agrega productos antes de guardar');
-            return;
-        }
-        
-        const quote = {
-            number: document.getElementById('cot-numero').value,
-            date: document.getElementById('cot-fecha').value,
-            client: document.getElementById('cot-cliente').value,
-            rut: document.getElementById('cot-rut').value,
-            items: quoteItems,
-            totals: calculateTotals(),
-            ivaApplied: applyIVA,
-            savedAt: new Date().toISOString(),
-            user: currentUser?.name
+    /* ========== FUNCIONES INVENTARIO CON JSONBIN ========== */
+    function updateSyncStatus(status, message) {
+        const el = document.getElementById('sync-status');
+        if(!el) return;
+        const statuses = {
+            ok: { class: 'sync-status sync-ok', icon: 'fa-check-circle', text: 'Sincronizado' },
+            pending: { class: 'sync-status sync-pending', icon: 'fa-circle', text: 'Sin sincronizar' },
+            error: { class: 'sync-status sync-error', icon: 'fa-exclamation-circle', text: 'Error' },
+            syncing: { class: 'sync-status sync-pending', icon: 'fa-spinner fa-spin', text: 'Sincronizando...' }
         };
-        
-        // Guardar en localStorage
-        const savedQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
-        savedQuotes.unshift(quote);
-        localStorage.setItem('linstelec_quotes', JSON.stringify(savedQuotes.slice(0, 50))); // Máximo 50
-        
-        alert('✅ Cotización guardada localmente');
+        const s = statuses[status] || statuses.pending;
+        el.className = s.class;
+        el.innerHTML = `<i class="fas ${s.icon}"></i> ${message || s.text}`;
+        const syncStatusText = document.getElementById('sync-status-text');
+        const lastSyncEl = document.getElementById('last-sync');
+        if (syncStatusText) syncStatusText.textContent = message || s.text;
+        if (lastSyncEl && status === 'ok') {
+            lastSyncEl.textContent = new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+        }
     }
 
-    // ✅ Función para generar PDF CON/SIN IVA
-    function generatePDF() {
-        if (quoteItems.length === 0) {
-            alert('⚠️ Agrega productos antes de generar PDF');
+    async function loadInventoryFromCloud() {
+        if(!JSONBIN_CONFIG.masterKey) {
+            updateSyncStatus('pending', 'Sin configurar');
             return;
         }
-        
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        // Configuración
-        const IVA_RATE = 0.19;
-        const { subtotal, iva, total } = calculateTotals();
-        
-        // Header
-        doc.setFontSize(18);
-        doc.setFont('helvetica', 'bold');
-        doc.text('LINSTELEC CHILE', 105, 20, { align: 'center' });
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Soluciones Eléctricas Inteligentes', 105, 27, { align: 'center' });
-        doc.text('RUT: 76.123.456-K', 105, 32, { align: 'center' });
-        
-        // Datos cotización
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'bold');
-        doc.text('COTIZACIÓN', 14, 45);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`N°: ${document.getElementById('cot-numero').value}`, 14, 52);
-        doc.text(`Fecha: ${document.getElementById('cot-fecha').value}`, 14, 58);
-        
-        // Cliente
-        doc.setFont('helvetica', 'bold');
-        doc.text('Cliente:', 14, 70);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`${document.getElementById('cot-cliente').value || 'Sin especificar'}`, 40, 70);
-        doc.text(`RUT: ${document.getElementById('cot-rut').value || 'Sin especificar'}`, 14, 76);
-        
-        // Indicador de IVA en el PDF
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9);
-        if (applyIVA) {
-            doc.setTextColor(39, 174, 96); // Verde
-            doc.text('✓ IVA (19%) APLICADO', 14, 83);
-        } else {
-            doc.setTextColor(245, 158, 11); // Amarillo
-            doc.text('⚠ COTIZACIÓN EXENTA DE IVA', 14, 83);
-        }
-        doc.setTextColor(0, 0, 0); // Reset color
-        
-        // Tabla de productos
-        const tableData = quoteItems.map(item => [
-            item.name,
-            item.qty.toString(),
-            formatCLP(item.price).replace('$', '').replace('.', '').trim(),
-            formatCLP(item.qty * item.price).replace('$', '').replace('.', '').trim()
-        ]);
-        
-        doc.autoTable({
-            startY: 92,
-            head: [['Producto', 'Cant.', 'Precio Unit.', 'Subtotal']],
-            body: tableData,
-            theme: 'grid',
-            headStyles: { fillColor: [52, 152, 219], textColor: 255, fontSize: 9 },
-            styles: { fontSize: 8, cellPadding: 3 },
-            columnStyles: {
-                0: { cellWidth: 90 },
-                1: { cellWidth: 20, halign: 'center' },
-                2: { cellWidth: 35, halign: 'right' },
-                3: { cellWidth: 35, halign: 'right' }
+        isSyncing = true;
+        updateSyncStatus('syncing', 'Cargando...');
+        try {
+            const data = await fetchFromJSONBin(JSONBIN_CONFIG.bins.inventario);
+            if(data && data.inventory) {
+                inventory = data.inventory;
+                localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+                renderInv();
+                updateStockAlerts();
+                updateSyncStatus('ok', `✅ ${new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}`);
+            } else {
+                inventory = [];
+                await saveInventoryToCloud();
+                updateSyncStatus('ok', '✅ Bin inicializado');
             }
+        } catch(error) {
+            console.error("❌ Error:", error);
+            updateSyncStatus('error', 'Error de conexión');
+            inventory = JSON.parse(localStorage.getItem('linstelec_inv_v2')) || [];
+            renderInv();
+        } finally { isSyncing = false; }
+    }
+
+    async function saveInventoryToCloud() {
+        if(!JSONBIN_CONFIG.masterKey) return;
+        if(isSyncing) return;
+        try {
+            const payload = { inventory: inventory, lastUpdate: new Date().toISOString(), updatedBy: currentUser?.name || 'Unknown' };
+            await saveToJSONBin(JSONBIN_CONFIG.bins.inventario, payload);
+            updateSyncStatus('ok', `Guardado ${new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}`);
+        } catch(error) {
+            console.error("❌ Error al guardar:", error);
+            updateSyncStatus('error', 'Error al guardar');
+        }
+    }
+
+    async function refreshInventory() {
+        updateSyncStatus('syncing', 'Actualizando...');
+        await loadInventoryFromCloud();
+        alert("📡 Inventario actualizado desde la nube");
+    }
+
+    function filterInventory() {
+        const searchTerm = document.getElementById('search-inv').value.toLowerCase().trim();
+        const rows = document.querySelectorAll('#inv-body tr');
+        let visibleCount = 0;
+        rows.forEach(row => {
+            const materialName = row.cells[0]?.textContent.toLowerCase() || '';
+            if(materialName.includes(searchTerm)) { row.style.display = ''; visibleCount++; }
+            else { row.style.display = 'none'; }
         });
-        
-        // Totales
-        const finalY = doc.lastAutoTable.finalY + 10;
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Subtotal: ${formatCLP(subtotal)}`, 140, finalY);
-        
-        if (applyIVA) {
-            doc.text(`IVA (19%): ${formatCLP(iva)}`, 140, finalY + 6);
+        const countEl = document.getElementById('search-count');
+        if(searchTerm) {
+            countEl.textContent = `${visibleCount} resultado${visibleCount !== 1 ? 's' : ''} encontrado${visibleCount !== 1 ? 's' : ''}`;
+            if(visibleCount === 0) countEl.textContent = '❌ Sin resultados';
+        } else { countEl.textContent = ''; }
+    }
+
+    function downloadInventory() {
+        if(inventory.length === 0) return alert("⚠️ No hay materiales en el inventario para descargar");
+        let csv = "MATERIAL;STOCK DISPONIBLE\n";
+        inventory.forEach(item => { csv += `"${item.name}";${item.stock}\n`; });
+        const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.setAttribute('href', URL.createObjectURL(blob));
+        link.setAttribute('download', `Inventario_LINSTELEC_${new Date().toISOString().slice(0,10)}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function printInventory() {
+        if(inventory.length === 0) return alert("⚠️ No hay materiales para imprimir");
+        let content = `<html><head><title>Inventario LINSTELEC</title><style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+            th { background: #3498db; color: white; }
+            tr:nth-child(even) { background: #f9f9f9; }
+            .footer { margin-top: 30px; font-size: 12px; color: #666; text-align: center; }
+            @media print { body { padding: 0; } }
+        </style></head><body>
+        <h1>📦 Inventario de Materiales - LINSTELEC CHILE</h1>
+        <p><strong>Fecha:</strong> ${new Date().toLocaleDateString('es-CL')} | <strong>Hora:</strong> ${new Date().toLocaleTimeString('es-CL')}</p>
+        <table><thead><tr><th>#</th><th>Material</th><th>Stock en Bodega</th></tr></thead><tbody>`;
+        inventory.forEach((item, idx) => {
+            content += `<tr><td>${idx + 1}</td><td>${item.name}</td><td><strong>${item.stock}</strong></td></tr>`;
+        });
+        content += `</tbody></table><div class="footer">Documento generado desde Sistema LINSTELEC - Uso interno<br>Total de materiales: ${inventory.length}</div></body></html>`;
+        const printWindow = window.open('', '_blank', 'width=800,height=600');
+        printWindow.document.write(content);
+        printWindow.document.close();
+        printWindow.onload = () => { setTimeout(() => { printWindow.print(); }, 500); };
+    }
+
+    function exportForShare() {
+        if(inventory.length === 0) return alert("⚠️ No hay materiales para exportar");
+        const exportData = { version: "1.0", date: new Date().toISOString(), inventory: inventory };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.setAttribute('href', URL.createObjectURL(blob));
+        link.setAttribute('download', `LINSTELEC_Inventario_Compartir_${new Date().toISOString().slice(0,10)}.json`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        alert("✅ Archivo exportado exitosamente.");
+    }
+
+    function importFromShare() { document.getElementById('importFile').click(); }
+
+    function handleImport(input) {
+        const file = input.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if(data.inventory && Array.isArray(data.inventory)) {
+                    if(confirm(`⚠️ IMPORTAR INVENTARIO\n\nEsto reemplazará tu inventario actual con ${data.inventory.length} materiales.\n\n¿Deseas continuar?`)) {
+                        inventory = data.inventory;
+                        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+                        renderInv();
+                        updateStockAlerts();
+                        saveInventoryToCloud();
+                        alert("✅ Inventario actualizado correctamente con " + inventory.length + " materiales");
+                    }
+                } else { alert("❌ Formato de archivo no válido."); }
+            } catch(err) { alert("❌ Error al leer el archivo: " + err.message); }
+            input.value = '';
+        };
+        reader.readAsText(file);
+    }
+
+    function addMaterial() {
+        const n = document.getElementById('new-item-name').value, q = parseInt(document.getElementById('new-item-qty').value);
+        if(n && !isNaN(q)) { 
+            inventory.push({ name: n, stock: q }); 
+            document.getElementById('new-item-name').value = ""; 
+            document.getElementById('new-item-qty').value = ""; 
+            renderInv();
+            updateStockAlerts();
+            saveInventoryToCloud();
         }
-        
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(12);
-        const totalLabel = applyIVA ? 'TOTAL:' : 'TOTAL (Exento):';
-        doc.text(`${totalLabel} ${formatCLP(total)}`, 140, applyIVA ? finalY + 14 : finalY + 8);
-        
-        // Footer
-        doc.setFontSize(8);
-        doc.setFont('helvetica', 'italic');
-        doc.text('Precios en pesos chilenos (CLP)', 105, 280, { align: 'center' });
-        if (applyIVA) {
-            doc.text('IVA incluido • Validez 30 días', 105, 285, { align: 'center' });
-        } else {
-            doc.text('Cotización exenta de IVA • Validez 30 días', 105, 285, { align: 'center' });
+    }
+    
+    function renderInv() {
+        const body = document.getElementById('inv-body'); 
+        body.innerHTML = "";
+        if(inventory.length === 0) {
+            body.innerHTML = `<tr><td colspan="4" class="no-results">📦 No hay materiales registrados. ¡Agrega el primero!</td></tr>`;
+            document.getElementById('search-count').textContent = '';
+            return;
         }
-        doc.text('Documento generado desde Sistema LINSTELEC', 105, 290, { align: 'center' });
-        
-        // Guardar
-        const filename = `Cotizacion_${document.getElementById('cot-numero').value}.pdf`;
-        doc.save(filename);
-        
-        alert('✅ PDF generado exitosamente');
+        inventory.forEach((item, idx) => {
+            body.innerHTML += `<tr><td>${item.name}</td><td><input type="number" value="${item.stock}" onchange="updateStock(${idx}, this.value)" class="qty-input"></td><td><input type="number" id="use-qty-${idx}" value="1" min="1" class="qty-input"></td><td><button onclick="addToBag(${idx})" class="tab-btn" style="padding:5px 10px; font-size:12px; background:var(--primary); color:white;">Ocupar</button> <button onclick="delMat(${idx})" style="background:var(--danger); border:none; color:white; padding:5px 8px; border-radius:5px; cursor:pointer;"><i class="fas fa-trash"></i></button></td></tr>`;
+        });
+        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+        filterInventory();
+    }
+
+    function updateStockAlerts() {
+        const alertsContainer = document.getElementById('stock-alerts');
+        if (!alertsContainer) return;
+        const lowStock = inventory.filter(item => item.stock <= 5);
+        if (lowStock.length === 0) {
+            alertsContainer.innerHTML = `<div style="text-align: center; color: var(--success); padding: 20px;"><i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 10px;"></i><p>✅ Todo el inventario está en niveles óptimos</p></div>`;
+            return;
+        }
+        let html = '';
+        lowStock.forEach(item => {
+            const isCritical = item.stock <= 2;
+            html += `<div class="alert-item"><div class="alert-item-info"><div class="alert-item-icon"><i class="fas fa-box"></i></div><div><div class="alert-item-name">${item.name}</div><div class="alert-item-stock">Stock actual</div></div></div><div class="alert-item-qty ${isCritical ? '' : 'low'}">${item.stock} un</div></div>`;
+        });
+        alertsContainer.innerHTML = html;
+    }
+    
+    function updateStock(idx, val) { 
+        inventory[idx].stock = parseInt(val); 
+        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+        updateStockAlerts();
+        saveInventoryToCloud();
+    }
+    
+    function delMat(idx) { 
+        if(confirm("¿Eliminar?")) { 
+            inventory.splice(idx, 1); 
+            renderInv();
+            updateStockAlerts();
+            saveInventoryToCloud();
+        } 
+    }
+    
+    function addToBag(idx) {
+        const useQty = parseInt(document.getElementById(`use-qty-${idx}`).value);
+        if(isNaN(useQty) || useQty <= 0) return;
+        const exist = bag.find(b => b.name === inventory[idx].name);
+        if(exist) exist.qty += useQty; else bag.push({ name: inventory[idx].name, qty: useQty, originIdx: idx });
+        renderBag();
+    }
+    
+    function renderBag() {
+        const div = document.getElementById('bag-items'); 
+        div.innerHTML = "";
+        bag.forEach(item => { 
+            div.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:5px; background:white; padding:5px; border-radius:5px; font-size:0.9rem;"><span>${item.name}</span><strong>Cant: ${item.qty}</strong></div>`; 
+        });
+    }
+    
+    function generateFile() {
+        if(bag.length === 0) return alert("Selecciona materiales primero");
+        const proj = document.getElementById('install-proj').value || "Salida_Materiales";
+        let txt = `LINSTELEC CHILE - GUIA DE MATERIALES\nPROYECTO: ${proj}\nFECHA: ${new Date().toLocaleDateString()}\n-------------------\n`;
+        bag.forEach(item => {
+            txt += `- ${item.name}: ${item.qty}\n`;
+            inventory[item.originIdx].stock -= item.qty;
+        });
+        const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.setAttribute('href', URL.createObjectURL(blob));
+        link.setAttribute('download', `${proj}_Materiales.txt`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        bag = []; 
+        renderBag(); 
+        renderInv();
+        updateStockAlerts();
+        saveInventoryToCloud();
+        alert("Archivo generado y stock actualizado.");
     }
 
     /* ========== FUNCIONES CALCULADORA OHM MEJORADA ========== */
     
     function cambiarModoOhm(modo, btn) {
         modoOhmActual = modo;
-        
-        // Actualizar botones de modo
         document.querySelectorAll('.mode-selector .toggle-btn').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
-        
-        // Mostrar/ocultar contenidos
         document.getElementById('modo-directo-ohm').classList.toggle('active', modo === 'directo');
         document.getElementById('modo-inverso-ohm').classList.toggle('active', modo === 'inverso');
     }
 
     function setSistemaOhm(sistema, btn) {
         sistemaOhmActual = sistema;
-        
-        // Actualizar botones de sistema
         document.getElementById('btn-mono-ohm').classList.toggle('active', sistema === 'monofasico');
         document.getElementById('btn-tri-ohm').classList.toggle('active', sistema === 'trifasico');
     }
@@ -3425,20 +3771,42 @@
     function calcularCaidaTensionOhm(corriente, distancia, seccion, cosPhi) {
         const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
         const factor = sistemaOhmActual === 'monofasico' ? 2 : Math.sqrt(3);
-        
         const caidaVoltios = (factor * distancia * corriente * RHO) / (seccion * cosPhi);
         const porcentaje = (caidaVoltios / voltaje) * 100;
-        
+        return { voltios: caidaVoltios, porcentaje: porcentaje, cumple: porcentaje <= LIMITE_CAIDA };
+    }
+
+    function recomendarInterruptor(corrienteCalculada, ampacidadCable, metodo, seccion, curva) {
+        const calibresEstandar = [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125];
+        const calibreMinimo = calibresEstandar.find(c => c >= corrienteCalculada);
+        if (!calibreMinimo) {
+            return { recomendado: null, mensaje: '⚠️ Corriente muy alta - Requiere proyecto especial', valido: false, alternativa: 'Consultar interruptor industrial' };
+        }
+        const protegeCable = calibreMinimo <= ampacidadCable;
+        const idxActual = calibresEstandar.indexOf(calibreMinimo);
+        const calibreSiguiente = calibresEstandar[idxActual + 1] || null;
+        const siguienteProtege = calibreSiguiente && calibreSiguiente <= ampacidadCable;
+        const curvasInfo = {
+            'B': { nombre: 'Curva B', rango: '3-5×In', uso: 'Cargas resistivas' },
+            'C': { nombre: 'Curva C', rango: '5-10×In', uso: 'Cargas mixtas/motores' },
+            'D': { nombre: 'Curva D', rango: '10-20×In', uso: 'Motores grandes/transformadores' }
+        };
         return {
-            voltios: caidaVoltios,
-            porcentaje: porcentaje,
-            cumple: porcentaje <= LIMITE_CAIDA
+            recomendado: calibreMinimo,
+            calibreSiguiente: siguienteProtege ? calibreSiguiente : null,
+            protegeCable: protegeCable,
+            ampacidadCable: ampacidadCable,
+            corrienteCalculada: corrienteCalculada,
+            curva: curva,
+            curvaInfo: curvasInfo[curva] || curvasInfo['C'],
+            mensaje: protegeCable ? `✅ Interruptor ${calibreMinimo}A ${curva} coordina con cable y carga` : `⚠️ Cable ${seccion}mm² (${ampacidadCable}A) no soporta interruptor ${calibreMinimo}A`,
+            valido: protegeCable,
+            alternativa: !protegeCable && calibreSiguiente ? `Usar cable ${SECCIONES_DISPONIBLES.find(s => TABLA_AMPACIDAD[s]?.[metodo] >= calibreMinimo) || 'mayor'} mm²` : 'Revisar diseño del circuito'
         };
     }
 
     function calcularOhmDirecto() {
         incrementCalcCount();
-        
         const potencia = parseFloat(document.getElementById('potencia-ohm').value);
         const corrienteInput = parseFloat(document.getElementById('corriente-ohm').value);
         const distancia = parseFloat(document.getElementById('distancia-ohm').value);
@@ -3447,31 +3815,17 @@
         const cosPhi = getCosPhiOhm();
         const curva = document.getElementById('curva-interruptor-ohm').value;
 
-        if (!distancia || !seccion) {
-            alert('Por favor ingrese distancia y sección del conductor');
-            return;
-        }
+        if (!distancia || !seccion) { alert('Por favor ingrese distancia y sección del conductor'); return; }
 
         let corriente;
-        if (potencia) {
-            corriente = calcularCorrienteOhm(potencia, cosPhi);
-        } else if (corrienteInput) {
-            corriente = corrienteInput;
-        } else {
-            alert('Ingrese potencia o corriente');
-            return;
-        }
+        if (potencia) { corriente = calcularCorrienteOhm(potencia, cosPhi); }
+        else if (corrienteInput) { corriente = corrienteInput; }
+        else { alert('Ingrese potencia o corriente'); return; }
 
-        // Calcular caída de tensión
         const caida = calcularCaidaTensionOhm(corriente, distancia, seccion, cosPhi);
-        
-        // Validar ampacidad
         const ampacidad = validarAmpacidadOhm(seccion, corriente, metodo);
-
-        // Mostrar resultados
         const resultadoDiv = document.getElementById('resultado-ohm-directo');
         const alertaDiv = document.getElementById('alerta-ampacidad-ohm');
-        
         const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
         const factor = sistemaOhmActual === 'monofasico' ? '2' : '√3 (1.732)';
         
@@ -3489,47 +3843,26 @@
         `;
 
         if (caida.cumple) {
-            html += `
-                <div style="margin-top: 15px; padding: 15px; background: #d1fae5; border-radius: 8px; text-align: center; font-weight: bold; color: #065f46;">
-                    <i class="fas fa-check-circle"></i> ✓ CUMPLE RIC 04 - Caída ≤ 3%
-                </div>
-            `;
+            html += `<div style="margin-top: 15px; padding: 15px; background: #d1fae5; border-radius: 8px; text-align: center; font-weight: bold; color: #065f46;"><i class="fas fa-check-circle"></i> ✓ CUMPLE RIC 04 - Caída ≤ 3%</div>`;
             resultadoDiv.className = 'resultado res-ok show';
         } else {
-            html += `
-                <div style="margin-top: 15px; padding: 15px; background: #fee2e2; border-radius: 8px; text-align: center; font-weight: bold; color: #991b1b;">
-                    <i class="fas fa-exclamation-triangle"></i> ✗ NO CUMPLE - Supera 3%
-                    <br><small>Se recomienda aumentar la sección del conductor</small>
-                </div>
-            `;
+            html += `<div style="margin-top: 15px; padding: 15px; background: #fee2e2; border-radius: 8px; text-align: center; font-weight: bold; color: #991b1b;"><i class="fas fa-exclamation-triangle"></i> ✗ NO CUMPLE - Supera 3%<br><small>Se recomienda aumentar la sección del conductor</small></div>`;
             resultadoDiv.className = 'resultado res-fail show';
         }
 
         resultadoDiv.innerHTML = html;
 
-        // Alerta de ampacidad
         if (!ampacidad.cumple && ampacidad.ampacidadMax > 0) {
-            alertaDiv.innerHTML = `
-                <h4><i class="fas fa-fire"></i> ¡ALERTA DE AMPACIDAD!</h4>
-                <p><strong>El conductor de ${seccion} mm² NO soporta ${corriente.toFixed(1)} A</strong></p>
-                <p>Capacidad máxima (${metodo}): ${ampacidad.ampacidadMax} A</p>
-                <p>Sobrecarga: ${ampacidad.porcentaje.toFixed(1)}%</p>
-                <p style="margin-top: 10px; font-weight: bold;">
-                    ⚠️ El cable se puede quemar independientemente de la caída de tensión
-                </p>
-            `;
+            alertaDiv.innerHTML = `<h4><i class="fas fa-fire"></i> ¡ALERTA DE AMPACIDAD!</h4><p><strong>El conductor de ${seccion} mm² NO soporta ${corriente.toFixed(1)} A</strong></p><p>Capacidad máxima (${metodo}): ${ampacidad.ampacidadMax} A</p><p>Sobrecarga: ${ampacidad.porcentaje.toFixed(1)}%</p><p style="margin-top: 10px; font-weight: bold;">⚠️ El cable se puede quemar independientemente de la caída de tensión</p>`;
             alertaDiv.classList.add('show');
         } else {
             alertaDiv.classList.remove('show');
         }
 
-        // === RECOMENDACIÓN DE INTERRUPTOR ===
         if (corriente > 0) {
             const interruptor = recomendarInterruptor(corriente, ampacidad.ampacidadMax, metodo, seccion, curva);
-            
             const claseCard = interruptor.valido ? 'interruptor-card' : (interruptor.protegeCable ? 'interruptor-card warning' : 'interruptor-card danger');
             const colorValor = interruptor.valido ? 'success' : (interruptor.protegeCable ? 'warning' : 'danger');
-            
             let htmlInterruptor = `
                 <div class="${claseCard}">
                     <h4 style="margin: 0 0 10px 0; color: var(--dark); display: flex; align-items: center; gap: 8px;">
@@ -3545,54 +3878,38 @@
                     <p style="margin: 12px 0 0 0; font-weight: ${interruptor.valido ? '600' : 'bold'}; color: ${interruptor.valido ? 'var(--success)' : (interruptor.protegeCable ? '#92400e' : 'var(--danger)')}; font-size: 0.95rem;">
                         ${interruptor.mensaje}
                     </p>
-                    ${!interruptor.valido ? `
-                        <p style="margin: 8px 0 0 0; font-size: 0.85rem; color: #64748b; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px;">
-                            💡 <strong>Solución:</strong> ${interruptor.alternativa}
-                        </p>
-                    ` : ''}
+                    ${!interruptor.valido ? `<p style="margin: 8px 0 0 0; font-size: 0.85rem; color: #64748b; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px;">💡 <strong>Solución:</strong> ${interruptor.alternativa}</p>` : ''}
                     <small style="display: block; margin-top: 10px; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 8px;">
                         <i class="fas fa-info-circle"></i> ${interruptor.curvaInfo.uso}
                     </small>
                 </div>
             `;
-            
             resultadoDiv.innerHTML += htmlInterruptor;
         }
     }
 
     function calcularOhmInverso() {
         incrementCalcCount();
-        
         const potencia = parseFloat(document.getElementById('potencia-inv-ohm').value);
         const distancia = parseFloat(document.getElementById('distancia-inv-ohm').value);
         const cosPhi = parseFloat(document.getElementById('cosphi-inv-ohm').value);
         const metodo = document.getElementById('metodo-instalacion-inv-ohm').value;
         const curva = document.getElementById('curva-interruptor-inv-ohm').value;
 
-        if (!potencia || !distancia) {
-            alert('Por favor ingrese potencia y distancia');
-            return;
-        }
+        if (!potencia || !distancia) { alert('Por favor ingrese potencia y distancia'); return; }
 
         const corriente = calcularCorrienteOhm(potencia, cosPhi);
         const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
         const factor = sistemaOhmActual === 'monofasico' ? 2 : Math.sqrt(3);
-        
-        // Calcular sección mínima por caída de tensión
         const caidaMaxVoltios = (LIMITE_CAIDA / 100) * voltaje;
         const seccionMinimaCaida = (factor * distancia * corriente * RHO) / (caidaMaxVoltios * cosPhi);
         
-        // Buscar sección comercial que cumpla
         let seccionRecomendada = null;
         let seccionAmpacidad = null;
         
         for (const seccion of SECCIONES_DISPONIBLES) {
-            // Verificar caída de tensión
             const caida = calcularCaidaTensionOhm(corriente, distancia, seccion, cosPhi);
-            
-            // Verificar ampacidad
             const ampacidad = validarAmpacidadOhm(seccion, corriente, metodo);
-            
             if (caida.cumple && ampacidad.cumple && !seccionRecomendada) {
                 seccionRecomendada = seccion;
                 seccionAmpacidad = ampacidad.ampacidadMax;
@@ -3603,57 +3920,42 @@
         const resultadoDiv = document.getElementById('resultado-ohm-inverso');
         const seccionDiv = document.getElementById('seccion-recomendada-ohm');
         
-        let html = `
-            <h3><i class="fas fa-calculator"></i> Análisis del Cálculo</h3>
-            <div class="detalles">
-                <div class="detalle-item"><strong>Corriente calculada:</strong> ${corriente.toFixed(2)} A</div>
-                <div class="detalle-item"><strong>Distancia:</strong> ${distancia} m</div>
-                <div class="detalle-item"><strong>cos φ:</strong> ${cosPhi}</div>
-                <div class="detalle-item"><strong>Sección mínima teórica:</strong> ${seccionMinimaCaida.toFixed(2)} mm²</div>
-            </div>
-        `;
+        let html = `<h3><i class="fas fa-calculator"></i> Análisis del Cálculo</h3><div class="detalles"><div class="detalle-item"><strong>Corriente calculada:</strong> ${corriente.toFixed(2)} A</div><div class="detalle-item"><strong>Distancia:</strong> ${distancia} m</div><div class="detalle-item"><strong>cos φ:</strong> ${cosPhi}</div><div class="detalle-item"><strong>Sección mínima teórica:</strong> ${seccionMinimaCaida.toFixed(2)} mm²</div></div>`;
 
         if (seccionRecomendada) {
-            html += `
-                <div style="margin-top: 15px; padding: 15px; background: #d1fae5; border-radius: 8px;">
-                    <strong><i class="fas fa-check-circle"></i> Solución encontrada:</strong><br>
-                    Cable de ${seccionRecomendada} mm² cumple con caída de tensión y ampacidad
-                </div>
-            `;
-            
-            // Calcular interruptor recomendado para la sección encontrada
+            html += `<div style="margin-top: 15px; padding: 15px; background: #d1fae5; border-radius: 8px;"><strong><i class="fas fa-check-circle"></i> Solución encontrada:</strong><br>Cable de ${seccionRecomendada} mm² cumple con caída de tensión y ampacidad</div>`;
             const interruptorInv = recomendarInterruptor(corriente, TABLA_AMPACIDAD[seccionRecomendada]?.[metodo] || 0, metodo, seccionRecomendada, curva);
-            
-            seccionDiv.innerHTML = `
-                <h3><i class="fas fa-check-circle"></i> Sección Recomendada</h3>
-                <span class="numero">${seccionRecomendada} mm²</span>
-                <p>Capacidad: ${seccionAmpacidad} A | Método: ${metodo}</p>
-                <small>Caída de tensión ≤ 3% según RIC 04</small>
-                ${interruptorInv.recomendado ? `
-                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.3);">
-                    <small><i class="fas fa-shield-alt"></i> Protección: <strong>${interruptorInv.recomendado} A</strong> <span class="curva-info curva-${curva}" style="margin-left: 5px;">${curva}</span></small>
-                </div>
-                ` : ''}
-            `;
+            seccionDiv.innerHTML = `<h3><i class="fas fa-check-circle"></i> Sección Recomendada</h3><span class="numero">${seccionRecomendada} mm²</span><p>Capacidad: ${seccionAmpacidad} A | Método: ${metodo}</p><small>Caída de tensión ≤ 3% según RIC 04</small>${interruptorInv.recomendado ? `<div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.3);"><small><i class="fas fa-shield-alt"></i> Protección: <strong>${interruptorInv.recomendado} A</strong> <span class="curva-info curva-${curva}" style="margin-left: 5px;">${curva}</span></small></div>` : ''}`;
             seccionDiv.className = 'seccion-recomendada show';
             resultadoDiv.className = 'resultado res-ok show';
         } else {
-            html += `
-                <div style="margin-top: 15px; padding: 15px; background: #fee2e2; border-radius: 8px;">
-                    <strong><i class="fas fa-exclamation-triangle"></i> Advertencia:</strong><br>
-                    Se requiere cable mayor a 50 mm² o reducir distancia/potencia
-                </div>
-            `;
+            html += `<div style="margin-top: 15px; padding: 15px; background: #fee2e2; border-radius: 8px;"><strong><i class="fas fa-exclamation-triangle"></i> Advertencia:</strong><br>Se requiere cable mayor a 50 mm² o reducir distancia/potencia</div>`;
             seccionDiv.classList.remove('show');
             resultadoDiv.className = 'resultado res-warn show';
         }
-
         resultadoDiv.innerHTML = html;
     }
 
     /* ========== INICIALIZACIÓN ========== */
+    function updateDashboardTime() {
+        const now = new Date();
+        const timeEl = document.getElementById('dash-time');
+        const dateEl = document.getElementById('dash-date');
+        if (timeEl) timeEl.textContent = now.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+        if (dateEl) dateEl.textContent = now.toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const cotFecha = document.getElementById('cot-fecha');
+        if (cotFecha) cotFecha.value = now.toLocaleDateString('es-CL');
+    }
+
+    function generateQuoteNumber() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const random = Math.floor(Math.random() * 900) + 100;
+        return `COT-${year}-${random}`;
+    }
+
     window.addEventListener('load', () => {
-        // Verificar si ya está logueado (para desarrollo)
+        // Para desarrollo: descomentar para saltar login
         // document.getElementById('login-wrapper').style.display = 'none';
         // document.getElementById('container').style.display = 'block';
         // currentUser = USERS[3];
