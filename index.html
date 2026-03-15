@@ -953,6 +953,27 @@
                 </select>
             </div>
 
+            <div class="form-group">
+                <label>Corriente Nominal del Interruptor (A):</label>
+                <select id="cc-interruptor">
+                    <option value="6">6 A</option>
+                    <option value="10">10 A</option>
+                    <option value="15">15 A</option>
+                    <option value="16">16 A</option>
+                    <option value="20">20 A</option>
+                    <option value="25" selected>25 A</option>
+                    <option value="32">32 A</option>
+                    <option value="40">40 A</option>
+                    <option value="50">50 A</option>
+                    <option value="63">63 A</option>
+                    <option value="80">80 A</option>
+                    <option value="100">100 A</option>
+                </select>
+                <small style="color: #64748b; display: block; margin-top: 5px;">
+                    💡 Calibre del interruptor termomagnético que protegerá el circuito
+                </small>
+            </div>
+
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="form-group">
                     <label>Longitud del Cable (m):</label>
@@ -1846,73 +1867,110 @@
 
     function calcCortocircuito() {
         incrementCalcCount();
+        
         const tipoSistema = document.querySelector('input[name="ccTipoSistema"]:checked')?.value;
         if (!tipoSistema) {
             mostrarResultadoCC('⚠️ Seleccione tipo de sistema', 'res-fail');
             return;
         }
+        
         const esMonofasico = tipoSistema === 'monofasico';
         const V_nominal = esMonofasico ? 220 : 380;
         const factorSistema = esMonofasico ? 2 : Math.sqrt(3);
+        
         const iccOrigen_kA = parseFloat(document.getElementById('cc-icc-origen')?.value);
         const material = document.getElementById('cc-material')?.value;
         const rho = material === 'cobre' ? 0.018 : 0.028;
         const longitud = parseFloat(document.getElementById('cc-longitud')?.value);
         const seccion = parseFloat(document.getElementById('cc-seccion')?.value);
-        if (isNaN(iccOrigen_kA) || iccOrigen_kA <= 0 || isNaN(longitud) || longitud <= 0 || isNaN(seccion) || seccion <= 0) {
+        const interruptorNominal = parseFloat(document.getElementById('cc-interruptor')?.value);
+        
+        if (isNaN(iccOrigen_kA) || iccOrigen_kA <= 0 || isNaN(longitud) || longitud <= 0 || 
+            isNaN(seccion) || seccion <= 0 || isNaN(interruptorNominal) || interruptorNominal <= 0) {
             mostrarResultadoCC('⚠️ Ingrese valores válidos mayores a cero', 'res-fail');
             return;
         }
+        
         const Z_origen = (V_nominal / (iccOrigen_kA * 1000)) * 1000;
         const R_cable_mOhm = (rho * longitud * factorSistema / seccion) * 1000;
         const incluirX = document.getElementById('cc-reactancia-check')?.checked;
         let Z_total, X_total = 0;
+        
         if (incluirX) {
             const X_origen = parseFloat(document.getElementById('cc-x-origen')?.value) || 0;
             const xCablePorMetro = parseFloat(document.getElementById('cc-x-cable')?.value) || 0;
             const X_cable = xCablePorMetro * longitud;
             X_total = X_origen + X_cable;
-            const R_total = (Z_origen * Z_origen / (Z_origen * Z_origen + X_origen * X_origen)) * Z_origen + R_cable_mOhm;
             Z_total = Math.sqrt(Math.pow(Z_origen + R_cable_mOhm/1000, 2) + Math.pow(X_total/1000, 2)) * 1000;
         } else {
             Z_total = Z_origen + R_cable_mOhm;
         }
+        
         const icc_punto = V_nominal / (Z_total / 1000) / 1000;
         const poderCorteMinimo = icc_punto * 1.25;
-        const interruptorTipico = 25;
-        const iccMinParaActuacion = interruptorTipico * 1.45 / 1000;
+        const iccMinParaActuacion = (interruptorNominal * 1.45) / 1000;
+        const cumpleActuacion = icc_punto >= iccMinParaActuacion;
+        
+        const corrienteAdmisibleCable = obtenerCorrienteAdmisible(seccion, material);
+        const cumpleCable = interruptorNominal <= corrienteAdmisibleCable;
+        
         const materialTexto = material === 'cobre' ? 'Cobre' : 'Aluminio';
         const reactanciaTexto = incluirX ? `<br>• Reactancia total: ${X_total.toFixed(2)} mΩ` : '';
         const metodoTexto = incluirX ? 'Impedancia (R+X)' : 'Resistivo simplificado';
+        
         let html = `
             <div class="resultado res-warn" style="margin-bottom: 15px;">
                 <strong>📊 Datos del Cálculo:</strong><br>
                 • Sistema: ${esMonofasico ? 'Monofásico 220V' : 'Trifásico 380V'}<br>
                 • Icc en origen: ${iccOrigen_kA} kA<br>
                 • Conductor: ${materialTexto} ${seccion} mm² × ${longitud} m<br>
+                • Interruptor: ${interruptorNominal} A<br>
                 • Método: ${metodoTexto}${reactanciaTexto}<br>
                 • Impedancia total: <strong>${Z_total.toFixed(2)} mΩ</strong>
             </div>
-            <div class="resultado ${icc_punto >= iccMinParaActuacion ? 'res-ok' : 'res-fail'}" style="margin-bottom: 15px;">
-                <strong>⚡ Resultado - Cortocircuito en Punto de Falla:</strong><br>
-                <span style="font-size: 1.8rem; display: block; margin: 10px 0;">${icc_punto.toFixed(2)} kA</span>
-                • Corriente de falla calculada<br>
-                • Mínimo para actuación protección (25A): ${iccMinParaActuacion.toFixed(3)} kA<br>
-                <strong style="color: ${icc_punto >= iccMinParaActuacion ? 'var(--success)' : 'var(--danger)'}">
-                    ${icc_punto >= iccMinParaActuacion ? '✓ La protección actuará correctamente' : '✗ Riesgo: Protección podría no actuar'}
+            
+            <div class="resultado ${cumpleActuacion ? 'res-ok' : 'res-fail'}" style="margin-bottom: 15px;">
+                <strong>⚡ Icc en Punto de Falla:</strong><br>
+                <span style="font-size: 2rem; display: block; margin: 10px 0; font-weight: bold;">${icc_punto.toFixed(2)} kA</span>
+                • Corriente de cortocircuito calculada<br>
+                • Mínima para actuación interruptor (${interruptorNominal}A): ${iccMinParaActuacion.toFixed(3)} kA<br>
+                <strong style="color: ${cumpleActuacion ? 'var(--success)' : 'var(--danger)'}; font-size: 1.1rem;">
+                    ${cumpleActuacion ? '✓ La protección ACTUARÁ correctamente' : '✗ PELIGRO: La protección podría NO actuar'}
                 </strong>
             </div>
+            
+            <div class="resultado ${cumpleCable ? 'res-ok' : 'res-fail'}" style="margin-bottom: 15px;">
+                <strong>🔌 Verificación Cable vs Interruptor:</strong><br>
+                • Corriente admisible cable (${seccion} mm² ${materialTexto}): ~${corrienteAdmisibleCable} A<br>
+                • Interruptor instalado: ${interruptorNominal} A<br>
+                <strong style="color: ${cumpleCable ? 'var(--success)' : 'var(--danger)'}">
+                    ${cumpleCable ? '✓ Cable protegido correctamente' : '✗ PELIGRO: Cable sobredimensionado para este interruptor'}
+                </strong>
+            </div>
+            
             <div class="resultado res-warn">
                 <strong>🛡️ Recomendaciones RIC 05:</strong><br>
-                • Poder de corte mínimo recomendado: <strong>${poderCorteMinimo.toFixed(2)} kA</strong><br>
-                • Verificar que interruptores instalados tengan Icn ≥ ${poderCorteMinimo.toFixed(1)} kA<br>
-                • Para selectividad, coordinar curvas tiempo-corriente<br>
-                <small style="display:block; margin-top:8px; color:#64748b;">
-                    💡 Tip: En instalaciones largas, la Icc disminuye. Considere protecciones con mayor sensibilidad.
-                </small>
+                • Poder de corte mínimo interruptor: <strong>${poderCorteMinimo.toFixed(2)} kA</strong><br>
+                • Verificar que Icn del interruptor ≥ ${poderCorteMinimo.toFixed(1)} kA<br>
+                ${!cumpleActuacion ? '<br>⚠️ <strong>SOLUCIÓN:</strong> Reducir longitud, aumentar sección del cable, o usar interruptor de menor calibre (si el cable lo permite)' : ''}
+                ${!cumpleCable ? '<br>⚠️ <strong>SOLUCIÓN:</strong> Aumentar sección del cable o reducir calibre del interruptor' : ''}
             </div>
         `;
+        
         document.getElementById('res-cortocircuito').innerHTML = html;
+    }
+
+    function obtenerCorrienteAdmisible(seccion, material) {
+        const tablaCobre = {
+            1.5: 15, 2.5: 20, 4: 25, 6: 32, 10: 40,
+            16: 50, 25: 63, 35: 80, 50: 100
+        };
+        const tablaAluminio = {
+            1.5: 12, 2.5: 16, 4: 20, 6: 25, 10: 32,
+            16: 40, 25: 50, 35: 63, 50: 80
+        };
+        const tabla = material === 'cobre' ? tablaCobre : tablaAluminio;
+        return tabla[seccion] || 0;
     }
 
     function mostrarResultadoCC(mensaje, clase) {
