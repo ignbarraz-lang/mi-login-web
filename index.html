@@ -661,6 +661,43 @@
         .cotizacion-field label { font-size: 0.85rem; color: #64748b; }
         .cotizacion-field input { padding: 8px 12px; font-size: 0.95rem; }
         
+        /* ===== NUEVOS ESTILOS PARA PESTAÑAS DE COTIZACIÓN ===== */
+        .cotizacion-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0;
+        }
+        .cot-tab-btn {
+            padding: 12px 24px;
+            border: none;
+            background: #f1f5f9;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 10px 10px 0 0;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+        }
+        .cot-tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        .cot-tab-btn:hover:not(.active) {
+            background: #e2e8f0;
+            color: var(--dark);
+        }
+        .cot-tab-content {
+            display: none;
+            padding: 20px 0;
+        }
+        .cot-tab-content.active {
+            display: block;
+        }
+        
         .productos-search {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr auto;
@@ -759,6 +796,51 @@
         .total-label { color: #64748b; }
         .total-value { font-weight: 600; }
         
+        /* ===== ESTILOS PARA INDICADOR DE IVA ===== */
+        .iva-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin: 10px 0;
+        }
+        .iva-applied {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        .iva-exempt {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+        }
+        
+        .iva-toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin: 15px 0;
+        }
+        .iva-toggle-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .iva-toggle-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
         .cotizacion-actions {
             display: flex;
             gap: 10px;
@@ -797,7 +879,8 @@
                 padding: 20px;
                 background: white;
             }
-            .navbar, .calc-tabs, .btn-back, .cotizacion-actions, .productos-search, #search-product {
+            .navbar, .calc-tabs, .btn-back, .cotizacion-actions, .productos-search, #search-product,
+            .cotizacion-tabs, .iva-toggle-group {
                 display: none !important;
             }
             .card { box-shadow: none; border: none; }
@@ -826,6 +909,8 @@
             .cotizacion-table th, .cotizacion-table td { padding: 8px 5px; }
             .cotizacion-table .action-cell { width: 40px; }
             .btn-remove { width: 24px; height: 24px; font-size: 0.8rem; }
+            .cotizacion-tabs { flex-wrap: wrap; }
+            .cot-tab-btn { padding: 10px 16px; font-size: 0.9rem; }
         }
 
         /* ===== NUEVOS ESTILOS PARA CALCULADORA OHM MEJORADA ===== */
@@ -1826,7 +1911,7 @@
             </div>
         </div>
 
-        <!-- ===== NUEVA PESTAÑA: COTIZACIONES ===== -->
+        <!-- ===== NUEVA PESTAÑA: COTIZACIONES CON PESTAÑAS Y IVA ===== -->
         <div id="cotizaciones" class="card">
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="margin: 0;">📋 Generador de Cotizaciones</h2>
@@ -1836,6 +1921,66 @@
             <p style="font-size: 0.85rem; color: #64748b; margin: -10px 0 20px 0;">
                 <i class="fas fa-info-circle"></i> IVA Chile: 19% • Precios en pesos chilenos (CLP)
             </p>
+            
+            <!-- ===== PESTAÑAS DE COTIZACIÓN ===== -->
+            <div class="cotizacion-tabs">
+                <button class="cot-tab-btn active" onclick="switchCotTab('agregar', this)">
+                    <i class="fas fa-plus-circle"></i> Agregar Productos
+                </button>
+                <button class="cot-tab-btn" onclick="switchCotTab('buscar', this)">
+                    <i class="fas fa-search"></i> Buscar y Seleccionar
+                </button>
+            </div>
+            
+            <!-- PESTAÑA 1: AGREGAR PRODUCTOS MANUALMENTE -->
+            <div id="cot-tab-agregar" class="cot-tab-content active">
+                <div class="productos-search">
+                    <div class="form-group">
+                        <label>Nombre del Producto</label>
+                        <input type="text" id="product-name-manual" placeholder="Ej: Interruptor 16A, Cable 6mm²...">
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad</label>
+                        <input type="number" id="product-qty-manual" value="1" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio Unit. (CLP)</label>
+                        <input type="number" id="product-price-manual" placeholder="0" min="0">
+                    </div>
+                    <button class="btn-calc" onclick="addProductManual()" style="padding: 12px; margin-bottom: 1px;">
+                        <i class="fas fa-plus"></i> Agregar
+                    </button>
+                </div>
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">
+                    💡 Ingresa manualmente productos que no estén en la base de datos
+                </p>
+            </div>
+            
+            <!-- PESTAÑA 2: BUSCAR Y SELECCIONAR DE BASE DE DATOS -->
+            <div id="cot-tab-buscar" class="cot-tab-content">
+                <div class="productos-search">
+                    <div class="form-group" style="position: relative;">
+                        <label>Buscar en Base de Datos</label>
+                        <input type="text" id="search-product" placeholder="🔍 Ej: Interruptor, Cable, Tablero..." 
+                               oninput="filterProducts(this.value)" onfocus="showSuggestions()" onblur="hideSuggestionsDelayed()">
+                        <div id="product-suggestions" class="suggestions-list"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad</label>
+                        <input type="number" id="product-qty" value="1" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio Unit. (CLP)</label>
+                        <input type="number" id="product-price" placeholder="0" min="0" readonly>
+                    </div>
+                    <button class="btn-calc" onclick="addProductToQuote()" style="padding: 12px; margin-bottom: 1px;">
+                        <i class="fas fa-cart-plus"></i> Seleccionar
+                    </button>
+                </div>
+                <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">
+                    💡 Selecciona productos de nuestra base de datos con precios predefinidos
+                </p>
+            </div>
             
             <!-- Datos de la cotización -->
             <div class="cotizacion-header">
@@ -1861,25 +2006,15 @@
                 </div>
             </div>
             
-            <!-- Buscador y agregado de productos -->
-            <div class="productos-search">
-                <div class="form-group" style="position: relative;">
-                    <label>Buscar Producto</label>
-                    <input type="text" id="search-product" placeholder="🔍 Ej: Interruptor, Cable, Tablero..." 
-                           oninput="filterProducts(this.value)" onfocus="showSuggestions()" onblur="hideSuggestionsDelayed()">
-                    <div id="product-suggestions" class="suggestions-list"></div>
+            <!-- ===== TOGGLE DE IVA ===== -->
+            <div class="iva-toggle-group">
+                <label>
+                    <input type="checkbox" id="iva-checkbox" checked onchange="toggleIVA()">
+                    <span>Aplicar IVA (19%)</span>
+                </label>
+                <div id="iva-indicator" class="iva-indicator iva-applied">
+                    <i class="fas fa-check-circle"></i> IVA Aplicado
                 </div>
-                <div class="form-group">
-                    <label>Cantidad</label>
-                    <input type="number" id="product-qty" value="1" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Precio Unit. (CLP)</label>
-                    <input type="number" id="product-price" placeholder="0" min="0">
-                </div>
-                <button class="btn-calc" onclick="addProductToQuote()" style="padding: 12px; margin-bottom: 1px;">
-                    <i class="fas fa-plus"></i> Agregar
-                </button>
             </div>
             
             <!-- Tabla de productos en cotización -->
@@ -1897,7 +2032,7 @@
                     <tr>
                         <td colspan="5" class="no-results" style="text-align: center; padding: 30px; color: #64748b;">
                             <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                            Busca y agrega productos para comenzar tu cotización
+                            Agrega productos desde cualquiera de las pestañas para comenzar tu cotización
                         </td>
                     </tr>
                 </tbody>
@@ -1910,13 +2045,16 @@
                         <span class="total-label">Subtotal:</span>
                         <span class="total-value" id="subtotal-value">$0</span>
                     </div>
-                    <div class="total-row">
+                    <div class="total-row" id="iva-row">
                         <span class="total-label">IVA (19%):</span>
                         <span class="total-value" id="iva-value">$0</span>
                     </div>
                     <div class="total-row">
-                        <span class="total-label">TOTAL:</span>
+                        <span class="total-label" id="total-label">TOTAL:</span>
                         <span class="total-value" id="total-value">$0</span>
+                    </div>
+                    <div id="iva-status-text" style="font-size: 0.8rem; color: #64748b; margin-top: 10px; text-align: right;">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i> IVA incluido en el total
                     </div>
                 </div>
             </div>
@@ -1990,12 +2128,13 @@
         baseUrl: "https://api.jsonbin.io/v3/b"
     };
 
-    /* ========== USUARIOS ========== */
+    /* ========== USUARIOS - AGREGADO MARCELO ========== */
     const USERS = [
         { id: "Rodrigo", pass: "1648", name: "Rodrigo Padilla", clase: "Clase D" },
         { id: "Luis", pass: "2507", name: "Luis Rojo", clase: "Clase C" },
         { id: "Isaias", pass: "2071", name: "Isaias Echeverria", clase: "Clase C" },
-        { id: "Brayan", pass: "2025", name: "Brayan Barraza", clase: "Clase D" }
+        { id: "Brayan", pass: "2025", name: "Brayan Barraza", clase: "Clase D" },
+        { id: "Marcelo", pass: "1369", name: "Marcelo", clase: "Adm. Contrato" }  // ✅ NUEVO USUARIO
     ];
 
     let inventory = JSON.parse(localStorage.getItem('linstelec_inv_v2')) || [];
@@ -2042,6 +2181,7 @@
     /* ========== ESTADO DE COTIZACIÓN ========== */
     let quoteItems = [];
     let quoteNumber = generateQuoteNumber();
+    let applyIVA = true; // ✅ Variable para controlar el IVA
 
     /* ========== TABLA DE AMPACIDAD RIC 04 ========== */
     const TABLA_AMPACIDAD = {
@@ -2869,11 +3009,48 @@
         res.innerHTML = mensaje;
     }
 
-    /* ========== FUNCIONES DE COTIZACIONES ========== */
+    /* ========== FUNCIONES DE COTIZACIONES - MODIFICADAS CON PESTAÑAS Y IVA ========== */
+    
+    // ✅ Función para cambiar entre pestañas de cotización
+    function switchCotTab(tabName, btn) {
+        // Actualizar botones de pestaña
+        document.querySelectorAll('.cot-tab-btn').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        
+        // Mostrar/ocultar contenidos de pestañas
+        document.getElementById('cot-tab-agregar').classList.toggle('active', tabName === 'agregar');
+        document.getElementById('cot-tab-buscar').classList.toggle('active', tabName === 'buscar');
+    }
+    
+    // ✅ Función para toggle de IVA
+    function toggleIVA() {
+        applyIVA = document.getElementById('iva-checkbox').checked;
+        const indicator = document.getElementById('iva-indicator');
+        const statusText = document.getElementById('iva-status-text');
+        const ivaRow = document.getElementById('iva-row');
+        const totalLabel = document.getElementById('total-label');
+        
+        if (applyIVA) {
+            indicator.className = 'iva-indicator iva-applied';
+            indicator.innerHTML = '<i class="fas fa-check-circle"></i> IVA Aplicado';
+            statusText.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> IVA incluido en el total';
+            ivaRow.style.display = 'flex';
+            totalLabel.textContent = 'TOTAL:';
+        } else {
+            indicator.className = 'iva-indicator iva-exempt';
+            indicator.innerHTML = '<i class="fas fa-circle-notch"></i> Exento de IVA';
+            statusText.innerHTML = '<i class="fas fa-info-circle" style="color: var(--warning);"></i> Cotización exenta de IVA';
+            ivaRow.style.display = 'none';
+            totalLabel.textContent = 'TOTAL (Exento):';
+        }
+        calculateTotals();
+    }
+    
     function initCotizaciones() {
         document.getElementById('cot-numero').value = quoteNumber;
         updateDashboardTime();
         renderQuoteItems();
+        toggleIVA(); // Inicializar estado de IVA
     }
 
     function formatCLP(amount) {
@@ -2930,13 +3107,47 @@
         document.getElementById('search-product').focus();
     }
 
+    // ✅ Función para agregar producto manualmente (Pestaña 1)
+    function addProductManual() {
+        const name = document.getElementById('product-name-manual').value.trim();
+        const qty = parseInt(document.getElementById('product-qty-manual').value) || 1;
+        const price = parseFloat(document.getElementById('product-price-manual').value) || 0;
+        
+        if (!name || price <= 0) {
+            alert('⚠️ Ingresa un producto válido con nombre y precio');
+            return;
+        }
+        
+        // Buscar si ya existe
+        const existing = quoteItems.find(item => item.name === name);
+        if (existing) {
+            existing.qty += qty;
+        } else {
+            quoteItems.push({
+                id: Date.now(),
+                name: name,
+                qty: qty,
+                price: price
+            });
+        }
+        
+        // Limpiar campos
+        document.getElementById('product-name-manual').value = '';
+        document.getElementById('product-qty-manual').value = '1';
+        document.getElementById('product-price-manual').value = '';
+        
+        renderQuoteItems();
+        calculateTotals();
+    }
+
+    // ✅ Función para agregar producto desde base de datos (Pestaña 2)
     function addProductToQuote() {
         const name = document.getElementById('search-product').value.trim();
         const qty = parseInt(document.getElementById('product-qty').value) || 1;
         const price = parseFloat(document.getElementById('product-price').value) || 0;
         
         if (!name || price <= 0) {
-            alert('⚠️ Ingresa un producto válido con precio');
+            alert('⚠️ Selecciona un producto válido de la base de datos');
             return;
         }
         
@@ -2968,7 +3179,7 @@
         if (quoteItems.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="no-results" style="text-align: center; padding: 30px; color: #64748b;">
                 <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                Busca y agrega productos para comenzar tu cotización
+                Agrega productos desde cualquiera de las pestañas para comenzar tu cotización
             </td></tr>`;
             return;
         }
@@ -3001,9 +3212,10 @@
         calculateTotals();
     }
 
+    // ✅ Función para calcular totales CON/SIN IVA
     function calculateTotals() {
         const subtotal = quoteItems.reduce((sum, item) => sum + (item.qty * item.price), 0);
-        const iva = subtotal * 0.19;
+        const iva = applyIVA ? subtotal * 0.19 : 0;
         const total = subtotal + iva;
         
         document.getElementById('subtotal-value').textContent = formatCLP(subtotal);
@@ -3021,6 +3233,8 @@
             calculateTotals();
             document.getElementById('cot-cliente').value = '';
             document.getElementById('cot-rut').value = '';
+            document.getElementById('product-name-manual').value = '';
+            document.getElementById('search-product').value = '';
             quoteNumber = generateQuoteNumber();
             document.getElementById('cot-numero').value = quoteNumber;
         }
@@ -3039,6 +3253,7 @@
             rut: document.getElementById('cot-rut').value,
             items: quoteItems,
             totals: calculateTotals(),
+            ivaApplied: applyIVA,
             savedAt: new Date().toISOString(),
             user: currentUser?.name
         };
@@ -3051,6 +3266,7 @@
         alert('✅ Cotización guardada localmente');
     }
 
+    // ✅ Función para generar PDF CON/SIN IVA
     function generatePDF() {
         if (quoteItems.length === 0) {
             alert('⚠️ Agrega productos antes de generar PDF');
@@ -3088,6 +3304,18 @@
         doc.text(`${document.getElementById('cot-cliente').value || 'Sin especificar'}`, 40, 70);
         doc.text(`RUT: ${document.getElementById('cot-rut').value || 'Sin especificar'}`, 14, 76);
         
+        // Indicador de IVA en el PDF
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        if (applyIVA) {
+            doc.setTextColor(39, 174, 96); // Verde
+            doc.text('✓ IVA (19%) APLICADO', 14, 83);
+        } else {
+            doc.setTextColor(245, 158, 11); // Amarillo
+            doc.text('⚠ COTIZACIÓN EXENTA DE IVA', 14, 83);
+        }
+        doc.setTextColor(0, 0, 0); // Reset color
+        
         // Tabla de productos
         const tableData = quoteItems.map(item => [
             item.name,
@@ -3097,7 +3325,7 @@
         ]);
         
         doc.autoTable({
-            startY: 85,
+            startY: 92,
             head: [['Producto', 'Cant.', 'Precio Unit.', 'Subtotal']],
             body: tableData,
             theme: 'grid',
@@ -3115,16 +3343,26 @@
         const finalY = doc.lastAutoTable.finalY + 10;
         doc.setFont('helvetica', 'normal');
         doc.text(`Subtotal: ${formatCLP(subtotal)}`, 140, finalY);
-        doc.text(`IVA (19%): ${formatCLP(iva)}`, 140, finalY + 6);
+        
+        if (applyIVA) {
+            doc.text(`IVA (19%): ${formatCLP(iva)}`, 140, finalY + 6);
+        }
+        
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(12);
-        doc.text(`TOTAL: ${formatCLP(total)}`, 140, finalY + 14);
+        const totalLabel = applyIVA ? 'TOTAL:' : 'TOTAL (Exento):';
+        doc.text(`${totalLabel} ${formatCLP(total)}`, 140, applyIVA ? finalY + 14 : finalY + 8);
         
         // Footer
         doc.setFontSize(8);
         doc.setFont('helvetica', 'italic');
-        doc.text('Precios en pesos chilenos (CLP) • IVA incluido • Validez 30 días', 105, 280, { align: 'center' });
-        doc.text('Documento generado desde Sistema LINSTELEC', 105, 285, { align: 'center' });
+        doc.text('Precios en pesos chilenos (CLP)', 105, 280, { align: 'center' });
+        if (applyIVA) {
+            doc.text('IVA incluido • Validez 30 días', 105, 285, { align: 'center' });
+        } else {
+            doc.text('Cotización exenta de IVA • Validez 30 días', 105, 285, { align: 'center' });
+        }
+        doc.text('Documento generado desde Sistema LINSTELEC', 105, 290, { align: 'center' });
         
         // Guardar
         const filename = `Cotizacion_${document.getElementById('cot-numero').value}.pdf`;
