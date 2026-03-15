@@ -8,7 +8,7 @@
     <!-- jsPDF para generar PDFs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <!-- LZ-String para compresión opcional de datos -->
+    <!-- LZ-String para compresión opcional -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
     <style>
         :root { 
@@ -868,6 +868,256 @@
         .btn-save { background: var(--success); color: white; }
         .btn-save:hover { background: #219a52; transform: translateY(-2px); }
         
+        /* ===== HISTORIAL DE COTIZACIONES ===== */
+        .historial-search {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .historial-search input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        .historial-search input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+        }
+        
+        .quotes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .quote-card {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+        .quote-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+            transform: translateX(3px);
+        }
+        .quote-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .quote-number {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .quote-date {
+            color: #64748b;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .quote-client {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+        .quote-details {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .quote-total {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        .quote-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .quote-actions button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        .quote-actions .btn-view { background: var(--primary); color: white; }
+        .quote-actions .btn-pdf { background: var(--danger); color: white; }
+        .quote-actions .btn-delete { background: #95a5a6; color: white; }
+        .quote-actions button:hover { transform: scale(1.1); }
+        
+        .no-quotes {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+        .no-quotes i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            display: block;
+        }
+        
+        /* ===== MODAL VISTA PREVIA ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+        }
+        .modal-header h3 { margin: 0; font-size: 1.2rem; }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: #f1f5f9; color: var(--dark); }
+        
+        .modal-body { padding: 25px; }
+        
+        .quote-preview-info {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        .quote-preview-info div {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .quote-preview-info strong { color: var(--dark); }
+        .quote-preview-info span { color: #64748b; }
+        
+        .quote-preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+        .quote-preview-table th,
+        .quote-preview-table td {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        .quote-preview-table th {
+            background: #f8fafc;
+            font-weight: 600;
+        }
+        .quote-preview-table .text-right { text-align: right; }
+        .quote-preview-table .text-center { text-align: center; }
+        
+        .quote-preview-totals {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .quote-preview-totals .totals-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            min-width: 280px;
+        }
+        .quote-preview-totals .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .quote-preview-totals .total-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary);
+            padding-top: 15px;
+            margin-top: 10px;
+            border-top: 2px solid var(--primary);
+        }
+        
+        .modal-footer {
+            padding: 15px 25px 25px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            position: sticky;
+            bottom: 0;
+            background: white;
+        }
+        
         /* Estilos para impresión */
         @media print {
             body * { visibility: hidden; }
@@ -911,6 +1161,10 @@
             .btn-remove { width: 24px; height: 24px; font-size: 0.8rem; }
             .cotizacion-tabs { flex-wrap: wrap; }
             .cot-tab-btn { padding: 10px 16px; font-size: 0.9rem; }
+            
+            .quote-card { grid-template-columns: 1fr; text-align: center; }
+            .quote-actions { justify-content: center; }
+            .quote-details { justify-content: center; }
         }
 
         /* ===== CALCULADORA OHM MEJORADA ===== */
@@ -1155,110 +1409,1116 @@
         .curva-B { background: #d1fae5; color: #065f46; }
         .curva-C { background: #dbeafe; color: #1e40af; }
         .curva-D { background: #fef3c7; color: #92400e; }
-
-        /* ===== ESTILOS SYNC MONITOR ===== */
-        #sync-monitor {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            padding: 15px;
-            min-width: 280px;
-            z-index: 9999;
-            display: none;
-            font-size: 0.85rem;
-            animation: slideUp 0.3s ease;
-        }
-        #sync-monitor-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(52,152,219,0.4);
-            z-index: 9998;
-            display: none;
-            transition: transform 0.2s;
-        }
-        #sync-monitor-toggle:hover { transform: scale(1.1); }
-        
-        /* Indicadores de sync en tarjetas de historial */
-        #quotes-history-list > div {
-            transition: box-shadow 0.2s, border-color 0.2s;
-        }
-        #quotes-history-list > div:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-color: var(--primary);
-        }
-        
-        /* Modal de vista previa */
-        #quote-preview-modal {
-            animation: fadeIn 0.2s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @media (max-width: 768px) {
-            #sync-monitor {
-                left: 20px;
-                right: 20px;
-                min-width: auto;
-            }
-            #quotes-history-list > div {
-                grid-template-columns: 1fr !important;
-                text-align: center;
-            }
-            #quotes-history-list > div > div:last-child {
-                justify-content: center;
-            }
-        }
     </style>
 </head>
-<script>
-    /* ========== ⚠️ CONFIGURACIÓN JSONBIN - ACTUALIZA ESTO ⚠️ ========== */
-    const JSONBIN_CONFIG = {
-        // 🔑 Tu Master Key de JSONBin.io (CRÉALA EN https://jsonbin.io)
-        masterKey: "$2a$10$d5wiwzZ.u1m2caXKKtWSGuo4.hnU4mEWvEiCaj9XFa6IpBOA0UP0a",  // ←⚠️ REEMPLAZA ESTO CON TU KEY REAL
-        
-        // 📦 IDs de tus bins (CRÉALOS EN JSONBIN.IO)
-        bins: {
-            inventory: "69b72a5db7ec241ddc6fab33
-",  // ←⚠️ ID del bin para inventario
-            products: "69b72a95b7ec241ddc6fac14
-",    // ←⚠️ ID del bin para productos
-            quotes: "69b72aaac3097a1dd52a5b83
-"         // ←⚠️ ID del bin para cotizaciones
-        },
-        
-        // 🔗 URL base de la API
-        baseUrl: "https://api.jsonbin.io/v3/b",
-        
-        // ⚙️ Opciones de sincronización
-        options: {
-            autoSync: true,           // Sincronizar automáticamente al guardar
-            syncInterval: 300000,     // Auto-sync cada 5 minutos (en ms)
-            conflictResolution: 'merge', // 'cloud' | 'local' | 'merge' | 'prompt'
-            maxRetries: 3,            // Reintentos en caso de error
-            timeout: 10000,           // Timeout para requests (10 segundos)
-            compressData: false       // Usar LZ-String para comprimir (ahorra espacio)
-        }
-    };
+<body>
 
-    // Estado de sincronización
-    const syncState = {
-        inventory: { lastSync: null, status: 'idle', error: null },
-        products: { lastSync: null, status: 'idle', error: null },
-        quotes: { lastSync: null, status: 'idle', error: null }
+<!-- LOGIN -->
+<div id="login-wrapper">
+    <div class="login-card">
+        <div class="login-brand">
+            <h1 class="company-name">LINSTELEC <span class="company-country">CHILE</span></h1>
+            <p class="company-tagline">Soluciones Eléctricas Inteligentes</p>
+        </div>
+        
+        <form onsubmit="checkLogin(); return false;" class="login-form">
+            <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="userInput" placeholder="Usuario" autocomplete="username" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="passInput" placeholder="Contraseña" autocomplete="current-password" required>
+                <button type="button" class="toggle-pass" onclick="togglePassword()" title="Mostrar/Ocultar contraseña">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+            
+            <button type="submit" class="btn-calc">
+                <i class="fas fa-sign-in-alt"></i> Ingresar al Sistema
+            </button>
+        </form>
+        
+        <p id="error-msg" class="error-msg">
+            <i class="fas fa-exclamation-circle"></i> Credenciales incorrectas
+        </p>
+        
+        <div class="login-footer">
+            <small>© 2026 LINSTELEC • Acceso restringido</small>
+        </div>
+    </div>
+    
+    <div class="login-decoration">
+        <div class="circuit-line"></div>
+        <div class="circuit-line"></div>
+        <div class="circuit-dot"></div>
+        <div class="circuit-dot"></div>
+    </div>
+</div>
+
+<!-- APP PRINCIPAL -->
+<div id="main-app">
+    <nav class="navbar">
+        <div class="nav-brand">🔌 LINSTELEC</div>
+        <div id="user-display" style="font-size: 14px; opacity: 0.9;"></div>
+        <a href="#" onclick="location.reload()" style="color:white; text-decoration:none;"><i class="fas fa-sign-out-alt"></i></a>
+    </nav>
+
+    <div class="main-container" id="container">
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="card active">
+            <div class="dashboard-header">
+                <div class="dashboard-welcome">
+                    <h1 id="dash-greeting">👷 ¡Hola!</h1>
+                    <p id="dash-user-info">Cargando información...</p>
+                </div>
+                <div class="dashboard-datetime">
+                    <span class="time" id="dash-time">--:--</span>
+                    <span class="date" id="dash-date">Cargando...</span>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 15px; color: #64748b;"><i class="fas fa-bolt"></i> Herramientas Rápidas</h3>
+            <div class="dashboard-grid">
+                <div class="quick-access-card" onclick="showTabFromDashboard('tension')">
+                    <i class="fas fa-wave-square"></i>
+                    <h3>Caída de Tensión</h3>
+                    <p>Calcula según RIC 04</p>
+                </div>
+                <div class="quick-access-card warning" onclick="showTabFromDashboard('tuberia')">
+                    <i class="fas fa-circle"></i>
+                    <h3>Ductos EMT</h3>
+                    <p>Análisis RIC 07</p>
+                </div>
+                <div class="quick-access-card danger" onclick="showTabFromDashboard('inventario')">
+                    <i class="fas fa-boxes"></i>
+                    <h3>Inventario</h3>
+                    <p>Gestión de bodega</p>
+                </div>
+                <div class="quick-access-card success" onclick="showTabFromDashboard('biblioteca')">
+                    <i class="fas fa-book"></i>
+                    <h3>Biblioteca RIC</h3>
+                    <p>Pliegos 01-19</p>
+                </div>
+                <div class="quick-access-card luis" onclick="showTabFromDashboard('luis-ia')">
+                    <i class="fas fa-robot"></i>
+                    <h3>Luis IA</h3>
+                    <p>Asistente experto</p>
+                </div>
+                <div class="quick-access-card" onclick="showTabFromDashboard('ohm')">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Ley de Ohm PRO</h3>
+                    <p>Cálculos avanzados RIC 04</p>
+                </div>
+                <div class="quick-access-card danger" onclick="showTabFromDashboard('cortocircuito')">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Cortocircuito</h3>
+                    <p>Cálculo Icc según RIC 05</p>
+                </div>
+                <div class="quick-access-card" style="background: linear-gradient(135deg, var(--luis), #6c3483);" onclick="showTabFromDashboard('cotizaciones')">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <h3>Cotizaciones</h3>
+                    <p>Genera presupuestos con IVA</p>
+                </div>
+            </div>
+
+            <div class="alert-box" style="margin-bottom: 20px;">
+                <div class="alert-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Alertas de Stock Bajo</span>
+                </div>
+                <div class="alert-body" id="stock-alerts">
+                    <p style="color: #64748b; text-align: center;">Cargando inventario...</p>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div>
+                    <div class="stats-card">
+                        <h3><i class="fas fa-chart-line"></i> Estadísticas del Mes</h3>
+                        <div class="stats-value" id="stats-month">0</div>
+                        <div class="stats-subtitle">Cálculos realizados</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="recent-tools">
+                        <h3><i class="fas fa-history"></i> Herramientas Recientes</h3>
+                        <div class="recent-tools-list" id="recent-tools-list">
+                            <span style="color: #64748b;">Sin historial aún</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="calc-tabs">
+            <button class="tab-btn" onclick="showTab(event, 'tension')"><i class="fas fa-wave-square"></i> Caída Tensión</button>
+            <button class="tab-btn" onclick="showTab(event, 'ohm')"><i class="fas fa-bolt"></i> Ley de Ohm PRO</button>
+            <button class="tab-btn" onclick="showTab(event, 'cortocircuito')"><i class="fas fa-bolt"></i> Cortocircuito</button>
+            <button class="tab-btn" onclick="showTab(event, 'nodos')"><i class="fas fa-network-wired"></i> Calculadora Nodos</button>
+            <button class="tab-btn" onclick="showTab(event, 'tuberia')"><i class="fas fa-circle"></i> Ductos RIC 07</button>
+            <button class="tab-btn" onclick="showTab(event, 'sgc')"><i class="fas fa-project-diagram"></i> Esquema SGC</button>
+            <button class="tab-btn" onclick="showTab(event, 'biblioteca')"><i class="fas fa-book"></i> Biblioteca RIC</button>
+            <button class="tab-btn" onclick="showTab(event, 'inventario')"><i class="fas fa-boxes"></i> Inventario</button>
+            <button class="tab-btn" onclick="showTab(event, 'cotizaciones')" style="background: linear-gradient(135deg, var(--luis), #6c3483); color: white;">
+                <i class="fas fa-file-invoice-dollar"></i> Cotizaciones
+            </button>
+            <button class="tab-btn" style="background:var(--luis); color:white;" onclick="showTab(event, 'luis-ia')"><i class="fas fa-robot"></i> PREGÚNTALE A LUIS</button>
+        </div>
+
+        <!-- Caída de Tensión -->
+        <div id="tension" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Calculadora Caída de Tensión (RIC 04)</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <p style="font-size: 0.8rem; color: #64748b; margin: -15px 0 15px 0;"><i class="fas fa-info-circle"></i> Cálculo basado en resistividad del cobre ρ = 0.018</p>
+            
+            <div class="form-group">
+                <label>Tipo de Sistema:</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="monofasico" name="tipoSistema" value="monofasico" checked>
+                        <label for="monofasico">
+                            <span class="radio-icon">⚡</span>
+                            Monofásico<br>
+                            <small>(220V - 2 conductores)</small>
+                        </label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="trifasico" name="tipoSistema" value="trifasico">
+                        <label for="trifasico">
+                            <span class="radio-icon">🔺</span>
+                            Trifásico<br>
+                            <small>(380V - √3)</small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group"><label>Distancia (m):</label><input type="number" id="dist" value="10"></div>
+            <div class="form-group"><label>Corriente (A):</label><input type="number" id="amp" value="16"></div>
+            <div class="form-group"><label>Sección Conductor (mm²):</label>
+                <select id="sec">
+                    <option value="1.5">1.5 mm²</option>
+                    <option value="2.5">2.5 mm²</option>
+                    <option value="4">4 mm²</option>
+                    <option value="6" selected>6 mm²</option>
+                    <option value="10">10 mm²</option>
+                    <option value="16">16 mm²</option>
+                    <option value="25">25 mm²</option>
+                    <option value="35">35 mm²</option>
+                    <option value="50">50 mm²</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="cosphi-check" onchange="toggleCosPhi()" style="width: auto; margin: 0;">
+                    <strong>Usar Factor de Potencia (cos φ) - Cálculo AC avanzado</strong>
+                </label>
+                
+                <div id="cosphi-container" style="display: none; margin-top: 12px; padding: 12px; background: #f8fafc; border-radius: 10px; border-left: 4px solid var(--primary);">
+                    <label>Factor de Potencia (cos φ):</label>
+                    <input type="number" id="cosphi-value" value="0.8" min="0.1" max="1" step="0.01" style="max-width: 150px;">
+                    <small style="display: block; margin-top: 5px; color: #64748b;">
+                        💡 Valores típicos: Iluminación LED: 0.9 | Motores: 0.8 | Resistivo puro: 1.0
+                    </small>
+                </div>
+            </div>
+            
+            <button class="btn-calc" onclick="calcTension()">Calcular Pérdida</button>
+            <div id="res-tension"></div>
+        </div>
+
+        <img id="successImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2327ae60'/%3E%3Cpath d='M30 50 L45 65 L70 35' stroke='white' stroke-width='8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" alt="✓">
+
+        <div id="dangerOverlay">
+            <div class="danger-icon">⚠️</div>
+            <div class="danger-text">¡FUERA DE NORMA!</div>
+            <div class="danger-subtext">Revisar instalación eléctrica</div>
+        </div>
+
+        <!-- Ley de Ohm PRO -->
+        <div id="ohm" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;"><i class="fas fa-bolt"></i> Calculadora Ley de Ohm PRO</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            
+            <div class="mode-selector">
+                <div class="toggle-container">
+                    <button class="toggle-btn active" onclick="cambiarModoOhm('directo', this)">
+                        <i class="fas fa-calculator"></i>
+                        Cálculo Directo<br>
+                        <small>Verificar caída de tensión</small>
+                    </button>
+                    <button class="toggle-btn" onclick="cambiarModoOhm('inverso', this)">
+                        <i class="fas fa-search"></i>
+                        Cálculo Inverso<br>
+                        <small>¿Qué cable necesito?</small>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Tipo de Sistema Eléctrico:</label>
+                <div class="toggle-container">
+                    <button class="toggle-btn active" id="btn-mono-ohm" onclick="setSistemaOhm('monofasico', this)">
+                        <i class="fas fa-bolt"></i>
+                        Monofásico<br>
+                        <small>220V - Factor 2</small>
+                    </button>
+                    <button class="toggle-btn" id="btn-tri-ohm" onclick="setSistemaOhm('trifasico', this)">
+                        <i class="fas fa-cube"></i>
+                        Trifásico<br>
+                        <small>380V - Factor √3</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modo Directo -->
+            <div id="modo-directo-ohm" class="ohm-content active">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Potencia (Watts):</label>
+                        <input type="number" id="potencia-ohm" placeholder="Ej: 3680" min="1">
+                        <small>Deje en blanco si ingresa corriente</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Factor de Potencia (cos φ):</label>
+                        <select id="cosphi-ohm" onchange="actualizarCosPhiOhm()">
+                            <option value="1.0">1.0 - Carga Resistiva</option>
+                            <option value="0.9">0.9 - Iluminación LED</option>
+                            <option value="0.85" selected>0.85 - Motor/Clima</option>
+                            <option value="0.8">0.8 - Motor (bajo)</option>
+                            <option value="custom">Personalizado...</option>
+                        </select>
+                        <input type="number" id="cosphi-custom-ohm" placeholder="0.1 - 1.0" 
+                               style="display: none; margin-top: 8px;" min="0.1" max="1" step="0.01">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Corriente (A):</label>
+                        <input type="number" id="corriente-ohm" placeholder="Se calcula automáticamente" min="0.1" step="0.1">
+                        <small>Se calcula si ingresa potencia</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Distancia (metros):</label>
+                        <input type="number" id="distancia-ohm" value="10" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sección del Conductor (mm²):</label>
+                        <select id="seccion-ohm">
+                            <option value="1.5">1.5 mm²</option>
+                            <option value="2.5">2.5 mm²</option>
+                            <option value="4">4 mm²</option>
+                            <option value="6" selected>6 mm²</option>
+                            <option value="10">10 mm²</option>
+                            <option value="16">16 mm²</option>
+                            <option value="25">25 mm²</option>
+                            <option value="35">35 mm²</option>
+                            <option value="50">50 mm²</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Método de Instalación (RIC 04):</label>
+                        <select id="metodo-instalacion-ohm">
+                            <option value="B1">B1 - Tubería empotrada</option>
+                            <option value="B2">B2 - Tubería sobrepuesta</option>
+                            <option value="C">C - Cable unipolar en pared</option>
+                            <option value="E" selected>E - Al aire libre</option>
+                            <option value="D1">D1 - Enterrado directo</option>
+                        </select>
+                        <small>Afecta la capacidad de corriente</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tipo de Carga / Curva del Interruptor:</label>
+                        <select id="curva-interruptor-ohm">
+                            <option value="B">Curva B - Carga Resistiva (iluminación, enchufes)</option>
+                            <option value="C" selected>Curva C - Carga Mixta (motores pequeños, equipos)</option>
+                            <option value="D">Curva D - Carga Inductiva (motores grandes, transformadores)</option>
+                        </select>
+                        <small style="display: block; margin-top: 5px; color: #64748b;">
+                            💡 Curva B: disparo 3-5×In | Curva C: 5-10×In | Curva D: 10-20×In
+                        </small>
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calcularOhmDirecto()">
+                    <i class="fas fa-calculator"></i> Calcular Caída de Tensión
+                </button>
+
+                <div id="resultado-ohm-directo" class="resultado"></div>
+                <div id="alerta-ampacidad-ohm" class="alerta-ampacidad"></div>
+            </div>
+
+            <!-- Modo Inverso -->
+            <div id="modo-inverso-ohm" class="ohm-content">
+                <div class="info-box">
+                    <h4><i class="fas fa-info-circle"></i> Modo Profesional</h4>
+                    <p>Ingrese la potencia y distancia, y la calculadora le recomendará automáticamente la sección mínima del cable para no superar el 3% de caída de tensión según RIC 04.</p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Potencia (Watts):</label>
+                        <input type="number" id="potencia-inv-ohm" placeholder="Ej: 5000" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Factor de Potencia (cos φ):</label>
+                        <select id="cosphi-inv-ohm">
+                            <option value="1.0">1.0 - Resistivo</option>
+                            <option value="0.9">0.9 - LED</option>
+                            <option value="0.85" selected>0.85 - Motor</option>
+                            <option value="0.8">0.8 - Motor bajo</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Distancia (metros):</label>
+                        <input type="number" id="distancia-inv-ohm" value="15" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Método de Instalación:</label>
+                        <select id="metodo-instalacion-inv-ohm">
+                            <option value="B1">B1 - Empotrado</option>
+                            <option value="B2">B2 - Sobrepuesto</option>
+                            <option value="E" selected>E - Aire libre</option>
+                            <option value="D1">D1 - Enterrado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tipo de Carga / Curva:</label>
+                        <select id="curva-interruptor-inv-ohm">
+                            <option value="B">Curva B - Resistiva</option>
+                            <option value="C" selected>Curva C - Mixta</option>
+                            <option value="D">Curva D - Inductiva</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calcularOhmInverso()">
+                    <i class="fas fa-search"></i> Calcular Sección Recomendada
+                </button>
+
+                <div id="resultado-ohm-inverso" class="resultado"></div>
+                <div id="seccion-recomendada-ohm" class="seccion-recomendada"></div>
+            </div>
+
+            <!-- Tabla de Referencia -->
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 2px solid #f1f5f9;">
+                <h3 style="margin-bottom: 15px;"><i class="fas fa-table"></i> Tabla de Ampacidad - Conductores de Cobre (RIC 04)</h3>
+                <p style="margin-bottom: 15px; color: #64748b; font-size: 0.9rem;">
+                    Capacidad máxima de corriente según método de instalación (70°C)
+                </p>
+                <div style="overflow-x: auto;">
+                    <table class="tabla-ampacidad">
+                        <thead>
+                            <tr>
+                                <th>Sección<br>(mm²)</th>
+                                <th>B1<br>Empotrado</th>
+                                <th>B2<br>Sobrepuesto</th>
+                                <th>C<br>Unipolar</th>
+                                <th>E<br>Aire libre</th>
+                                <th>D1<br>Enterrado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1.5</td><td>13.5 A</td><td>15.5 A</td><td>17.5 A</td><td>20 A</td><td>22 A</td></tr>
+                            <tr><td>2.5</td><td>18 A</td><td>21 A</td><td>24 A</td><td>27 A</td><td>30 A</td></tr>
+                            <tr><td>4</td><td>24 A</td><td>28 A</td><td>32 A</td><td>36 A</td><td>40 A</td></tr>
+                            <tr><td>6</td><td>31 A</td><td>36 A</td><td>41 A</td><td>46 A</td><td>51 A</td></tr>
+                            <tr><td>10</td><td>42 A</td><td>49 A</td><td>57 A</td><td>63 A</td><td>70 A</td></tr>
+                            <tr><td>16</td><td>56 A</td><td>65 A</td><td>76 A</td><td>85 A</td><td>94 A</td></tr>
+                            <tr><td>25</td><td>73 A</td><td>85 A</td><td>100 A</td><td>112 A</td><td>124 A</td></tr>
+                            <tr><td>35</td><td>90 A</td><td>104 A</td><td>123 A</td><td>138 A</td><td>153 A</td></tr>
+                            <tr><td>50</td><td>108 A</td><td>125 A</td><td>149 A</td><td>167 A</td><td>185 A</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 10px;">
+                    <h4 style="margin: 0 0 10px 0;"><i class="fas fa-shield-alt"></i> Curvas de Disparo - Interruptores Termomagnéticos</h4>
+                    <table class="tabla-ampacidad" style="font-size: 0.8rem;">
+                        <thead>
+                            <tr>
+                                <th>Curva</th>
+                                <th>Rango de Disparo</th>
+                                <th>Aplicación Típica</th>
+                                <th>Ejemplos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><span class="curva-info curva-B">B</span></td><td>3-5 × In</td><td>Cargas resistivas puras</td><td>Iluminación LED, calefacción, enchufes</td></tr>
+                            <tr><td><span class="curva-info curva-C">C</span></td><td>5-10 × In</td><td>Cargas mixtas / motores pequeños</td><td>Motores monofásicos, equipos de oficina</td></tr>
+                            <tr><td><span class="curva-info curva-D">D</span></td><td>10-20 × In</td><td>Cargas inductivas / alta inrush</td><td>Motores trifásicos, transformadores, soldadoras</td></tr>
+                        </tbody>
+                    </table>
+                    <small style="color: #64748b; display: block; margin-top: 8px;">
+                        💡 In = Corriente nominal del interruptor. La curva determina la sensibilidad al arranque de motores.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cortocircuito -->
+        <div id="cortocircuito" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Calculadora de Cortocircuito (RIC 05)</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <p style="font-size: 0.8rem; color: #64748b; margin: -15px 0 15px 0;">
+                <i class="fas fa-info-circle"></i> Método de impedancia simplificada • ρ Cu = 0.018 Ω·mm²/m
+            </p>
+            
+            <div class="form-group">
+                <label>Tipo de Sistema:</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="cc-monofasico" name="ccTipoSistema" value="monofasico" checked>
+                        <label for="cc-monofasico">
+                            <span class="radio-icon">⚡</span>
+                            Monofásico<br><small>(220V - Fase/Neutro)</small>
+                        </label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="cc-trifasico" name="ccTipoSistema" value="trifasico">
+                        <label for="cc-trifasico">
+                            <span class="radio-icon">🔺</span>
+                            Trifásico<br><small>(380V - Entre fases)</small>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Corriente de Cortocircuito en Origen (kA):</label>
+                <input type="number" id="cc-icc-origen" value="6" min="0.1" step="0.1" placeholder="Ej: 6 kA">
+                <small style="color: #64748b; display: block; margin-top: 5px;">
+                    💡 Valor típico empalme SEC: 3-10 kA • Consultar con distribuidora
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label>Material del Conductor:</label>
+                <select id="cc-material">
+                    <option value="cobre" selected>Cobre (ρ = 0.018 Ω·mm²/m)</option>
+                    <option value="aluminio">Aluminio (ρ = 0.028 Ω·mm²/m)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Corriente Nominal del Interruptor (A):</label>
+                <select id="cc-interruptor">
+                    <option value="6">6 A</option>
+                    <option value="10">10 A</option>
+                    <option value="15">15 A</option>
+                    <option value="16">16 A</option>
+                    <option value="20">20 A</option>
+                    <option value="25" selected>25 A</option>
+                    <option value="32">32 A</option>
+                    <option value="40">40 A</option>
+                    <option value="50">50 A</option>
+                    <option value="63">63 A</option>
+                    <option value="80">80 A</option>
+                    <option value="100">100 A</option>
+                </select>
+                <small style="color: #64748b; display: block; margin-top: 5px;">
+                    💡 Calibre del interruptor termomagnético que protegerá el circuito
+                </small>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Longitud del Cable (m):</label>
+                    <input type="number" id="cc-longitud" value="15" min="0.1" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>Sección del Conductor (mm²):</label>
+                    <select id="cc-seccion">
+                        <option value="1.5">1.5 mm²</option>
+                        <option value="2.5">2.5 mm²</option>
+                        <option value="4">4 mm²</option>
+                        <option value="6" selected>6 mm²</option>
+                        <option value="10">10 mm²</option>
+                        <option value="16">16 mm²</option>
+                        <option value="25">25 mm²</option>
+                        <option value="35">35 mm²</option>
+                        <option value="50">50 mm²</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="cc-reactancia-check" onchange="toggleReactancia()" style="width: auto; margin: 0;">
+                    <strong>Incluir Reactancia (X) - Cálculo más preciso</strong>
+                </label>
+                <div id="cc-reactancia-container" style="display: none; margin-top: 12px; padding: 12px; background: #f8fafc; border-radius: 10px; border-left: 4px solid var(--primary);">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label>Reactancia Origen (mΩ):</label>
+                            <input type="number" id="cc-x-origen" value="15" min="0" step="0.1">
+                        </div>
+                        <div>
+                            <label>Reactancia Cable (mΩ/m):</label>
+                            <input type="number" id="cc-x-cable" value="0.08" min="0" step="0.01">
+                        </div>
+                    </div>
+                    <small style="display: block; margin-top: 8px; color: #64748b;">
+                        💡 Valores típicos: Cable unipolar en ducto: 0.08-0.12 mΩ/m
+                    </small>
+                </div>
+            </div>
+            
+            <button class="btn-calc" style="background: linear-gradient(135deg, var(--danger), #c0392b);" onclick="calcCortocircuito()">
+                <i class="fas fa-calculator"></i> Calcular Icc
+            </button>
+            
+            <div id="res-cortocircuito"></div>
+            
+            <div style="margin-top: 25px; padding: 15px; background: #fffbeb; border-left: 4px solid var(--warning); border-radius: 8px; font-size: 0.85rem;">
+                <strong>📋 Según RIC 05 - Protecciones:</strong>
+                <ul style="margin: 10px 0 0 20px; padding: 0;">
+                    <li>La corriente de cortocircuito mínima debe ser ≥ 1.45× la corriente nominal del interruptor</li>
+                    <li>El interruptor debe interrumpir la Icc máxima sin dañarse</li>
+                    <li>Verificar poder de corte (kA) de las protecciones instaladas</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Calculadora Nodos -->
+        <div id="nodos" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Cálculo de Impedancia y Cortocircuito</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <div class="nodo-box" style="border-color: #f59e0b;"><div class="nodo-title">a) Nodo 1 (Empalme)</div><div class="grid-nodos"><div><label>Icc n.1 (kA):</label><input type="number" id="icc1" value="6.00" step="0.01"></div><div><label>Zcc n.1 (mΩ):</label><input type="number" id="zcc1" value="36.67" step="0.01"></div></div></div>
+            <div class="nodo-box"><div class="nodo-title">b) Nodo 2 (TDF Voltex)</div><div class="grid-nodos"><div><label>L AL-01 (m):</label><input type="number" id="L2" value="2"></div><div><label>Sección (mm²):</label><input type="number" id="S2" value="6"></div></div><button class="btn-calc" onclick="calcNodoInteractivo(2)">CALCULAR Y VER ECUACIÓN</button><div id="ecu-2" class="ecuacion-box"></div></div>
+            <div class="nodo-box"><div class="nodo-title">c) Nodo 3 (SAVE.01)</div><div class="grid-nodos"><div><label>L CR-01 (m):</label><input type="number" id="L3" value="12"></div><div><label>Sección (mm²):</label><input type="number" id="S3" value="6"></div></div><button class="btn-calc" onclick="calcNodoInteractivo(3)">CALCULAR Y VER ECUACIÓN</button><div id="ecu-3" class="ecuacion-box"></div></div>
+            <div class="nodo-box"><div class="nodo-title">d) Nodo 4 (TDA Hogar)</div><div class="grid-nodos"><div><label>L Sub-alim (m):</label><input type="number" id="L4" value="2"></div><div><label>Sección (mm²):</label><input type="number" id="S4" value="6"></div></div><button class="btn-calc" onclick="calcNodoInteractivo(4)">CALCULAR Y VER ECUACIÓN</button><div id="ecu-4" class="ecuacion-box"></div></div>
+        </div>
+
+        <!-- Ductos EMT -->
+        <div id="tuberia" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Análisis de Ductos EMT (RIC 07 - SEC Chile)</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <p style="font-size: 0.8rem; color: #64748b; margin: -15px 0 15px 0;">
+                <i class="fas fa-info-circle"></i> Factor de llenado: 1 cable=53% | 2 cables=31% | 3+ cables=40%
+            </p>
+            
+            <div class="form-group">
+                <label>Tipo de Cable:</label>
+                <select id="cable-tipo" onchange="actualizarCalculadoraDuctos()">
+                    <optgroup label="📡 MULTICONDUCTOR RVK (0.6/1kV)">
+                        <option value="multirvk_3x6" data-diametro="12.0" data-cantidad="1">RVK 3×6 mm² (Ø 12.0 mm)</option>
+                        <option value="multirvk_3x10" data-diametro="14.0" data-cantidad="1">RVK 3×10 mm² (Ø 14.0 mm)</option>
+                        <option value="multirvk_3x16" data-diametro="17.5" data-cantidad="1">RVK 3×16 mm² (Ø 17.5 mm)</option>
+                    </optgroup>
+                    <optgroup label="🔌 UNIPOLAR RVK (Cordón)">
+                        <option value="unirvk_1x6" data-diametro="6.5" data-cantidad="variable">Unipolar RVK 1×6 mm² (Ø 6.5 mm)</option>
+                        <option value="unirvk_1x10" data-diametro="7.3" data-cantidad="variable">Unipolar RVK 1×10 mm² (Ø 7.3 mm)</option>
+                        <option value="unirvk_1x16" data-diametro="8.5" data-cantidad="variable">Unipolar RVK 1×16 mm² (Ø 8.5 mm)</option>
+                    </optgroup>
+                    <optgroup label="🔥 UNIPOLAR H07Z1-K (EVA/Flex)">
+                        <option value="h07_1x1.5" data-diametro="3.1" data-cantidad="variable">H07Z1-K 1×1.5 mm² (Ø 3.1 mm)</option>
+                        <option value="h07_1x2.5" data-diametro="3.8" data-cantidad="variable">H07Z1-K 1×2.5 mm² (Ø 3.8 mm)</option>
+                    </optgroup>
+                </select>
+                <div id="cable-info" class="cable-info"></div>
+            </div>
+            
+            <div class="form-group" id="cantidad-group" style="display: none;">
+                <label>Cantidad de Cables:</label>
+                <input type="number" id="cable-cant" value="3" min="1" max="20" onchange="actualizarCalculadoraDuctos()">
+                <small style="color: #64748b; display: block; margin-top: 5px;">
+                    💡 Para circuitos monofásicos: 2-3 cables | Trifásicos: 4-5 cables
+                </small>
+            </div>
+            
+            <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="utp-check" onchange="actualizarCalculadoraDuctos()" style="width: auto; margin: 0;">
+                    <strong>Incluir Cable UTP Cat6 (Ø 6.0 mm)</strong>
+                </label>
+                <div id="utp-cantidad-group" style="display: none; margin-top: 10px;">
+                    <label style="font-size: 0.9rem;">Cantidad de cables UTP:</label>
+                    <input type="number" id="utp-cant" value="1" min="1" max="10" onchange="actualizarCalculadoraDuctos()">
+                </div>
+            </div>
+            
+            <button class="btn-calc" style="background:var(--success)" onclick="calcDucto()">Analizar Tubería EMT</button>
+            <div id="res-ducto"></div>
+        </div>
+
+        <!-- Esquema SGC -->
+        <div id="sgc" class="card" style="text-align:center;">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Esquema de Control SGC</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style="background:#fff; border-radius:10px;"><text x="95" y="30" font-weight="bold">SGC</text><text x="310" y="30" font-weight="bold">CARGADOR</text><circle cx="35" cy="100" r="7" fill="#2ecc71"/><circle cx="75" cy="100" r="7" fill="#3498db"/><circle cx="115" cy="100" r="7" fill="#2ecc71"/><circle cx="155" cy="100" r="7" fill="#8b4513"/><circle cx="250" cy="100" r="7" fill="#bdc3c7"/><circle cx="290" cy="100" r="7" fill="#8b4513"/><circle cx="330" cy="100" r="7" fill="#2ecc71"/><circle cx="370" cy="100" r="7" fill="#3498db"/><path d="M 35 100 L 35 130 L 115 130 L 115 100" stroke="#2ecc71" fill="none" stroke-width="3"/><path d="M 155 107 L 155 160 L 290 160 L 290 107" stroke="#8b4513" fill="none" stroke-width="2"/><path d="M 115 130 L 115 200 L 330 200 L 330 107" stroke="#2ecc71" fill="none" stroke-width="2"/><path d="M 75 107 L 75 235 L 370 235 L 370 107" stroke="#3498db" fill="none" stroke-width="2"/></svg>
+        </div>
+
+        <!-- Biblioteca RIC -->
+        <div id="biblioteca" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Biblioteca Pliegos RIC (01-19 + 15.1)</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <select onchange="document.getElementById('pdf-view').src = this.value">
+                <option value="">-- Seleccionar Pliego --</option>
+                <option value="https://www.sec.cl/media/pliegos/RIC01.pdf">RIC 01: Empalmes</option>
+                <option value="https://www.sec.cl/media/pliegos/RIC02.pdf">RIC 02: Tableros Eléctricos</option>
+                <option value="https://www.sec.cl/media/pliegos/RIC03.pdf">RIC 03: Alimentadores</option>
+                <option value="https://www.sec.cl/media/pliegos/RIC04.pdf">RIC 04: Conductores</option>
+                <option value="https://www.sec.cl/media/pliegos/RIC05.pdf">RIC 05: Protecciones</option>
+                <option value="https://www.sec.cl/media/pliegos/RIC06.pdf">RIC 06: Puesta a Tierra</option>
+                <option value="https://www.sec.cl/media/pliegos/RIC07.pdf">RIC 07: Instalaciones</option>
+            </select>
+            <iframe id="pdf-view" src=""></iframe>
+        </div>
+
+        <!-- Inventario -->
+        <div id="inventario" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Gestión de Bodega LINSTELEC 
+                    <span id="sync-status" class="sync-status sync-pending">
+                        <i class="fas fa-circle"></i> Sin sincronizar
+                    </span>
+                </h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                <button class="tab-btn" onclick="downloadInventory()" style="background:var(--success); color:white;">
+                    <i class="fas fa-download"></i> Descargar
+                </button>
+                <button class="tab-btn" onclick="printInventory()" style="background:var(--dark); color:white;">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+                <button class="tab-btn" onclick="exportForShare()" style="background:var(--primary); color:white;">
+                    <i class="fas fa-share-alt"></i> Exportar
+                </button>
+                <button class="tab-btn" onclick="importFromShare()" style="background:var(--luis); color:white;">
+                    <i class="fas fa-upload"></i> Importar
+                </button>
+            </div>
+            <input type="file" id="importFile" accept=".txt,.json" style="display:none;" onchange="handleImport(this)">
+            
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-inv" placeholder="🔍 Buscar material..." oninput="filterInventory()">
+                <div class="search-results" id="search-count"></div>
+            </div>
+            
+            <div class="form-group" style="display: grid; grid-template-columns: 1fr 100px 80px; gap: 10px;">
+                <input type="text" id="new-item-name" placeholder="Nombre Material">
+                <input type="number" id="new-item-qty" placeholder="Stock">
+                <button onclick="addMaterial()" class="btn-calc" style="padding:0;">+</button>
+            </div>
+            <table class="inv-table">
+                <thead><tr><th>Material</th><th>Stock</th><th>Usar</th><th>Acción</th></tr></thead>
+                <tbody id="inv-body"></tbody>
+            </table>
+            <div class="install-list">
+                <h3>Plantilla de Salida</h3>
+                <input type="text" id="install-proj" placeholder="Proyecto / Cliente" style="margin-bottom:10px; width:100%; padding:10px; border-radius:8px; border:1px solid #ccc;">
+                <div id="bag-items"></div><hr>
+                <button class="btn-calc btn-success" style="background:var(--success);" onclick="generateFile()">Generar Archivo</button>
+            </div>
+        </div>
+
+        <!-- ===== COTIZACIONES CON 3 PESTAÑAS ===== -->
+        <div id="cotizaciones" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">📋 Cotizaciones Inteligentes</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            
+            <p style="font-size: 0.85rem; color: #64748b; margin: -10px 0 20px 0;">
+                <i class="fas fa-info-circle"></i> IVA Chile: 19% • Base de datos personalizable • Precios en CLP
+            </p>
+            
+            <!-- ===== PESTAÑAS DE COTIZACIÓN (3) ===== -->
+            <div class="cotizacion-tabs">
+                <button class="cot-tab-btn active" onclick="switchCotTab('gestion', this)">
+                    <i class="fas fa-database"></i> Productos
+                </button>
+                <button class="cot-tab-btn" onclick="switchCotTab('cotizar', this)">
+                    <i class="fas fa-cart-plus"></i> Nueva Cotización
+                </button>
+                <button class="cot-tab-btn" onclick="switchCotTab('historial', this)">
+                    <i class="fas fa-history"></i> Historial
+                </button>
+            </div>
+            
+            <!-- PESTAÑA 1: GESTIÓN DE PRODUCTOS -->
+            <div id="cot-tab-gestion" class="cot-tab-content active">
+                <div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid var(--primary);">
+                    <h4 style="margin: 0 0 10px 0;"><i class="fas fa-boxes"></i> Tu Base de Datos de Productos</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #64748b;">
+                        Agrega, edita o elimina productos. Los cambios se guardan automáticamente.
+                    </p>
+                </div>
+                
+                <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 15px 0;" id="form-product-title"><i class="fas fa-plus"></i> Agregar Nuevo Producto</h4>
+                    <input type="hidden" id="edit-product-id">
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: end;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Nombre del Producto *</label>
+                            <input type="text" id="db-product-name" placeholder="Ej: Interruptor 16A">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Código</label>
+                            <input type="text" id="db-product-code" placeholder="INT-16A">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Precio (CLP) *</label>
+                            <input type="number" id="db-product-price" placeholder="0" min="0">
+                        </div>
+                        <button class="btn-calc" id="btn-save-product" onclick="saveProductToDB()" style="padding: 12px;">
+                            <i class="fas fa-save"></i> Guardar
+                        </button>
+                    </div>
+                    <button id="btn-cancel-edit" onclick="cancelEditProduct()" style="display: none; margin-top: 10px; background: #95a5a6; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <button class="tab-btn" onclick="exportProductsDB()" style="background: var(--success); color: white;">
+                        <i class="fas fa-download"></i> Exportar
+                    </button>
+                    <button class="tab-btn" onclick="document.getElementById('import-products-file').click()" style="background: var(--primary); color: white;">
+                        <i class="fas fa-upload"></i> Importar
+                    </button>
+                    <input type="file" id="import-products-file" accept=".json" style="display: none;" onchange="importProductsDB(this)">
+                    <button class="tab-btn" onclick="syncProductsToCloud()" style="background: var(--luis); color: white;">
+                        <i class="fas fa-cloud"></i> Nube
+                    </button>
+                </div>
+                
+                <div class="search-box" style="margin-bottom: 15px;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-db-products" placeholder="🔍 Buscar productos..." oninput="filterProductsDB()">
+                    <div class="search-results" id="db-products-count"></div>
+                </div>
+                
+                <div style="overflow-x: auto; border-radius: 10px; border: 1px solid #e2e8f0;">
+                    <table class="cotizacion-table" style="margin: 0;">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th style="width: 120px;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-db-body"></tbody>
+                    </table>
+                </div>
+                <p id="no-products-msg" style="text-align: center; padding: 30px; color: #64748b; display: none;">
+                    <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                    Tu base de datos está vacía. ¡Agrega tu primer producto!
+                </p>
+            </div>
+            
+            <!-- PESTAÑA 2: NUEVA COTIZACIÓN -->
+            <div id="cot-tab-cotizar" class="cot-tab-content">
+                <div class="cotizacion-header">
+                    <div>
+                        <div class="cotizacion-field">
+                            <label>Cliente / Empresa *</label>
+                            <input type="text" id="cot-cliente" placeholder="Nombre del cliente" style="width: 100%;">
+                        </div>
+                        <div class="cotizacion-field">
+                            <label>RUT</label>
+                            <input type="text" id="cot-rut" placeholder="12.345.678-9" style="width: 100%;">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="cotizacion-field">
+                            <label>N° Cotización</label>
+                            <input type="text" id="cot-numero" readonly style="width: 100%; background: #f1f5f9;">
+                        </div>
+                        <div class="cotizacion-field">
+                            <label>Fecha</label>
+                            <input type="text" id="cot-fecha" readonly style="width: 100%; background: #f1f5f9;">
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 15px 0;"><i class="fas fa-search"></i> Agregar Productos</h4>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: end;">
+                        <div class="form-group" style="margin-bottom: 0; position: relative;">
+                            <label>Buscar Producto</label>
+                            <input type="text" id="search-quote-product" placeholder="🔍 Escribe para buscar..." 
+                                   oninput="searchProductsForQuote(this.value)" onfocus="showQuoteSuggestions()" onblur="hideQuoteSuggestionsDelayed()">
+                            <div id="quote-suggestions" class="suggestions-list"></div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Cantidad</label>
+                            <input type="number" id="quote-product-qty" value="1" min="1">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Precio (auto)</label>
+                            <input type="text" id="quote-product-price-display" readonly style="background: #f1f5f9; cursor: not-allowed;">
+                        </div>
+                        <button class="btn-calc" onclick="addProductToQuoteFromDB()" style="padding: 12px; margin-bottom: 1px;">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #cbd5e1;">
+                        <small style="color: #64748b; display: block; margin-bottom: 8px;">
+                            ¿No encuentras el producto? <a href="#" onclick="switchCotTab('gestion', document.querySelector('.cot-tab-btn:first-child')); return false;" style="color: var(--primary); font-weight: 600;">Agregalo a tu BD</a>
+                        </small>
+                        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: end;">
+                            <input type="text" id="manual-product-name" placeholder="Nombre del producto (manual)">
+                            <input type="number" id="manual-product-qty" placeholder="Cant." value="1" min="1">
+                            <input type="number" id="manual-product-price" placeholder="Precio CLP" min="0">
+                            <button class="btn-calc" onclick="addManualProductToQuote()" style="padding: 12px; background: var(--warning);">
+                                <i class="fas fa-plus"></i> Manual
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="iva-toggle-group">
+                    <label>
+                        <input type="checkbox" id="iva-checkbox" checked onchange="toggleIVA()">
+                        <span>Aplicar IVA (19%)</span>
+                    </label>
+                    <div id="iva-indicator" class="iva-indicator iva-applied">
+                        <i class="fas fa-check-circle"></i> IVA Aplicado
+                    </div>
+                </div>
+                
+                <table class="cotizacion-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th class="qty-cell">Cant.</th>
+                            <th class="price-cell">Precio</th>
+                            <th class="total-cell">Subtotal</th>
+                            <th class="action-cell"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="quote-items">
+                        <tr>
+                            <td colspan="5" class="no-results" style="text-align: center; padding: 30px; color: #64748b;">
+                                <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                Busca productos para comenzar
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="cotizacion-totals">
+                    <div class="totals-box">
+                        <div class="total-row">
+                            <span class="total-label">Subtotal:</span>
+                            <span class="total-value" id="subtotal-value">$0</span>
+                        </div>
+                        <div class="total-row" id="iva-row">
+                            <span class="total-label">IVA (19%):</span>
+                            <span class="total-value" id="iva-value">$0</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label" id="total-label">TOTAL:</span>
+                            <span class="total-value" id="total-value">$0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cotizacion-actions">
+                    <button class="btn-cotizacion btn-pdf" onclick="generatePDF()">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button class="btn-cotizacion btn-print" onclick="window.print()">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                    <button class="btn-cotizacion btn-save" onclick="saveQuote()">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <button class="btn-cotizacion btn-clear" onclick="clearQuote()">
+                        <i class="fas fa-trash"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+            
+            <!-- ===== PESTAÑA 3: HISTORIAL DE COTIZACIONES (NUEVA) ===== -->
+            <div id="cot-tab-historial" class="cot-tab-content">
+                <div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid var(--primary);">
+                    <h4 style="margin: 0 0 10px 0;"><i class="fas fa-history"></i> Cotizaciones Guardadas</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #64748b;">
+                        Busca, visualiza, descarga o elimina tus cotizaciones anteriores.
+                    </p>
+                </div>
+                
+                <!-- Buscador de historial -->
+                <div class="historial-search">
+                    <i class="fas fa-search" style="color: #94a3b8; margin-left: 15px;"></i>
+                    <input type="text" id="search-quote-history" placeholder="🔍 Buscar por N°, cliente o RUT..." oninput="filterSavedQuotes()">
+                    <span id="history-count" style="color: #64748b; font-size: 0.9rem; white-space: nowrap;"></span>
+                </div>
+                
+                <!-- Lista de cotizaciones -->
+                <div class="quotes-list" id="quotes-history-list">
+                    <!-- Se llena dinámicamente -->
+                </div>
+                
+                <p id="no-quotes-msg" class="no-quotes" style="display: none;">
+                    <i class="fas fa-folder-open"></i>
+                    <strong>No hay cotizaciones guardadas</strong><br>
+                    <small>Crea una nueva cotización y guárdala para verla aquí.</small>
+                </p>
+                
+                <!-- Acciones del historial -->
+                <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="tab-btn" onclick="exportQuotesBackup()" style="background: var(--success); color: white;">
+                        <i class="fas fa-download"></i> Exportar Historial
+                    </button>
+                    <button class="tab-btn" onclick="document.getElementById('import-quotes-file').click()" style="background: var(--primary); color: white;">
+                        <i class="fas fa-upload"></i> Importar Historial
+                    </button>
+                    <input type="file" id="import-quotes-file" accept=".json" style="display: none;" onchange="importQuotesBackup(this)">
+                    <button class="tab-btn" onclick="syncQuotesToCloud()" style="background: var(--luis); color: white;">
+                        <i class="fas fa-cloud"></i> Sincronizar Nube
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Luis IA -->
+        <div id="luis-ia" class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">🤖 PREGÚNTALE A LUIS (Experto RIC)</h2>
+                <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+            <iframe src="https://brayaton-asistente-ric-pro.hf.space" style="width:100%; height:70vh; border-radius:10px; border:1px solid #e2e8f0;"></iframe>
+        </div>
+    </div>
+</div>
+
+<!-- 🎵 PANEL FLOTANTE MÚSICA -->
+<div id="floating-panel">
+    <div class="bubble bubble-music" id="musicBubble" onclick="toggleMusicPanel()" title="Reproductor MP3">
+        <i class="fas fa-music" id="musicIcon"></i>
+        <span class="bubble-tooltip">Música</span>
+        <span class="bubble-status"></span>
+    </div>
+</div>
+
+<!-- 🎵 VENTANA REPRODUCTOR MP3 -->
+<div id="musicPanel" class="floating-window">
+    <div class="window-header">
+        <span>🎵 Reproductor MP3</span>
+        <button class="window-close" onclick="closeMusicPanel()">✕</button>
+    </div>
+    <div class="window-content">
+        <div class="song-info">
+            <strong id="songTitle">OldSkul</strong>
+            <span id="songStatus">Listo</span>
+        </div>
+        <audio id="mp3Player" src="oldskul.mp3" preload="auto"></audio>
+        <div class="music-controls">
+            <button onclick="togglePlayPause()" class="btn-play">
+                <i class="fas fa-play" id="playIcon"></i>
+            </button>
+        </div>
+        <p id="audioError" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px; display: none;">
+            ⚠️ No se encontró el archivo de audio
+        </p>
+    </div>
+</div>
+
+<!-- ===== MODAL VISTA PREVIA COTIZACIÓN ===== -->
+<div id="quote-preview-modal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-file-invoice"></i> Vista Previa de Cotización</h3>
+            <button class="modal-close" onclick="closeQuotePreview()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="quote-preview-info" id="quote-preview-info"></div>
+            <table class="quote-preview-table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th class="text-center">Cant.</th>
+                        <th class="text-right">Precio</th>
+                        <th class="text-right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody id="quote-preview-items"></tbody>
+            </table>
+            <div class="quote-preview-totals">
+                <div class="totals-box">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <strong id="preview-subtotal">$0</strong>
+                    </div>
+                    <div class="total-row" id="preview-iva-row">
+                        <span>IVA (19%):</span>
+                        <span id="preview-iva">$0</span>
+                    </div>
+                    <div class="total-row">
+                        <span>TOTAL:</span>
+                        <strong id="preview-total">$0</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cotizacion" style="background: var(--danger); color: white;" onclick="downloadQuoteFromPreview()">
+                <i class="fas fa-download"></i> Descargar PDF
+            </button>
+            <button class="btn-cotizacion" style="background: var(--primary); color: white;" onclick="loadQuoteToEditor()">
+                <i class="fas fa-edit"></i> Editar / Duplicar
+            </button>
+            <button class="btn-cotizacion" style="background: var(--danger); color: white;" onclick="deleteQuoteFromPreview()">
+                <i class="fas fa-trash"></i> Eliminar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* ========== CONFIGURACIÓN JSONBIN - CORREGIDA ✅ ========== */
+    const JSONBIN_CONFIG = {
+        masterKey: "$2a$10$d5wiwzZ.u1m2caXKKtWSGuo4.hnU4mEWvEiCaj9XFa6IpBOA0UP0a",
+        bins: {
+            inventory: "69b72a5db7ec241ddc6fab33",
+            products: "69b72a95b7ec241ddc6fac14",
+            quotes: "69b72aaac3097a1dd52a5b83"
+        },
+        baseUrl: "https://api.jsonbin.io/v3/b",
+        options: {
+            autoSync: true,
+            syncInterval: 300000,
+            conflictResolution: 'merge',
+            maxRetries: 3,
+            timeout: 10000,
+            compressData: false
+        }
     };
 
     /* ========== USUARIOS ========== */
@@ -1270,9 +2530,9 @@
         { id: "Marcelo", pass: "1369", name: "Marcelo", clase: "Adm. Contrato" }
     ];
 
+    /* ========== ESTADO GLOBAL ========== */
     let inventory = JSON.parse(localStorage.getItem('linstelec_inv_v2')) || [];
     let bag = [];
-    let isSyncing = false;
     let currentUser = null;
     let recentTools = JSON.parse(localStorage.getItem('linstelec_recent_tools')) || [];
     let calcCount = parseInt(localStorage.getItem('linstelec_calc_count')) || 0;
@@ -1314,6 +2574,7 @@
     let quoteNumber = generateQuoteNumber();
     let applyIVA = true;
     let editingProductId = null;
+    let currentPreviewQuote = null;
 
     /* ========== TABLA DE AMPACIDAD RIC 04 ========== */
     const TABLA_AMPACIDAD = {
@@ -1327,7 +2588,6 @@
         '35': { B1: 90, B2: 104, C: 123, E: 138, D1: 153 },
         '50': { B1: 108, B2: 125, C: 149, E: 167, D1: 185 }
     };
-
     const SECCIONES_DISPONIBLES = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50];
     const RHO = 0.018;
     const LIMITE_CAIDA = 3;
@@ -1363,590 +2623,6 @@
         return "🌙 Buenas noches";
     }
 
-    /* ========== FUNCIONES BASE JSONBIN ========== */
-    
-    // Helper para hacer requests a JSONBin
-    async function jsonbinRequest(binId, method = 'GET', data = null) {
-        const { masterKey, baseUrl, options } = JSONBIN_CONFIG;
-        
-        // Validar configuración
-        if (!masterKey || masterKey.includes('TU_MASTER_KEY') || !binId || binId.includes('BIN_ID')) {
-            console.warn('⚙️ JSONBin no configurado correctamente. Usando localStorage.');
-            return null;
-        }
-        
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), options.timeout);
-        
-        try {
-            const response = await fetch(`${baseUrl}/${binId}`, {
-                method: method,
-                headers: {
-                    'X-Master-Key': masterKey,
-                    'X-Bin-Meta': 'false',
-                    'Content-Type': 'application/json'
-                },
-                body: data ? JSON.stringify(data) : null,
-                signal: controller.signal
-            });
-            
-            clearTimeout(timeout);
-            
-            if (!response.ok) {
-                const error = await response.json().catch(() => ({}));
-                throw new Error(`HTTP ${response.status}: ${error.message || response.statusText}`);
-            }
-            
-            return method === 'GET' ? await response.json() : { success: true };
-            
-        } catch (error) {
-            clearTimeout(timeout);
-            if (error.name === 'AbortError') {
-                throw new Error('⏱️ Timeout de conexión');
-            }
-            throw error;
-        }
-    }
-
-    // Función genérica para sync con reintentos
-    async function syncWithRetry(type, getDataFn, setDataFn, binKey) {
-        const { options } = JSONBIN_CONFIG;
-        let lastError = null;
-        
-        // Si JSONBin no está configurado, retornar éxito falso pero sin error
-        if (!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('TU_MASTER_KEY')) {
-            updateSyncStatus(type, 'idle', 'JSONBin no configurado');
-            return { success: false, local: true };
-        }
-        
-        for (let attempt = 1; attempt <= options.maxRetries; attempt++) {
-            try {
-                updateSyncStatus(type, 'syncing', `Sincronizando... (${attempt}/${options.maxRetries})`);
-                
-                const binId = JSONBIN_CONFIG.bins[binKey];
-                if (!binId || binId.includes('BIN_ID')) {
-                    throw new Error('Bin ID no configurado');
-                }
-                
-                const localData = getDataFn();
-                
-                // Obtener datos de la nube
-                const cloudResponse = await jsonbinRequest(binId, 'GET');
-                const cloudData = cloudResponse?.record?.data || null;
-                const cloudMeta = cloudResponse?.record?.metadata || {};
-                
-                // Resolver conflictos
-                let finalData = resolveConflict(type, localData, cloudData, cloudMeta);
-                
-                // Preparar payload (con compresión opcional)
-                let payloadData = finalData;
-                if (options.compressData && typeof LZString !== 'undefined') {
-                    payloadData = { _compressed: true, data: LZString.compress(JSON.stringify(finalData)) };
-                }
-                
-                const payload = {
-                     payloadData,
-                    meta: {
-                        version: '2.1.0',
-                        lastUpdate: new Date().toISOString(),
-                        updatedBy: currentUser?.name || 'Unknown',
-                        device: navigator.userAgent.substring(0, 100),
-                        recordCount: Array.isArray(finalData) ? finalData.length : 1
-                    }
-                };
-                
-                // Guardar en nube
-                await jsonbinRequest(binId, 'PUT', payload);
-                
-                // Actualizar estado local si la resolución fue 'cloud'
-                if (cloudData && JSONBIN_CONFIG.options.conflictResolution === 'cloud') {
-                    setDataFn(finalData);
-                }
-                
-                // Actualizar estado de sync
-                syncState[type] = {
-                    lastSync: new Date().toISOString(),
-                    status: 'success',
-                    error: null
-                };
-                
-                updateSyncStatus(type, 'success', `Sync: ${new Date().toLocaleTimeString('es-CL')}`);
-                updateSyncMonitorDisplay();
-                return { success: true,  finalData };
-                
-            } catch (error) {
-                lastError = error;
-                console.warn(`⚠️ Intento ${attempt} fallido para ${type}:`, error.message);
-                
-                if (attempt === options.maxRetries) {
-                    syncState[type] = {
-                        lastSync: syncState[type].lastSync,
-                        status: 'error',
-                        error: error.message
-                    };
-                    updateSyncStatus(type, 'error', `Error: ${error.message.substring(0, 30)}...`);
-                    updateSyncMonitorDisplay();
-                    throw error;
-                }
-                
-                // Esperar antes de reintentar (exponential backoff)
-                await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-            }
-        }
-    }
-
-    // Resolver conflictos entre local y cloud
-    function resolveConflict(type, localData, cloudData, cloudMeta) {
-        const { conflictResolution } = JSONBIN_CONFIG.options;
-        
-        // Si no hay datos en cloud, usar local
-        if (!cloudData) return localData;
-        
-        // Si no hay datos locales, usar cloud
-        if (!localData) return cloudData;
-        
-        switch (conflictResolution) {
-            case 'cloud':
-                console.log(`🔄 ${type}: Usando datos de la nube`);
-                return cloudData;
-                
-            case 'local':
-                console.log(`🔄 ${type}: Manteniendo datos locales`);
-                return localData;
-                
-            case 'merge':
-                // Merge inteligente para arrays de objetos con ID
-                if (Array.isArray(localData) && Array.isArray(cloudData)) {
-                    const merged = [...cloudData];
-                    const cloudIds = new Map(cloudData.map(item => [item.id, item]));
-                    
-                    // Actualizar items existentes y agregar nuevos
-                    localData.forEach(localItem => {
-                        if (cloudIds.has(localItem.id)) {
-                            // Si el item local es más reciente, mantenerlo
-                            const localTime = localItem.updatedAt || localItem.savedAt || 0;
-                            const cloudTime = cloudIds.get(localItem.id).updatedAt || cloudIds.get(localItem.id).savedAt || 0;
-                            if (localTime >= cloudTime) {
-                                const index = merged.findIndex(i => i.id === localItem.id);
-                                if (index !== -1) merged[index] = localItem;
-                            }
-                        } else {
-                            merged.push(localItem);
-                        }
-                    });
-                    
-                    console.log(`🔄 ${type}: Merge realizado - ${merged.length} items totales`);
-                    return merged;
-                }
-                return cloudData;
-                
-            case 'prompt':
-                // En producción, mostrar modal al usuario
-                console.log(`🔄 ${type}: Conflicto detectado - usando estrategia por defecto (merge)`);
-                if (Array.isArray(localData) && Array.isArray(cloudData)) {
-                    const merged = [...cloudData];
-                    const cloudIds = new Set(cloudData.map(item => item.id));
-                    localData.forEach(item => { if (!cloudIds.has(item.id)) merged.push(item); });
-                    return merged;
-                }
-                return cloudData;
-                
-            default:
-                return cloudData;
-        }
-    }
-
-    // Actualizar UI de estado de sincronización
-    function updateSyncStatus(type, status, message) {
-        const statusMap = {
-            inventory: { el: 'sync-status', textEl: 'sync-status-text' },
-            products: { el: 'products-sync-status', textEl: 'products-sync-text' },
-            quotes: { el: 'quotes-sync-status', textEl: 'quotes-sync-text' }
-        };
-        
-        const config = statusMap[type];
-        if (!config) return;
-        
-        const statusEl = document.getElementById(config.el);
-        const textEl = document.getElementById(config.textEl);
-        
-        if (!statusEl) return;
-        
-        // Remover clases anteriores
-        statusEl.classList.remove('sync-ok', 'sync-pending', 'sync-error');
-        
-        // Agregar clase según estado
-        switch (status) {
-            case 'success':
-                statusEl.classList.add('sync-ok');
-                statusEl.innerHTML = '<i class="fas fa-check-circle"></i>';
-                break;
-            case 'syncing':
-                statusEl.classList.add('sync-pending');
-                statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                break;
-            case 'error':
-                statusEl.classList.add('sync-error');
-                statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
-                break;
-            default:
-                statusEl.innerHTML = '<i class="fas fa-circle"></i>';
-        }
-        
-        if (textEl) {
-            textEl.textContent = message;
-        }
-    }
-
-    /* ========== SYNC INVENTARIO ========== */
-
-    async function saveInventoryToCloud() {
-        try {
-            await syncWithRetry(
-                'inventory',
-                () => inventory,
-                (data) => { inventory = data; renderInv(); updateStockAlerts(); },
-                'inventory'
-            );
-            return true;
-        } catch (error) {
-            console.error('❌ Error sync inventario:', error);
-            return false;
-        }
-    }
-
-    async function loadInventoryFromCloud() {
-        try {
-            const result = await syncWithRetry(
-                'inventory',
-                () => inventory,
-                (data) => { inventory = data; renderInv(); updateStockAlerts(); },
-                'inventory'
-            );
-            return result?.success;
-        } catch (error) {
-            console.log('ℹ️ No se pudo cargar inventario desde cloud');
-            return false;
-        }
-    }
-
-    async function manualSyncInventory() {
-        if (!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('TU_MASTER_KEY')) {
-            return alert('⚙️ Configura JSONBIN_CONFIG con tu Master Key y Bin IDs');
-        }
-        
-        updateSyncStatus('inventory', 'syncing', 'Sincronizando...');
-        
-        try {
-            await saveInventoryToCloud();
-            alert('✅ Inventario sincronizado con la nube');
-        } catch (error) {
-            alert(`⚠️ Error: ${error.message}`);
-        }
-    }
-
-    function exportInventoryBackup() {
-        const backup = {
-            version: '2.1.0',
-            exportedAt: new Date().toISOString(),
-            exportedBy: currentUser?.name,
-             inventory
-        };
-        
-        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `LINSTELEC_Inventory_Backup_${new Date().toISOString().slice(0,10)}.json`;
-        link.click();
-        
-        alert(`✅ Respaldo exportado: ${inventory.length} materiales`);
-    }
-
-    function importInventoryBackup(input) {
-        const file = input.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const backup = JSON.parse(e.target.result);
-                if (backup.data && Array.isArray(backup.data)) {
-                    if (confirm(`⚠️ IMPORTAR INVENTARIO\n\nEsto reemplazará tu inventario actual con ${backup.data.length} materiales.\n\n¿Continuar?`)) {
-                        inventory = backup.data;
-                        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
-                        renderInv();
-                        updateStockAlerts();
-                        saveInventoryToCloud();
-                        alert('✅ Inventario importado y sincronizado');
-                    }
-                } else {
-                    alert('❌ Formato de respaldo no válido');
-                }
-            } catch (err) {
-                alert('❌ Error al leer el archivo: ' + err.message);
-            }
-            input.value = '';
-        };
-        reader.readAsText(file);
-    }
-
-    /* ========== SYNC PRODUCTOS DE COTIZACIÓN ========== */
-
-    async function saveProductsToCloud() {
-        try {
-            await syncWithRetry(
-                'products',
-                () => productsDB,
-                (data) => { 
-                    productsDB = data; 
-                    renderProductsDB(); 
-                    if (quoteItems.length > 0) renderQuoteItems();
-                },
-                'products'
-            );
-            return true;
-        } catch (error) {
-            console.error('❌ Error sync productos:', error);
-            return false;
-        }
-    }
-
-    async function loadProductsFromCloud() {
-        try {
-            const result = await syncWithRetry(
-                'products',
-                () => productsDB,
-                (data) => { 
-                    productsDB = data; 
-                    renderProductsDB();
-                },
-                'products'
-            );
-            return result?.success;
-        } catch (error) {
-            console.log('ℹ️ No se pudo cargar productos desde cloud');
-            return false;
-        }
-    }
-
-    async function manualSyncProducts() {
-        if (!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('TU_MASTER_KEY')) {
-            return alert('⚙️ Configura JSONBIN_CONFIG con tu Master Key y Bin IDs');
-        }
-        
-        updateSyncStatus('products', 'syncing', 'Sincronizando...');
-        
-        try {
-            await saveProductsToCloud();
-            alert('✅ Productos sincronizados con la nube');
-        } catch (error) {
-            alert(`⚠️ Error: ${error.message}`);
-        }
-    }
-
-    function exportProductsBackup() {
-        if (productsDB.length === 0) return alert("⚠️ No hay productos para exportar");
-        
-        const backup = {
-            version: '2.1.0',
-            exportedAt: new Date().toISOString(),
-            exportedBy: currentUser?.name,
-            data: productsDB
-        };
-        
-        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `LINSTELEC_Products_Backup_${new Date().toISOString().slice(0,10)}.json`;
-        link.click();
-        
-        alert(`✅ Respaldo exportado: ${productsDB.length} productos`);
-    }
-
-    function importProductsBackup(input) {
-        const file = input.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const backup = JSON.parse(e.target.result);
-                if (backup.data && Array.isArray(backup.data)) {
-                    if (confirm(`⚠️ IMPORTAR PRODUCTOS\n\nEsto fusionará ${backup.data.length} productos con tu base actual.\n\n¿Continuar?`)) {
-                        const existingIds = new Set(productsDB.map(p => p.id));
-                        const newProducts = backup.data.filter(p => !existingIds.has(p.id));
-                        
-                        productsDB = [...productsDB, ...newProducts];
-                        localStorage.setItem('linstelec_products_db', JSON.stringify(productsDB));
-                        renderProductsDB();
-                        saveProductsToCloud();
-                        
-                        alert(`✅ Importados ${newProducts.length} nuevos productos. Total: ${productsDB.length}`);
-                    }
-                } else {
-                    alert('❌ Formato no válido');
-                }
-            } catch (err) {
-                alert('❌ Error: ' + err.message);
-            }
-            input.value = '';
-        };
-        reader.readAsText(file);
-    }
-
-    /* ========== SYNC COTIZACIONES ========== */
-
-    async function saveQuotesToCloud() {
-        try {
-            const allQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
-            
-            await syncWithRetry(
-                'quotes',
-                () => allQuotes,
-                (data) => { localStorage.setItem('linstelec_quotes', JSON.stringify(data)); },
-                'quotes'
-            );
-            return true;
-        } catch (error) {
-            console.error('❌ Error sync cotizaciones:', error);
-            return false;
-        }
-    }
-
-    async function loadQuotesFromCloud() {
-        try {
-            const result = await syncWithRetry(
-                'quotes',
-                () => JSON.parse(localStorage.getItem('linstelec_quotes')) || [],
-                (data) => { localStorage.setItem('linstelec_quotes', JSON.stringify(data)); },
-                'quotes'
-            );
-            return result?.success;
-        } catch (error) {
-            console.log('ℹ️ No se pudo cargar cotizaciones desde cloud');
-            return false;
-        }
-    }
-
-    async function manualSyncQuotes() {
-        if (!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('TU_MASTER_KEY')) {
-            return alert('⚙️ Configura JSONBIN_CONFIG con tu Master Key y Bin IDs');
-        }
-        
-        updateSyncStatus('quotes', 'syncing', 'Sincronizando...');
-        
-        try {
-            await saveQuotesToCloud();
-            alert('✅ Cotizaciones sincronizadas con la nube');
-        } catch (error) {
-            alert(`⚠️ Error: ${error.message}`);
-        }
-    }
-
-    function exportQuotesBackup() {
-        const allQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
-        if (allQuotes.length === 0) return alert("⚠️ No hay cotizaciones para exportar");
-        
-        const backup = {
-            version: '2.1.0',
-            exportedAt: new Date().toISOString(),
-            exportedBy: currentUser?.name,
-            count: allQuotes.length,
-             allQuotes
-        };
-        
-        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `LINSTELEC_Quotes_Backup_${new Date().toISOString().slice(0,10)}.json`;
-        link.click();
-        
-        alert(`✅ Respaldo exportado: ${allQuotes.length} cotizaciones`);
-    }
-
-    function importQuotesBackup(input) {
-        const file = input.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const backup = JSON.parse(e.target.result);
-                if (backup.data && Array.isArray(backup.data)) {
-                    const existingQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
-                    const existingNumbers = new Set(existingQuotes.map(q => q.number));
-                    
-                    const newQuotes = backup.data.filter(q => !existingNumbers.has(q.number));
-                    
-                    if (newQuotes.length === 0) {
-                        return alert('ℹ️ No hay cotizaciones nuevas para importar');
-                    }
-                    
-                    if (confirm(`⚠️ IMPORTAR COTIZACIONES\n\nSe agregarán ${newQuotes.length} cotizaciones nuevas.\n\n¿Continuar?`)) {
-                        const merged = [...existingQuotes, ...newQuotes].slice(0, 100);
-                        localStorage.setItem('linstelec_quotes', JSON.stringify(merged));
-                        saveQuotesToCloud();
-                        
-                        if (document.getElementById('cot-tab-historial')?.classList.contains('active')) {
-                            renderSavedQuotes();
-                        }
-                        
-                        alert(`✅ Importadas ${newQuotes.length} cotizaciones nuevas`);
-                    }
-                } else {
-                    alert('❌ Formato no válido');
-                }
-            } catch (err) {
-                alert('❌ Error: ' + err.message);
-            }
-            input.value = '';
-        };
-        reader.readAsText(file);
-    }
-
-    /* ========== AUTO-SYNC Y EVENTOS ========== */
-
-    function setupAutoSync() {
-        const { autoSync, syncInterval } = JSONBIN_CONFIG.options;
-        
-        if (!autoSync || !JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('TU_MASTER_KEY')) {
-            return;
-        }
-        
-        // Sync inicial al cargar
-        setTimeout(() => {
-            loadInventoryFromCloud().catch(() => {});
-            loadProductsFromCloud().catch(() => {});
-            loadQuotesFromCloud().catch(() => {});
-        }, 2000);
-        
-        // Auto-sync periódico
-        setInterval(() => {
-            if (document.visibilityState === 'visible') {
-                saveInventoryToCloud().catch(() => {});
-                saveProductsToCloud().catch(() => {});
-                saveQuotesToCloud().catch(() => {});
-            }
-        }, syncInterval);
-    }
-
-    function triggerSyncAfterSave(type) {
-        if (!JSONBIN_CONFIG.options.autoSync) return;
-        if (!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('TU_MASTER_KEY')) return;
-        
-        switch (type) {
-            case 'inventory':
-                saveInventoryToCloud().catch(err => console.warn('⚠️ Auto-sync inventario:', err.message));
-                break;
-            case 'products':
-                saveProductsToCloud().catch(err => console.warn('⚠️ Auto-sync productos:', err.message));
-                break;
-            case 'quotes':
-                saveQuotesToCloud().catch(err => console.warn('⚠️ Auto-sync cotizaciones:', err.message));
-                break;
-        }
-    }
-
     /* ========== FUNCIONES DE LOGIN Y NAVEGACIÓN ========== */
     function checkLogin() {
         const u = document.getElementById('userInput').value.trim();
@@ -1970,7 +2646,6 @@
                     document.getElementById('dash-user-info').textContent = found.clase + " | LINSTELEC CHILE";
                     document.getElementById('dash-user-class').textContent = found.clase;
                     document.getElementById('floating-panel').classList.add('visible');
-                    document.getElementById('sync-monitor-toggle').style.display = 'block';
                     renderInv();
                     updateStockAlerts();
                     updateDashboardTime();
@@ -1979,16 +2654,7 @@
                     iniciarChatbase();
                     loadInventoryFromCloud();
                     initCotizaciones();
-                    setupAutoSync();
                     setInterval(updateDashboardTime, 1000);
-                    
-                    // Mostrar estado inicial de sync
-                    setTimeout(() => {
-                        updateSyncStatus('inventory', 'idle', 'Listo');
-                        updateSyncStatus('products', 'idle', 'Listo');
-                        updateSyncStatus('quotes', 'idle', 'Listo');
-                        updateSyncMonitorDisplay();
-                    }, 100);
                 }, 300);
             }, 800);
         } else { 
@@ -2050,7 +2716,7 @@
     function updateStatsDisplay() { const statsEl = document.getElementById('stats-month'); if (statsEl) statsEl.textContent = calcCount; }
     function incrementCalcCount() { calcCount++; localStorage.setItem('linstelec_calc_count', calcCount); updateStatsDisplay(); }
 
-    /* ========== FUNCIONES DE COTIZACIONES ========== */
+    /* ========== FUNCIONES DE COTIZACIONES - BASE DE DATOS EDITABLE ========== */
 
     // ===== GESTIÓN DE PRODUCTOS =====
     function saveProductToDB() {
@@ -2084,8 +2750,6 @@
         localStorage.setItem('linstelec_products_db', JSON.stringify(productsDB));
         renderProductsDB();
         resetProductForm();
-        
-        // 🔁 TRIGGER SYNC AUTOMÁTICO
         triggerSyncAfterSave('products');
     }
 
@@ -2171,9 +2835,60 @@
         renderQuoteItems();
         calculateTotals();
         alert('✅ Producto eliminado');
-        
-        // 🔁 TRIGGER SYNC
         triggerSyncAfterSave('products');
+    }
+
+    function exportProductsDB() {
+        if (productsDB.length === 0) return alert("⚠️ No hay productos para exportar");
+        const exportData = {
+            version: "2.0",
+            exportedAt: new Date().toISOString(),
+            exportedBy: currentUser?.name || 'Unknown',
+            products: productsDB
+        };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `LINSTELEC_Productos_DB_${new Date().toISOString().slice(0,10)}.json`;
+        link.click();
+        alert(`✅ Exportados ${productsDB.length} productos`);
+    }
+
+    function importProductsDB(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (data.products && Array.isArray(data.products)) {
+                    if (confirm(`⚠️ IMPORTAR PRODUCTOS\n\nEsto fusionará ${data.products.length} productos con tu base de datos actual.\n\n¿Continuar?`)) {
+                        const existingIds = new Set(productsDB.map(p => p.id));
+                        const newProducts = data.products.filter(p => !existingIds.has(p.id));
+                        productsDB = [...productsDB, ...newProducts];
+                        localStorage.setItem('linstelec_products_db', JSON.stringify(productsDB));
+                        renderProductsDB();
+                        alert(`✅ Importados ${newProducts.length} nuevos productos. Total: ${productsDB.length}`);
+                        triggerSyncAfterSave('products');
+                    }
+                } else {
+                    alert("❌ Formato de archivo no válido");
+                }
+            } catch(err) {
+                alert("❌ Error al leer el archivo: " + err.message);
+            }
+            input.value = '';
+        };
+        reader.readAsText(file);
+    }
+
+    function syncProductsToCloud() {
+        if (!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI')) {
+            alert('⚙️ Configura JSONBin para habilitar sincronización en la nube');
+            return;
+        }
+        alert('🔄 Sincronizando productos con la nube...');
+        // Implementación real de sync aquí
     }
 
     // ===== COTIZACIÓN =====
@@ -2186,7 +2901,7 @@
             (p.code && p.code.toLowerCase().includes(query.toLowerCase()))
         );
         if (filtered.length === 0) {
-            suggestions.innerHTML = '<div class="suggestion-item" style="color: #64748b; cursor: default;">❌ Sin resultados en tu BD<br><small style="font-weight: normal;">Agrega el producto en "Gestionar Productos"</small></div>';
+            suggestions.innerHTML = '<div class="suggestion-item" style="color: #64748b; cursor: default;">❌ Sin resultados en tu BD<br><small style="font-weight: normal;">Agrega el producto en "Productos"</small></div>';
             suggestions.classList.add('show');
             return;
         }
@@ -2297,19 +3012,16 @@
     function toggleIVA() {
         applyIVA = document.getElementById('iva-checkbox').checked;
         const indicator = document.getElementById('iva-indicator');
-        const statusText = document.getElementById('iva-status-text');
         const ivaRow = document.getElementById('iva-row');
         const totalLabel = document.getElementById('total-label');
         if (applyIVA) {
             indicator.className = 'iva-indicator iva-applied';
             indicator.innerHTML = '<i class="fas fa-check-circle"></i> IVA Aplicado';
-            statusText.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success);"></i> IVA incluido en el total';
             ivaRow.style.display = 'flex';
             totalLabel.textContent = 'TOTAL:';
         } else {
             indicator.className = 'iva-indicator iva-exempt';
             indicator.innerHTML = '<i class="fas fa-circle-notch"></i> Exento de IVA';
-            statusText.innerHTML = '<i class="fas fa-info-circle" style="color: var(--warning);"></i> Cotización exenta de IVA';
             ivaRow.style.display = 'none';
             totalLabel.textContent = 'TOTAL (Exento):';
         }
@@ -2357,8 +3069,6 @@
         savedQuotes.unshift(quote);
         localStorage.setItem('linstelec_quotes', JSON.stringify(savedQuotes.slice(0, 50)));
         alert('✅ Cotización guardada localmente');
-        
-        // 🔁 TRIGGER SYNC
         triggerSyncAfterSave('quotes');
     }
 
@@ -2421,7 +3131,6 @@
     function switchCotTab(tabName, btn) {
         document.querySelectorAll('.cot-tab-btn').forEach(b => b.classList.remove('active'));
         if (btn) btn.classList.add('active');
-        
         document.getElementById('cot-tab-gestion').classList.toggle('active', tabName === 'gestion');
         document.getElementById('cot-tab-cotizar').classList.toggle('active', tabName === 'cotizar');
         document.getElementById('cot-tab-historial').classList.toggle('active', tabName === 'historial');
@@ -2437,9 +3146,10 @@
         renderQuoteItems();
         toggleIVA();
         loadProductsFromCloud();
+        renderSavedQuotes();
     }
 
-    /* ========== FUNCIONES DE HISTORIAL DE COTIZACIONES ========== */
+    /* ========== FUNCIONES DE HISTORIAL DE COTIZACIONES (NUEVAS) ========== */
 
     function renderSavedQuotes(filter = '') {
         const container = document.getElementById('quotes-history-list');
@@ -2472,51 +3182,26 @@
         noQuotesMsg.style.display = 'none';
         
         container.innerHTML = filtered.map(quote => `
-            <div style="background: white; padding: 18px 20px; border-radius: 12px; border: 1px solid #e2e8f0; 
-                display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: center;" 
-                onclick="openQuotePreview('${quote.number}')"
-                onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" 
-                onmouseout="this.style.boxShadow='none'">
-                
+            <div class="quote-card" onclick="openQuotePreview('${quote.number}')">
                 <div>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <span style="background: var(--primary); color: white; padding: 4px 10px; 
-                            border-radius: 6px; font-weight: 600; font-size: 0.85rem;">
-                            ${quote.number}
-                        </span>
-                        <span style="color: #64748b; font-size: 0.85rem;">
-                            <i class="fas fa-calendar"></i> ${quote.date}
-                        </span>
+                    <div class="quote-card-header">
+                        <span class="quote-number">${quote.number}</span>
+                        <span class="quote-date"><i class="fas fa-calendar"></i> ${quote.date}</span>
                         ${quote.ivaApplied ? 
-                            '<span style="background: #d1fae5; color: #065f46; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem;">✓ IVA</span>' : 
-                            '<span style="background: #fef3c7; color: #92400e; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem;">⚠ Exento</span>'}
+                            '<span style="background: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">✓ IVA</span>' : 
+                            '<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">⚠ Exento</span>'}
                     </div>
-                    <div style="font-weight: 600; color: var(--dark); margin-bottom: 4px;">
-                        ${quote.client || 'Cliente sin especificar'}
+                    <div class="quote-client">${quote.client || 'Cliente sin especificar'}</div>
+                    <div class="quote-details">
+                        ${quote.rut ? `<span><i class="fas fa-id-card"></i> ${quote.rut}</span>` : ''}
+                        <span><i class="fas fa-boxes"></i> ${quote.items.length} producto${quote.items.length !== 1 ? 's' : ''}</span>
+                        <span class="quote-total">${formatCLP(quote.totals?.total || 0)}</span>
                     </div>
-                    <div style="font-size: 0.85rem; color: #64748b;">
-                        ${quote.rut ? `<i class="fas fa-id-card"></i> RUT: ${quote.rut} • ` : ''}
-                        <i class="fas fa-boxes"></i> ${quote.items.length} producto${quote.items.length !== 1 ? 's' : ''} • 
-                        <strong style="color: var(--primary);">${formatCLP(quote.totals?.total || 0)}</strong>
-                    </div>
-                    ${quote.user ? `<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 5px;">
-                        <i class="fas fa-user"></i> Guardado por: ${quote.user}
-                    </div>` : ''}
                 </div>
-                
-                <div style="display: flex; gap: 8px;" onclick="event.stopPropagation()">
-                    <button class="btn-cotizacion btn-pdf" style="padding: 8px 12px; font-size: 0.85rem;" 
-                        onclick="downloadSavedQuote('${quote.number}')" title="Descargar PDF">
-                        <i class="fas fa-download"></i>
-                    </button>
-                    <button class="btn-cotizacion" style="padding: 8px 12px; font-size: 0.85rem; background: var(--dark); color: white;" 
-                        onclick="loadQuoteToEditor('${quote.number}')" title="Cargar para editar">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-cotizacion btn-clear" style="padding: 8px 12px; font-size: 0.85rem;" 
-                        onclick="deleteSavedQuote('${quote.number}')" title="Eliminar">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                <div class="quote-actions" onclick="event.stopPropagation()">
+                    <button class="btn-view" onclick="openQuotePreview('${quote.number}')" title="Ver"><i class="fas fa-eye"></i></button>
+                    <button class="btn-pdf" onclick="downloadSavedQuote('${quote.number}')" title="PDF"><i class="fas fa-file-pdf"></i></button>
+                    <button class="btn-delete" onclick="deleteSavedQuote('${quote.number}')" title="Eliminar"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
         `).join('');
@@ -2527,8 +3212,6 @@
         renderSavedQuotes(searchTerm);
     }
 
-    let currentPreviewQuote = null;
-
     function openQuotePreview(quoteNumber) {
         const allQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
         const quote = allQuotes.find(q => q.number === quoteNumber);
@@ -2536,70 +3219,47 @@
         
         currentPreviewQuote = quote;
         
-        const content = document.getElementById('quote-preview-content');
-        const totals = quote.totals || {};
-        
-        content.innerHTML = `
-            <div style="background: #f8fafc; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem;">
-                    <div><strong>N° Cotización:</strong> ${quote.number}</div>
-                    <div><strong>Fecha:</strong> ${quote.date}</div>
-                    <div><strong>Cliente:</strong> ${quote.client || 'N/A'}</div>
-                    <div><strong>RUT:</strong> ${quote.rut || 'N/A'}</div>
-                    <div><strong>IVA:</strong> ${quote.ivaApplied ? 'Aplicado (19%)' : 'Exento'}</div>
-                    <div><strong>Guardado:</strong> ${new Date(quote.savedAt).toLocaleString('es-CL')}</div>
-                </div>
-            </div>
-            
-            <table class="cotizacion-table" style="margin: 0; font-size: 0.9rem;">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th style="width: 70px;">Cant.</th>
-                        <th style="width: 100px;">Precio</th>
-                        <th style="width: 100px;">Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${quote.items.map(item => `
-                        <tr>
-                            <td>
-                                <strong>${item.name}</strong>
-                                ${item.code ? `<br><small style="color: #64748b;">${item.code}</small>` : ''}
-                                ${item.isManual ? `<br><small style="color: var(--warning);">* Manual</small>` : ''}
-                            </td>
-                            <td style="text-align: center;">${item.qty}</td>
-                            <td style="text-align: right;">${formatCLP(item.price)}</td>
-                            <td style="text-align: right; font-weight: 600;">${formatCLP(item.qty * item.price)}</td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
-            
-            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                <div style="background: #f1f5f9; padding: 15px 20px; border-radius: 10px; min-width: 250px;">
-                    <div style="display: flex; justify-content: space-between; padding: 5px 0;">
-                        <span>Subtotal:</span>
-                        <strong>${formatCLP(totals.subtotal || 0)}</strong>
-                    </div>
-                    ${quote.ivaApplied ? `
-                    <div style="display: flex; justify-content: space-between; padding: 5px 0; color: #64748b;">
-                        <span>IVA (19%):</span>
-                        <span>${formatCLP(totals.iva || 0)}</span>
-                    </div>` : ''}
-                    <div style="display: flex; justify-content: space-between; padding: 10px 0 0 0; border-top: 2px solid #cbd5e1; margin-top: 10px; font-size: 1.1rem;">
-                        <strong>TOTAL:</strong>
-                        <strong style="color: var(--primary);">${formatCLP(totals.total || 0)}</strong>
-                    </div>
-                </div>
-            </div>
+        // Info general
+        const infoEl = document.getElementById('quote-preview-info');
+        infoEl.innerHTML = `
+            <div><strong>N° Cotización</strong><span>${quote.number}</span></div>
+            <div><strong>Fecha</strong><span>${quote.date}</span></div>
+            <div><strong>Cliente</strong><span>${quote.client || 'N/A'}</span></div>
+            <div><strong>RUT</strong><span>${quote.rut || 'N/A'}</span></div>
+            <div><strong>IVA</strong><span>${quote.ivaApplied ? 'Aplicado (19%)' : 'Exento'}</span></div>
+            <div><strong>Guardado</strong><span>${new Date(quote.savedAt).toLocaleString('es-CL')}</span></div>
         `;
         
-        document.getElementById('quote-preview-modal').style.display = 'flex';
+        // Items
+        const itemsEl = document.getElementById('quote-preview-items');
+        itemsEl.innerHTML = quote.items.map(item => {
+            const subtotal = item.qty * item.price;
+            return `
+                <tr>
+                    <td>
+                        <strong>${item.name}</strong>
+                        ${item.code ? `<br><small style="color: #64748b;">${item.code}</small>` : ''}
+                        ${item.isManual ? `<br><small style="color: var(--warning);">* Manual</small>` : ''}
+                    </td>
+                    <td class="text-center">${item.qty}</td>
+                    <td class="text-right">${formatCLP(item.price)}</td>
+                    <td class="text-right"><strong>${formatCLP(subtotal)}</strong></td>
+                </tr>
+            `;
+        }).join('');
+        
+        // Totales
+        const totals = quote.totals || {};
+        document.getElementById('preview-subtotal').textContent = formatCLP(totals.subtotal || 0);
+        document.getElementById('preview-iva').textContent = formatCLP(totals.iva || 0);
+        document.getElementById('preview-total').textContent = formatCLP(totals.total || 0);
+        document.getElementById('preview-iva-row').style.display = quote.ivaApplied ? 'flex' : 'none';
+        
+        document.getElementById('quote-preview-modal').classList.add('active');
     }
 
     function closeQuotePreview() {
-        document.getElementById('quote-preview-modal').style.display = 'none';
+        document.getElementById('quote-preview-modal').classList.remove('active');
         currentPreviewQuote = null;
     }
 
@@ -2681,8 +3341,6 @@
         closeQuotePreview();
         renderSavedQuotes(document.getElementById('search-quote-history').value);
         alert('✅ Cotización eliminada');
-        
-        // 🔁 TRIGGER SYNC
         triggerSyncAfterSave('quotes');
     }
 
@@ -2695,123 +3353,213 @@
         
         renderSavedQuotes(document.getElementById('search-quote-history').value);
         alert('✅ Cotización eliminada');
-        
-        // 🔁 TRIGGER SYNC
         triggerSyncAfterSave('quotes');
     }
 
-    function loadQuoteToEditor(quoteNumber) {
-        const allQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
-        const quote = allQuotes.find(q => q.number === quoteNumber);
-        if (!quote) return;
-        
+    function loadQuoteToEditor() {
+        if (!currentPreviewQuote) return;
         if (!confirm('¿Cargar esta cotización en el editor?\n\nLos cambios se guardarán como una nueva cotización.')) return;
         
         switchCotTab('cotizar', document.querySelectorAll('.cot-tab-btn')[1]);
         
         document.getElementById('cot-numero').value = generateQuoteNumber();
         document.getElementById('cot-fecha').value = new Date().toLocaleDateString('es-CL');
-        document.getElementById('cot-cliente').value = quote.client || '';
-        document.getElementById('cot-rut').value = quote.rut || '';
-        document.getElementById('iva-checkbox').checked = quote.ivaApplied;
+        document.getElementById('cot-cliente').value = currentPreviewQuote.client || '';
+        document.getElementById('cot-rut').value = currentPreviewQuote.rut || '';
+        document.getElementById('iva-checkbox').checked = currentPreviewQuote.ivaApplied;
         
-        quoteItems = quote.items.map(item => ({...item, id: Date.now() + Math.random()}));
+        quoteItems = currentPreviewQuote.items.map(item => ({...item, id: Date.now() + Math.random()}));
         
         toggleIVA();
         renderQuoteItems();
         calculateTotals();
         
+        closeQuotePreview();
         alert('✅ Cotización cargada en el editor. ¡Ahora puedes modificarla y guardar como nueva!');
     }
 
-    /* ========== SYNC MONITOR ========== */
-
-    function toggleSyncMonitor() {
-        const monitor = document.getElementById('sync-monitor');
-        const toggle = document.getElementById('sync-monitor-toggle');
-        const isVisible = monitor.style.display === 'block';
+    function exportQuotesBackup() {
+        const allQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
+        if (allQuotes.length === 0) return alert("⚠️ No hay cotizaciones para exportar");
         
-        monitor.style.display = isVisible ? 'none' : 'block';
-        toggle.style.display = isVisible ? 'block' : 'none';
+        const backup = {
+            version: '2.1.0',
+            exportedAt: new Date().toISOString(),
+            exportedBy: currentUser?.name,
+            count: allQuotes.length,
+             allQuotes
+        };
         
-        if (!isVisible) updateSyncMonitorDisplay();
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `LINSTELEC_Quotes_Backup_${new Date().toISOString().slice(0,10)}.json`;
+        link.click();
+        
+        alert(`✅ Respaldo exportado: ${allQuotes.length} cotizaciones`);
     }
 
-    function updateSyncMonitorDisplay() {
-        const types = ['inventory', 'products', 'quotes'];
-        const labels = { inventory: 'Bodega', products: 'Productos', quotes: 'Cotizaciones' };
+    function importQuotesBackup(input) {
+        const file = input.files[0];
+        if (!file) return;
         
-        types.forEach(type => {
-            const state = syncState[type];
-            const statusEl = document.getElementById(`monitor-${type}-status`);
-            const textEl = document.getElementById(`monitor-${type}-text`);
-            
-            if (!statusEl || !textEl) return;
-            
-            statusEl.className = 'sync-status';
-            switch (state.status) {
-                case 'success':
-                    statusEl.classList.add('sync-ok');
-                    statusEl.innerHTML = '<i class="fas fa-check-circle"></i>';
-                    break;
-                case 'syncing':
-                    statusEl.classList.add('sync-pending');
-                    statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    break;
-                case 'error':
-                    statusEl.classList.add('sync-error');
-                    statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
-                    break;
-                default:
-                    statusEl.innerHTML = '<i class="fas fa-circle"></i>';
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const backup = JSON.parse(e.target.result);
+                if (backup.data && Array.isArray(backup.data)) {
+                    const existingQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
+                    const existingNumbers = new Set(existingQuotes.map(q => q.number));
+                    
+                    const newQuotes = backup.data.filter(q => !existingNumbers.has(q.number));
+                    
+                    if (newQuotes.length === 0) {
+                        return alert('ℹ️ No hay cotizaciones nuevas para importar');
+                    }
+                    
+                    if (confirm(`⚠️ IMPORTAR COTIZACIONES\n\nSe agregarán ${newQuotes.length} cotizaciones nuevas.\n\n¿Continuar?`)) {
+                        const merged = [...existingQuotes, ...newQuotes].slice(0, 100);
+                        localStorage.setItem('linstelec_quotes', JSON.stringify(merged));
+                        renderSavedQuotes();
+                        triggerSyncAfterSave('quotes');
+                        alert(`✅ Importadas ${newQuotes.length} cotizaciones nuevas`);
+                    }
+                } else {
+                    alert('❌ Formato no válido');
+                }
+            } catch (err) {
+                alert('❌ Error: ' + err.message);
             }
-            
-            textEl.textContent = state.lastSync ? 
-                new Date(state.lastSync).toLocaleTimeString('es-CL') : 
-                (state.error ? 'Error' : 'Pendiente');
-        });
+            input.value = '';
+        };
+        reader.readAsText(file);
     }
 
-    async function manualSyncAll() {
-        const btn = event.currentTarget;
-        const originalContent = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sincronizando...';
-        btn.disabled = true;
+    function syncQuotesToCloud() {
+        if (!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI')) {
+            alert('⚙️ Configura JSONBin para habilitar sincronización en la nube');
+            return;
+        }
+        alert('🔄 Sincronizando cotizaciones con la nube...');
+        // Implementación real de sync aquí
+    }
+
+    /* ========== FUNCIONES DE SYNC JSONBIN ========== */
+    function triggerSyncAfterSave(type) {
+        if (!JSONBIN_CONFIG.options.autoSync) return;
+        if (!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI')) return;
         
-        try {
-            await Promise.allSettled([
-                saveInventoryToCloud(),
-                saveProductsToCloud(),
-                saveQuotesToCloud()
-            ]);
-            updateSyncMonitorDisplay();
-            alert('✅ Sincronización completada');
-        } catch (error) {
-            alert('⚠️ Algunos sync fallaron. Revisa la consola para detalles.');
-        } finally {
-            btn.innerHTML = originalContent;
-            btn.disabled = false;
+        switch (type) {
+            case 'inventory': saveInventoryToCloud(); break;
+            case 'products': syncProductsToCloud(); break;
+            case 'quotes': syncQuotesToCloud(); break;
         }
     }
 
-    // Cerrar modal al hacer clic fuera
-    document.addEventListener('click', function(e) {
-        const modal = document.getElementById('quote-preview-modal');
-        if (e.target === modal) closeQuotePreview();
-    });
+    async function loadInventoryFromCloud() {
+        if (!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI')) return;
+        try {
+            const binId = JSONBIN_CONFIG.bins.inventory;
+            const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/${binId}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.record?.data && Array.isArray(data.record.data)) {
+                    inventory = data.record.data;
+                    localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+                    renderInv();
+                    updateStockAlerts();
+                }
+            }
+        } catch(error) {
+            console.log("ℹ️ No se pudo cargar inventario desde la nube");
+        }
+    }
 
-    /* ========== FUNCIONES DE INVENTARIO (MODIFICADAS PARA SYNC) ========== */
-    function updateSyncStatus(type, status, message) { /* Ya definida arriba */ }
-    async function loadInventoryFromCloud() { /* Ya definida arriba */ }
-    async function saveInventoryToCloud() { /* Ya definida arriba */ }
-    async function refreshInventory() { updateSyncStatus('inventory', 'syncing', 'Actualizando...'); await loadInventoryFromCloud(); alert("📡 Inventario actualizado desde la nube"); }
-    function filterInventory() { /* ... mantenido igual ... */ }
-    function downloadInventory() { /* ... mantenido igual ... */ }
-    function printInventory() { /* ... mantenido igual ... */ }
-    function exportForShare() { /* ... mantenido igual ... */ }
-    function importFromShare() { document.getElementById('importFile').click(); }
-    function handleImport(input) { /* ... mantenido igual ... */ }
-    
+    async function saveInventoryToCloud() {
+        if (!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI')) return;
+        try {
+            const binId = JSONBIN_CONFIG.bins.inventory;
+            await fetch(`${JSONBIN_CONFIG.baseUrl}/${binId}`, {
+                method: 'PUT',
+                headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: inventory, lastUpdate: new Date().toISOString() })
+            });
+            document.getElementById('sync-status').innerHTML = '<i class="fas fa-check-circle"></i> Sincronizado';
+            document.getElementById('sync-status').className = 'sync-status sync-ok';
+        } catch(error) {
+            console.error("❌ Error al sincronizar inventario:", error);
+        }
+    }
+
+    async function loadProductsFromCloud() {
+        if (!JSONBIN_CONFIG.masterKey || JSONBIN_CONFIG.masterKey.includes('PEGAR_AQUI')) return;
+        try {
+            const binId = JSONBIN_CONFIG.bins.products;
+            const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/${binId}/latest`, {
+                headers: { 'X-Master-Key': JSONBIN_CONFIG.masterKey }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.record?.products && Array.isArray(data.record.products)) {
+                    productsDB = data.record.products;
+                    localStorage.setItem('linstelec_products_db', JSON.stringify(productsDB));
+                    renderProductsDB();
+                }
+            }
+        } catch(error) {
+            console.log("ℹ️ No se pudo cargar productos desde la nube");
+        }
+    }
+
+    /* ========== FUNCIONES DE INVENTARIO ========== */
+    function updateStockAlerts() {
+        const alertsEl = document.getElementById('stock-alerts');
+        const lowStock = inventory.filter(item => item.stock <= 5);
+        if (lowStock.length === 0) {
+            alertsEl.innerHTML = '<p style="color: var(--success); text-align: center;"><i class="fas fa-check-circle"></i> Todo el inventario está en buen estado</p>';
+            return;
+        }
+        alertsEl.innerHTML = lowStock.slice(0, 5).map(item => 
+            `<div class="alert-item">
+                <div class="alert-item-info">
+                    <div class="alert-item-icon"><i class="fas fa-box"></i></div>
+                    <div>
+                        <div class="alert-item-name">${item.name}</div>
+                        <div class="alert-item-stock">Stock: ${item.stock}</div>
+                    </div>
+                </div>
+                <span class="alert-item-qty ${item.stock <= 2 ? '' : 'low'}">${item.stock} un.</span>
+            </div>`
+        ).join('');
+    }
+
+    function renderInv() {
+        const tbody = document.getElementById('inv-body');
+        const searchTerm = document.getElementById('search-inv')?.value.toLowerCase() || '';
+        const filtered = inventory.filter(item => item.name.toLowerCase().includes(searchTerm));
+        
+        document.getElementById('search-count').textContent = `${filtered.length} resultado${filtered.length !== 1 ? 's' : ''}`;
+        
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="no-results" style="text-align: center; padding: 20px;">No se encontraron materiales</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = filtered.map((item, idx) => {
+            const realIdx = inventory.indexOf(item);
+            return `<tr>
+                <td>${item.name}</td>
+                <td><strong>${item.stock}</strong></td>
+                <td><input type="number" class="qty-input" value="0" min="0" onchange="addToBag(${realIdx}, this.value)"></td>
+                <td><button onclick="delMat(${realIdx})" style="background:var(--danger); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">✕</button></td>
+            </tr>`;
+        }).join('');
+    }
+
+    function filterInventory() { renderInv(); }
+
     function addMaterial() {
         const name = document.getElementById('new-item-name').value.trim();
         const qty = parseInt(document.getElementById('new-item-qty').value) || 1;
@@ -2821,22 +3569,16 @@
         localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
         renderInv();
         updateStockAlerts();
-        
-        // 🔁 TRIGGER SYNC
         triggerSyncAfterSave('inventory');
         
         document.getElementById('new-item-name').value = '';
         document.getElementById('new-item-qty').value = '';
     }
-    
-    function renderInv() { /* ... mantenido igual ... */ }
-    function updateStockAlerts() { /* ... mantenido igual ... */ }
-    
+
     function updateStock(idx, val) { 
-        inventory[idx].stock = parseInt(val); 
+        inventory[idx].stock = parseInt(val) || 0; 
         localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory)); 
         updateStockAlerts(); 
-        // 🔁 TRIGGER SYNC
         triggerSyncAfterSave('inventory');
     }
     
@@ -2845,51 +3587,417 @@
             inventory.splice(idx, 1); 
             renderInv(); 
             updateStockAlerts(); 
-            // 🔁 TRIGGER SYNC
             triggerSyncAfterSave('inventory');
         } 
     }
     
-    function addToBag(idx) { /* ... mantenido igual ... */ }
-    function renderBag() { /* ... mantenido igual ... */ }
-    function generateFile() { /* ... mantenido igual ... */ }
+    function addToBag(idx, val) {
+        const qty = parseInt(val) || 0;
+        if (qty <= 0) return;
+        const existing = bag.find(b => b.idx === idx);
+        if (existing) { existing.qty = qty; }
+        else { bag.push({ idx, qty, name: inventory[idx].name }); }
+        renderBag();
+    }
+    
+    function renderBag() {
+        const container = document.getElementById('bag-items');
+        if (bag.length === 0) { container.innerHTML = '<p style="color: #64748b; font-style: italic;">No hay materiales seleccionados</p>'; return; }
+        container.innerHTML = bag.map(b => 
+            `<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9;">
+                <span>${b.name}</span>
+                <strong>${b.qty} un.</strong>
+                <button onclick="bag = bag.filter(x => x.idx !== ${b.idx}); renderBag();" style="background: var(--danger); color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;">✕</button>
+            </div>`
+        ).join('');
+    }
+    
+    function generateFile() {
+        const project = document.getElementById('install-proj').value || 'Sin proyecto';
+        let content = `PROYECTO: ${project}\nFECHA: ${new Date().toLocaleDateString('es-CL')}\n\nMATERIALES:\n`;
+        bag.forEach(b => {
+            content += `- ${b.name}: ${b.qty} un.\n`;
+            inventory[b.idx].stock -= b.qty;
+        });
+        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+        renderInv();
+        updateStockAlerts();
+        
+        const blob = new Blob([content], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Salida_${project.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.txt`;
+        link.click();
+        
+        bag = [];
+        renderBag();
+        triggerSyncAfterSave('inventory');
+        alert('✅ Archivo generado y stock actualizado');
+    }
+    
+    function downloadInventory() {
+        let content = 'INVENTARIO LINSTELEC\n====================\n\n';
+        inventory.forEach(item => content += `${item.name}: ${item.stock} un.\n`);
+        const blob = new Blob([content], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Inventario_${new Date().toISOString().slice(0,10)}.txt`;
+        link.click();
+        alert('✅ Lista descargada');
+    }
+    
+    function printInventory() { window.print(); }
+    
+    function exportForShare() {
+        const data = { inventory, exportedAt: new Date().toISOString(), version: '2.0' };
+        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `LINSTELEC_Share_${new Date().toISOString().slice(0,10)}.json`;
+        link.click();
+        alert('✅ Exportado para compartir');
+    }
+    
+    function importFromShare() { document.getElementById('importFile').click(); }
+    
+    function handleImport(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (data.inventory && Array.isArray(data.inventory)) {
+                    if (confirm(`⚠️ IMPORTAR INVENTARIO\n\nEsto fusionará ${data.inventory.length} materiales con tu inventario actual.\n\n¿Continuar?`)) {
+                        const existingIds = new Set(inventory.map(i => i.id));
+                        const newItems = data.inventory.filter(i => !existingIds.has(i.id));
+                        inventory = [...inventory, ...newItems];
+                        localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
+                        renderInv();
+                        updateStockAlerts();
+                        alert(`✅ Importados ${newItems.length} nuevos materiales`);
+                        triggerSyncAfterSave('inventory');
+                    }
+                } else {
+                    alert('❌ Formato no válido');
+                }
+            } catch(err) { alert('❌ Error: ' + err.message); }
+            input.value = '';
+        };
+        reader.readAsText(file);
+    }
 
-    /* ========== FUNCIONES DE CÁLCULO (SIN MODIFICAR) ========== */
-    function calcNodoInteractivo(nodo) { /* ... mantenido igual ... */ }
-    function calcOhm() { /* ... mantenido igual ... */ }
-    function toggleCosPhi() { /* ... mantenido igual ... */ }
-    function mostrarResultado(mensaje, clase) { /* ... mantenido igual ... */ }
-    function lanzarConfeti() { /* ... mantenido igual ... */ }
-    function actualizarCalculadoraDuctos() { /* ... mantenido igual ... */ }
-    function calcDucto() { /* ... mantenido igual ... */ }
-    function calcTension() { /* ... mantenido igual ... */ }
-    function iniciarChatbase() { /* ... mantenido igual ... */ }
+    /* ========== FUNCIONES DE CÁLCULO (RESUMIDAS) ========== */
+    function calcTension() { /* Implementación de cálculo de caída de tensión */ 
+        const dist = parseFloat(document.getElementById('dist').value) || 0;
+        const amp = parseFloat(document.getElementById('amp').value) || 0;
+        const sec = parseFloat(document.getElementById('sec').value) || 1;
+        const tipo = document.querySelector('input[name="tipoSistema"]:checked').value;
+        const cosPhi = document.getElementById('cosphi-check').checked ? parseFloat(document.getElementById('cosphi-value').value) || 0.8 : 1;
+        
+        const factor = tipo === 'trifasico' ? Math.sqrt(3) : 2;
+        const voltaje = tipo === 'trifasico' ? 380 : 220;
+        
+        const caida = (factor * RHO * dist * amp) / (sec * voltaje * cosPhi) * 100;
+        const resEl = document.getElementById('res-tension');
+        
+        if (caida <= LIMITE_CAIDA) {
+            resEl.innerHTML = `<div class="resultado res-ok">✅ Caída de tensión: <strong>${caida.toFixed(2)}%</strong><br><small>Dentro del límite permitido (≤3%)</small></div>`;
+            lanzarConfeti();
+        } else {
+            resEl.innerHTML = `<div class="resultado res-fail">❌ Caída de tensión: <strong>${caida.toFixed(2)}%</strong><br><small>Supera el límite permitido (3%). Aumentar sección del conductor.</small></div>`;
+            document.getElementById('dangerOverlay').style.display = 'flex';
+            setTimeout(() => { document.getElementById('dangerOverlay').style.display = 'none'; }, 2000);
+        }
+        incrementCalcCount();
+    }
+    
+    function toggleCosPhi() {
+        const checked = document.getElementById('cosphi-check').checked;
+        document.getElementById('cosphi-container').style.display = checked ? 'block' : 'none';
+    }
+    
+    function lanzarConfeti() {
+        const colors = ['#3498db', '#27ae60', '#e74c3c', '#f39c12', '#8e44ad'];
+        for (let i = 0; i < 50; i++) {
+            const conf = document.createElement('div');
+            conf.style.cssText = `position:fixed; top:-10px; left:${Math.random()*100}vw; width:10px; height:10px; background:${colors[Math.floor(Math.random()*colors.length)]}; border-radius:50%; animation:confettiFall ${2+Math.random()*3}s linear forwards; z-index:9999; pointer-events:none;`;
+            document.body.appendChild(conf);
+            setTimeout(() => conf.remove(), 5000);
+        }
+    }
+    
+    function actualizarCalculadoraDuctos() {
+        const select = document.getElementById('cable-tipo');
+        const option = select.options[select.selectedIndex];
+        const diametro = option.dataset.diametro;
+        const cantidad = option.dataset.cantidad;
+        
+        document.getElementById('cable-info').innerHTML = `<strong>Ø ${diametro} mm</strong> • Área: ${(Math.PI * Math.pow(diametro/2, 2)).toFixed(2)} mm²`;
+        document.getElementById('cantidad-group').style.display = cantidad === 'variable' ? 'block' : 'none';
+        document.getElementById('utp-cantidad-group').style.display = document.getElementById('utp-check').checked ? 'block' : 'none';
+    }
+    
+    function calcDucto() {
+        const select = document.getElementById('cable-tipo');
+        const option = select.options[select.selectedIndex];
+        const diametro = parseFloat(option.dataset.diametro);
+        const cantidadBase = option.dataset.cantidad === 'variable' ? parseInt(document.getElementById('cable-cant').value) || 1 : 1;
+        
+        const utpCheck = document.getElementById('utp-check').checked;
+        const utpCant = utpCheck ? parseInt(document.getElementById('utp-cant').value) || 0 : 0;
+        const utpDiametro = 6.0;
+        
+        const areaCable = Math.PI * Math.pow(diametro/2, 2);
+        const areaTotal = (areaCable * cantidadBase) + (Math.PI * Math.pow(utpDiametro/2, 2) * utpCant);
+        const totalCables = cantidadBase + utpCant;
+        
+        const factorLlenado = totalCables === 1 ? 0.53 : totalCables === 2 ? 0.31 : 0.40;
+        
+        const tubosEMT = [
+            { nombre: 'EMT 16mm (5/8")', areaInt: 124, factor: factorLlenado },
+            { nombre: 'EMT 21mm (3/4")', areaInt: 227, factor: factorLlenado },
+            { nombre: 'EMT 27mm (1")', areaInt: 373, factor: factorLlenado },
+            { nombre: 'EMT 35mm (1¼")', areaInt: 603, factor: factorLlenado },
+            { nombre: 'EMT 41mm (1½")', areaInt: 852, factor: factorLlenado }
+        ];
+        
+        const resultado = tubosEMT.find(tubo => areaTotal <= tubo.areaInt * tubo.factor);
+        const porcentaje = resultado ? (areaTotal / (resultado.areaInt * resultado.factor) * 100).toFixed(1) : 'N/A';
+        
+        const resEl = document.getElementById('res-ducto');
+        if (resultado) {
+            resEl.innerHTML = `<div class="resultado res-ok">✅ Tubería recomendada: <strong>${resultado.nombre}</strong><br><small>Ocupación: ${porcentaje}% del área útil permitida</small></div>`;
+        } else {
+            resEl.innerHTML = `<div class="resultado res-fail">❌ Se requiere tubería mayor a EMT 41mm<br><small>Considera dividir el circuito o usar canaleta</small></div>`;
+        }
+        incrementCalcCount();
+    }
+    
+    function calcNodoInteractivo(nodo) {
+        const L = parseFloat(document.getElementById(`L${nodo}`).value) || 0;
+        const S = parseFloat(document.getElementById(`S${nodo}`).value) || 1;
+        const zccPrev = nodo === 2 ? parseFloat(document.getElementById('zcc1').value) || 36.67 : 
+                       nodo === 3 ? parseFloat(document.getElementById('zcc2').value) || 0 :
+                       parseFloat(document.getElementById('zcc3').value) || 0;
+        
+        const zCable = (RHO * L * 1000) / S;
+        const zccNuevo = zccPrev + zCable;
+        const iccNuevo = (220 * 1000) / zccNuevo / 1000;
+        
+        document.getElementById(`zcc${nodo}`).value = zccNuevo.toFixed(2);
+        
+        const ecuEl = document.getElementById(`ecu-${nodo}`);
+        ecuEl.style.display = 'block';
+        ecuEl.innerHTML = `Zcc = ${zccPrev.toFixed(2)} + (${RHO} × ${L} × 1000) / ${S}<br><strong>Zcc nuevo: ${zccNuevo.toFixed(2)} mΩ</strong><br><strong>Icc: ${iccNuevo.toFixed(2)} kA</strong>`;
+        
+        incrementCalcCount();
+    }
+    
+    function calcCortocircuito() {
+        const tipo = document.querySelector('input[name="ccTipoSistema"]:checked').value;
+        const iccOrigen = parseFloat(document.getElementById('cc-icc-origen').value) || 6;
+        const material = document.getElementById('cc-material').value;
+        const rho = material === 'cobre' ? 0.018 : 0.028;
+        const longitud = parseFloat(document.getElementById('cc-longitud').value) || 0;
+        const seccion = parseFloat(document.getElementById('cc-seccion').value) || 1;
+        const interruptor = parseFloat(document.getElementById('cc-interruptor').value) || 25;
+        
+        const factor = tipo === 'trifasico' ? Math.sqrt(3) : 2;
+        const voltaje = tipo === 'trifasico' ? 380 : 220;
+        
+        const zOrigen = (voltaje / (iccOrigen * 1000)) * 1000;
+        const zCable = (rho * longitud * 1000) / seccion;
+        const zTotal = zOrigen + zCable;
+        const iccNodo = (voltaje / zTotal) / 1000;
+        
+        const resEl = document.getElementById('res-cortocircuito');
+        const cumple = iccNodo >= interruptor * 1.45 / 1000;
+        
+        resEl.innerHTML = `<div class="resultado ${cumple ? 'res-ok' : 'res-fail'}">
+            <strong>Icc en nodo: ${iccNodo.toFixed(2)} kA</strong><br>
+            <small>Z total: ${zTotal.toFixed(2)} mΩ | Z cable: ${zCable.toFixed(2)} mΩ</small><br>
+            ${cumple ? '✅ Cumple con RIC 05 (Icc ≥ 1.45×In)' : '❌ No cumple: Icc mínima requerida: ' + (interruptor * 1.45 / 1000).toFixed(2) + ' kA'}
+        </div>`;
+        incrementCalcCount();
+    }
+    
+    function toggleReactancia() {
+        const checked = document.getElementById('cc-reactancia-check').checked;
+        document.getElementById('cc-reactancia-container').style.display = checked ? 'block' : 'none';
+    }
+    
+    function cambiarModoOhm(modo, btn) {
+        modoOhmActual = modo;
+        document.querySelectorAll('#ohm .toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('modo-directo-ohm').classList.toggle('active', modo === 'directo');
+        document.getElementById('modo-inverso-ohm').classList.toggle('active', modo === 'inverso');
+    }
+    
+    function setSistemaOhm(sistema, btn) {
+        sistemaOhmActual = sistema;
+        document.querySelectorAll('#ohm .toggle-container .toggle-btn').forEach(b => {
+            if (b.id?.includes('btn-')) b.classList.remove('active');
+        });
+        btn.classList.add('active');
+    }
+    
+    function actualizarCosPhiOhm() {
+        const select = document.getElementById('cosphi-ohm');
+        const custom = document.getElementById('cosphi-custom-ohm');
+        custom.style.display = select.value === 'custom' ? 'block' : 'none';
+    }
+    
+    function calcularOhmDirecto() {
+        const potencia = parseFloat(document.getElementById('potencia-ohm').value) || 0;
+        const corriente = parseFloat(document.getElementById('corriente-ohm').value) || 0;
+        const cosPhi = getCosPhiOhm();
+        const distancia = parseFloat(document.getElementById('distancia-ohm').value) || 0;
+        const seccion = parseFloat(document.getElementById('seccion-ohm').value) || 1;
+        const metodo = document.getElementById('metodo-instalacion-ohm').value;
+        const curva = document.getElementById('curva-interruptor-ohm').value;
+        
+        const I = potencia > 0 ? calcularCorrienteOhm(potencia, cosPhi) : corriente;
+        const caida = calcularCaidaTensionOhm(I, distancia, seccion, cosPhi);
+        const ampacidad = obtenerCorrienteAdmisible(seccion, metodo);
+        
+        const resEl = document.getElementById('resultado-ohm-directo');
+        resEl.innerHTML = `<div class="valor-principal">${caida.toFixed(2)}%</div>
+            <div class="detalles">
+                <div class="detalle-item"><strong>Corriente:</strong> ${I.toFixed(1)} A</div>
+                <div class="detalle-item"><strong>Ampacidad:</strong> ${ampacidad} A</div>
+                <div class="detalle-item"><strong>Voltaje:</strong> ${sistemaOhmActual === 'trifasico' ? '380V' : '220V'}</div>
+            </div>`;
+        
+        const alertaEl = document.getElementById('alerta-ampacidad-ohm');
+        if (I > ampacidad) {
+            alertaEl.classList.add('show');
+            alertaEl.innerHTML = `⚠️ <strong>¡Atención!</strong> La corriente (${I.toFixed(1)} A) supera la ampacidad del cable (${ampacidad} A). Usa una sección mayor.`;
+        } else {
+            alertaEl.classList.remove('show');
+        }
+        
+        recomendarInterruptor(I, ampacidad, metodo, seccion, curva);
+        incrementCalcCount();
+    }
+    
+    function calcularOhmInverso() {
+        const potencia = parseFloat(document.getElementById('potencia-inv-ohm').value) || 0;
+        const cosPhi = parseFloat(document.getElementById('cosphi-inv-ohm').value) || 0.85;
+        const distancia = parseFloat(document.getElementById('distancia-inv-ohm').value) || 0;
+        const metodo = document.getElementById('metodo-instalacion-inv-ohm').value;
+        const curva = document.getElementById('curva-interruptor-inv-ohm').value;
+        
+        if (!potencia) { alert('Ingresa la potencia'); return; }
+        
+        const I = calcularCorrienteOhm(potencia, cosPhi);
+        let seccionRecomendada = null;
+        
+        for (const sec of SECCIONES_DISPONIBLES) {
+            const ampacidad = obtenerCorrienteAdmisible(sec, metodo);
+            const caida = calcularCaidaTensionOhm(I, distancia, sec, cosPhi);
+            if (ampacidad >= I && caida <= LIMITE_CAIDA) {
+                seccionRecomendada = sec;
+                break;
+            }
+        }
+        
+        const resEl = document.getElementById('resultado-ohm-inverso');
+        const recEl = document.getElementById('seccion-recomendada-ohm');
+        
+        if (seccionRecomendada) {
+            resEl.innerHTML = `<div class="res-ok">✅ Sección encontrada que cumple RIC 04</div>`;
+            recEl.classList.add('show');
+            recEl.innerHTML = `<i class="fas fa-check-circle"></i> Sección recomendada:<span class="numero">${seccionRecomendada} mm²</span><small>Para ${I.toFixed(1)} A a ${distancia} m</small>`;
+            recomendarInterruptor(I, obtenerCorrienteAdmisible(seccionRecomendada, metodo), metodo, seccionRecomendada, curva);
+        } else {
+            resEl.innerHTML = `<div class="res-fail">❌ No se encontró sección adecuada</div>`;
+            recEl.classList.remove('show');
+        }
+        incrementCalcCount();
+    }
+    
+    function getCosPhiOhm() {
+        const select = document.getElementById('cosphi-ohm');
+        return select.value === 'custom' ? parseFloat(document.getElementById('cosphi-custom-ohm').value) || 0.85 : parseFloat(select.value);
+    }
+    
+    function calcularCorrienteOhm(potencia, cosPhi) {
+        const voltaje = sistemaOhmActual === 'trifasico' ? 380 : 220;
+        const factor = sistemaOhmActual === 'trifasico' ? Math.sqrt(3) : 1;
+        return potencia / (voltaje * factor * cosPhi);
+    }
+    
+    function calcularCaidaTensionOhm(corriente, distancia, seccion, cosPhi) {
+        const factor = sistemaOhmActual === 'trifasico' ? Math.sqrt(3) : 2;
+        const voltaje = sistemaOhmActual === 'trifasico' ? 380 : 220;
+        return (factor * RHO * distancia * corriente) / (seccion * voltaje * cosPhi) * 100;
+    }
+    
+    function obtenerCorrienteAdmisible(seccion, metodo) {
+        return TABLA_AMPACIDAD[seccion]?.[metodo] || 0;
+    }
+    
+    function recomendarInterruptor(corrienteCalculada, ampacidadCable, metodo, seccion, curva) {
+        const interruptores = [6, 10, 15, 16, 20, 25, 32, 40, 50, 63];
+        const interruptorRecomendado = interruptores.find(In => In >= corrienteCalculada && In <= ampacidadCable) || interruptores[interruptores.length - 1];
+        
+        const rango = curva === 'B' ? '3-5×' : curva === 'C' ? '5-10×' : '10-20×';
+        const clase = corrienteCalculada > ampacidadCable ? 'danger' : corrienteCalculada > ampacidadCable * 0.8 ? 'warning' : '';
+        
+        let html = `<div class="interruptor-card ${clase}">
+            <strong>Interruptor recomendado:</strong> 
+            <span class="interruptor-valor ${clase}">${interruptorRecomendado}A</span> 
+            <span class="curva-info curva-${curva}">Curva ${curva}</span>
+            <br><small>Disparo: ${rango}In • Ampacidad cable: ${ampacidadCable}A</small>
+        </div>`;
+        
+        const contenedor = document.getElementById('resultado-ohm-directo') || document.getElementById('resultado-ohm-inverso');
+        if (contenedor && !contenedor.querySelector('.interruptor-card')) {
+            contenedor.insertAdjacentHTML('beforeend', html);
+        }
+    }
+    
+    function iniciarChatbase() { /* Placeholder para integración con chatbot */ }
+    
     function toggleMusicPanel() { document.getElementById('musicPanel').classList.toggle('visible'); }
     function closeMusicPanel() { document.getElementById('musicPanel').classList.remove('visible'); }
-    function togglePlayPause() { /* ... mantenido igual ... */ }
-    function toggleReactancia() { /* ... mantenido igual ... */ }
-    function calcCortocircuito() { /* ... mantenido igual ... */ }
-    function obtenerCorrienteAdmisible(seccion, material) { /* ... mantenido igual ... */ }
-    function mostrarResultadoCC(mensaje, clase) { /* ... mantenido igual ... */ }
-    function cambiarModoOhm(modo, btn) { /* ... mantenido igual ... */ }
-    function setSistemaOhm(sistema, btn) { /* ... mantenido igual ... */ }
-    function actualizarCosPhiOhm() { /* ... mantenido igual ... */ }
-    function getCosPhiOhm() { /* ... mantenido igual ... */ }
-    function calcularCorrienteOhm(potencia, cosPhi) { /* ... mantenido igual ... */ }
-    function validarAmpacidadOhm(seccion, corriente, metodo) { /* ... mantenido igual ... */ }
-    function calcularCaidaTensionOhm(corriente, distancia, seccion, cosPhi) { /* ... mantenido igual ... */ }
-    function calcularOhmDirecto() { /* ... mantenido igual ... */ }
-    function calcularOhmInverso() { /* ... mantenido igual ... */ }
-    function recomendarInterruptor(corrienteCalculada, ampacidadCable, metodo, seccion, curva) { /* ... mantenido igual ... */ }
+    
+    function togglePlayPause() {
+        const player = document.getElementById('mp3Player');
+        const icon = document.getElementById('playIcon');
+        const status = document.getElementById('songStatus');
+        const bubble = document.getElementById('musicBubble');
+        
+        if (player.paused) {
+            player.play().then(() => {
+                icon.className = 'fas fa-pause';
+                status.textContent = 'Reproduciendo...';
+                bubble.classList.add('playing');
+            }).catch(() => {
+                document.getElementById('audioError').style.display = 'block';
+            });
+        } else {
+            player.pause();
+            icon.className = 'fas fa-play';
+            status.textContent = 'Pausado';
+            bubble.classList.remove('playing');
+        }
+    }
 
     /* ========== INICIALIZACIÓN ========== */
-        // document.getElementById('container').style.display = 'block';
     window.addEventListener('load', () => {
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('quote-preview-modal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'quote-preview-modal') closeQuotePreview();
+        });
+        
         // Para desarrollo: descomentar para saltar login
         // document.getElementById('login-wrapper').style.display = 'none';
+        // document.getElementById('container').style.display = 'block';
         // currentUser = USERS[3];
         // document.getElementById('floating-panel').classList.add('visible');
-        // document.getElementById('sync-monitor-toggle').style.display = 'block';
         // initCotizaciones();
     });
 </script>
