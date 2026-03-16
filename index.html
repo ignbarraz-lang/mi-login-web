@@ -700,14 +700,68 @@
             display: block;
         }
         
-        .productos-search {
+        /* ===== PESTAÑA 1: CREAR COTIZACIÓN ===== */
+        .crear-cotizacion-container {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 10px;
-            margin-bottom: 20px;
-            align-items: end;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
-        .productos-search .form-group { margin-bottom: 0; }
+        
+        .buscador-productos {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .buscador-productos .search-box {
+            margin-bottom: 20px;
+        }
+        
+        .producto-seleccionado {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px dashed var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .producto-seleccionado .form-group {
+            margin-bottom: 0;
+        }
+        
+        .producto-seleccionado input {
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .producto-seleccionado input[readonly] {
+            background: #f1f5f9;
+            cursor: not-allowed;
+        }
+        
+        .btn-agregar-cot {
+            background: linear-gradient(135deg, var(--success), #219a52);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-agregar-cot:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
         
         .suggestions-list {
             position: absolute;
@@ -735,15 +789,252 @@
         .suggestion-name { font-weight: 600; color: var(--dark); }
         .suggestion-code { font-size: 0.8rem; color: #64748b; }
         
+        /* ===== PESTAÑA 2: AGREGAR PRODUCTOS A BASE DE DATOS ===== */
+        .form-agregar-producto {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .form-agregar-producto .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-agregar-producto label {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-agregar-producto input,
+        .form-agregar-producto select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        
+        .form-agregar-producto input:focus,
+        .form-agregar-producto select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .btn-guardar-producto {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn-guardar-producto:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+        
+        .lista-productos-db {
+            margin-top: 30px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .lista-productos-db h4 {
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .producto-db-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .producto-db-info {
+            flex: 1;
+        }
+        
+        .producto-db-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .producto-db-code {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        
+        .producto-db-price {
+            font-weight: bold;
+            color: var(--success);
+            margin-right: 15px;
+        }
+        
+        .btn-eliminar-producto {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .btn-eliminar-producto:hover {
+            background: #c0392b;
+        }
+        
+        /* ===== PESTAÑA 3: COTIZACIONES GUARDADAS ===== */
+        .cotizaciones-guardadas-container {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        
+        .cotizaciones-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .cotizaciones-header h4 {
+            margin: 0;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-refresh-quotes {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        .btn-refresh-quotes:hover {
+            background: #2980b9;
+        }
+        
+        .quotes-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .quotes-table th,
+        .quotes-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f5f9;
+            text-align: left;
+        }
+        
+        .quotes-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--dark);
+            position: sticky;
+            top: 0;
+        }
+        
+        .quotes-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        .quotes-table .action-cell {
+            width: 140px;
+            text-align: center;
+        }
+        
+        .btn-action-quote {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin: 0 3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        
+        .btn-view { background: var(--primary); color: white; }
+        .btn-view:hover { background: #2980b9; transform: translateY(-1px); }
+        
+        .btn-download { background: var(--danger); color: white; }
+        .btn-download:hover { background: #c0392b; transform: translateY(-1px); }
+        
+        .btn-edit { background: var(--warning); color: white; }
+        .btn-edit:hover { background: #d68910; transform: translateY(-1px); }
+        
+        .btn-delete { background: #95a5a6; color: white; }
+        .btn-delete:hover { background: #7f8c8d; transform: translateY(-1px); }
+        
+        .no-quotes {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+        
+        .no-quotes i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        /* Tabla de productos en cotización */
         .cotizacion-table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
             font-size: 0.9rem;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         .cotizacion-table th, .cotizacion-table td {
-            padding: 12px;
-            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
             text-align: left;
         }
         .cotizacion-table th {
@@ -751,15 +1042,17 @@
             font-weight: 600;
             color: var(--dark);
         }
-        .cotizacion-table .qty-cell { width: 80px; }
-        .cotizacion-table .price-cell { width: 120px; }
-        .cotizacion-table .total-cell { width: 120px; font-weight: 600; }
+        .cotizacion-table .qty-cell { width: 80px; text-align: center; }
+        .cotizacion-table .price-cell { width: 120px; text-align: right; }
+        .cotizacion-table .total-cell { width: 120px; text-align: right; font-weight: 600; }
         .cotizacion-table .action-cell { width: 60px; text-align: center; }
         .cotizacion-table input[type="number"] {
             padding: 6px 8px;
             text-align: center;
             width: 100%;
             box-sizing: border-box;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
         }
         .btn-remove {
             background: var(--danger);
@@ -776,6 +1069,7 @@
         }
         .btn-remove:hover { background: #c0392b; }
         
+        /* Totales */
         .cotizacion-totals {
             display: flex;
             justify-content: flex-end;
@@ -871,57 +1165,6 @@
         .btn-refresh { background: var(--primary); color: white; }
         .btn-refresh:hover { background: #2980b9; transform: translateY(-2px); }
         
-        /* ===== TABLA COTIZACIONES GUARDADAS ===== */
-        .quotes-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 0.9rem;
-        }
-        .quotes-table th, .quotes-table td {
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            text-align: left;
-        }
-        .quotes-table th {
-            background: #f8fafc;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        .quotes-table .action-cell { width: 120px; text-align: center; }
-        .btn-view {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-right: 5px;
-            font-size: 0.85rem;
-        }
-        .btn-view:hover { background: #2980b9; }
-        .btn-download {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-        .btn-download:hover { background: #c0392b; }
-        .btn-delete {
-            background: #95a5a6;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-left: 5px;
-            font-size: 0.85rem;
-        }
-        .btn-delete:hover { background: #7f8c8d; }
-        
         .loading {
             text-align: center;
             padding: 30px;
@@ -947,7 +1190,7 @@
                 background: white;
             }
             .navbar, .calc-tabs, .btn-back, .cotizacion-actions, .productos-search, #search-product,
-            .cotizacion-tabs, .iva-toggle-group {
+            .cotizacion-tabs, .iva-toggle-group, .crear-cotizacion-container, .form-agregar-producto {
                 display: none !important;
             }
             .card { box-shadow: none; border: none; }
@@ -981,6 +1224,11 @@
             .quotes-table { font-size: 0.8rem; }
             .quotes-table th, .quotes-table td { padding: 8px 5px; }
             .quotes-table .action-cell { width: 100px; }
+            
+            /* Responsive crear cotización */
+            .crear-cotizacion-container { grid-template-columns: 1fr; }
+            .producto-seleccionado { grid-template-columns: 1fr; gap: 8px; }
+            .btn-agregar-cot { width: 100%; }
         }
 
         /* ===== CALCULADORA OHM MEJORADA ===== */
@@ -1981,7 +2229,7 @@
             </div>
         </div>
 
-        <!-- ===== COTIZACIONES CON 3 PESTAÑAS Y JSONBIN ===== -->
+        <!-- ===== COTIZACIONES REESTRUCTURADAS CON 3 VENTANAS ===== -->
         <div id="cotizaciones" class="card">
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="margin: 0;">📋 Generador de Cotizaciones</h2>
@@ -1989,112 +2237,203 @@
             </div>
             
             <p style="font-size: 0.85rem; color: #64748b; margin: -10px 0 20px 0;">
-                <i class="fas fa-info-circle"></i> IVA Chile: 19% • Precios en pesos chilenos (CLP) • Datos sincronizados con la nube
+                <i class="fas fa-info-circle"></i> IVA Chile: 19% • Precios en pesos chilenos (CLP) • Base de datos local
             </p>
             
             <!-- ===== 3 PESTAÑAS DE COTIZACIÓN ===== -->
             <div class="cotizacion-tabs">
-                <button class="cot-tab-btn active" onclick="switchCotTab('agregar', this)">
-                    <i class="fas fa-plus-circle"></i> Agregar Productos
+                <button class="cot-tab-btn active" onclick="switchCotTab('crear', this)">
+                    <i class="fas fa-plus-circle"></i> 1. Crear Cotización
                 </button>
-                <button class="cot-tab-btn" onclick="switchCotTab('buscar', this)">
-                    <i class="fas fa-search"></i> Buscar en Base de Datos
+                <button class="cot-tab-btn" onclick="switchCotTab('agregar-productos', this)">
+                    <i class="fas fa-database"></i> 2. Agregar Productos
                 </button>
                 <button class="cot-tab-btn" onclick="switchCotTab('guardadas', this)">
-                    <i class="fas fa-folder-open"></i> Cotizaciones Guardadas
+                    <i class="fas fa-folder-open"></i> 3. Cotizaciones Guardadas
                 </button>
             </div>
             
-            <!-- PESTAÑA 1: AGREGAR PRODUCTOS MANUALMENTE (CON BUSCADOR DE NUBE) -->
-            <div id="cot-tab-agregar" class="cot-tab-content active">
-                <div class="productos-search">
-                    <div class="form-group" style="position: relative;">
-                        <label>Buscar Producto en Base de Datos</label>
-                        <input type="text" id="product-name-manual" placeholder="🔍 Ej: Interruptor, Cable..." 
-                               oninput="searchCloudProducts(this.value)" onfocus="showCloudSuggestions()" onblur="hideCloudSuggestionsDelayed()">
-                        <div id="cloud-suggestions" class="suggestions-list"></div>
+            <!-- PESTAÑA 1: CREAR COTIZACIÓN -->
+            <div id="cot-tab-crear" class="cot-tab-content active">
+                <div class="crear-cotizacion-container">
+                    <!-- Buscador de productos -->
+                    <div class="buscador-productos">
+                        <h3 style="margin: 0 0 15px 0; color: var(--dark);"><i class="fas fa-search"></i> Buscar Producto</h3>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-product-crear" placeholder="🔍 Buscar producto en base de datos..." 
+                                   oninput="searchProductsCrear(this.value)" onfocus="showSuggestionsCrear()" onblur="hideSuggestionsCrearDelayed()">
+                            <div id="suggestions-crear" class="suggestions-list"></div>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">
+                            💡 Escribe al menos 2 caracteres para buscar productos
+                        </p>
                     </div>
-                    <div class="form-group">
-                        <label>Cantidad</label>
-                        <input type="number" id="product-qty-manual" value="1" min="1">
+                    
+                    <!-- Recuadros del producto seleccionado -->
+                    <div>
+                        <h3 style="margin: 0 0 15px 0; color: var(--dark);"><i class="fas fa-cart-plus"></i> Producto Seleccionado</h3>
+                        <div class="producto-seleccionado">
+                            <div class="form-group">
+                                <label>Producto</label>
+                                <input type="text" id="selected-product-name" placeholder="Nombre del producto" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Cantidad</label>
+                                <input type="number" id="selected-product-qty" value="1" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Precio Unit. (CLP)</label>
+                                <input type="number" id="selected-product-price" placeholder="0" min="0" readonly>
+                            </div>
+                            <button class="btn-agregar-cot" onclick="addProductToQuoteCrear()">
+                                <i class="fas fa-plus"></i> Agregar
+                            </button>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #64748b;">
+                            💡 Selecciona un producto del buscador, ajusta cantidad y haz clic en "Agregar"
+                        </p>
                     </div>
-                    <div class="form-group">
-                        <label>Precio Unit. (CLP)</label>
-                        <input type="number" id="product-price-manual" placeholder="0" min="0">
-                    </div>
-                    <button class="btn-calc" onclick="addProductManual()" style="padding: 12px; margin-bottom: 1px;">
-                        <i class="fas fa-plus"></i> Agregar
-                    </button>
                 </div>
-                <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">
-                    💡 Busca productos de la base en la nube (JSONBin) o ingresa manualmente productos personalizados
-                </p>
-                <div id="cloud-loading" class="loading" style="display: none;">
-                    <i class="fas fa-spinner"></i> Cargando productos desde la nube...
+                
+                <!-- Tabla de productos en cotización (común para todas las pestañas) -->
+                <h3 style="margin: 25px 0 15px 0; color: var(--dark);"><i class="fas fa-list"></i> Productos en Cotización</h3>
+                <table class="cotizacion-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th class="qty-cell">Cant.</th>
+                            <th class="price-cell">Precio Unit.</th>
+                            <th class="total-cell">Subtotal</th>
+                            <th class="action-cell"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="quote-items">
+                        <tr>
+                            <td colspan="5" class="no-results" style="text-align: center; padding: 30px; color: #64748b;">
+                                <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                Agrega productos para comenzar tu cotización
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- Totales -->
+                <div class="cotizacion-totals">
+                    <div class="totals-box">
+                        <div class="total-row">
+                            <span class="total-label">Subtotal:</span>
+                            <span class="total-value" id="subtotal-value">$0</span>
+                        </div>
+                        <div class="total-row" id="iva-row">
+                            <span class="total-label">IVA (19%):</span>
+                            <span class="total-value" id="iva-value">$0</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label" id="total-label">TOTAL:</span>
+                            <span class="total-value" id="total-value">$0</span>
+                        </div>
+                        <div id="iva-status-text" style="font-size: 0.8rem; color: #64748b; margin-top: 10px; text-align: right;">
+                            <i class="fas fa-check-circle" style="color: var(--success);"></i> IVA incluido en el total
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- PESTAÑA 2: BUSCAR Y SELECCIONAR DE BASE DE DATOS (LOCAL) -->
-            <div id="cot-tab-buscar" class="cot-tab-content">
-                <div class="productos-search">
-                    <div class="form-group" style="position: relative;">
-                        <label>Buscar en Base Local</label>
-                        <input type="text" id="search-product" placeholder="🔍 Ej: Interruptor, Cable, Tablero..." 
-                               oninput="filterProducts(this.value)" onfocus="showSuggestions()" onblur="hideSuggestionsDelayed()">
-                        <div id="product-suggestions" class="suggestions-list"></div>
-                    </div>
+            <!-- PESTAÑA 2: AGREGAR PRODUCTOS A BASE DE DATOS -->
+            <div id="cot-tab-agregar-productos" class="cot-tab-content">
+                <div class="form-agregar-producto">
+                    <h3 style="margin: 0 0 20px 0; color: var(--dark); text-align: center;">
+                        <i class="fas fa-plus-circle"></i> Agregar Nuevo Producto
+                    </h3>
+                    
                     <div class="form-group">
-                        <label>Cantidad</label>
-                        <input type="number" id="product-qty" value="1" min="1">
+                        <label for="new-product-code">Código del Producto *</label>
+                        <input type="text" id="new-product-code" placeholder="Ej: INT-16A, CAB-2.5" required>
                     </div>
+                    
                     <div class="form-group">
-                        <label>Precio Unit. (CLP)</label>
-                        <input type="number" id="product-price" placeholder="0" min="0" readonly>
+                        <label for="new-product-name">Nombre del Producto *</label>
+                        <input type="text" id="new-product-name" placeholder="Ej: Interruptor Termomagnético 16A" required>
                     </div>
-                    <button class="btn-calc" onclick="addProductToQuote()" style="padding: 12px; margin-bottom: 1px;">
-                        <i class="fas fa-cart-plus"></i> Seleccionar
+                    
+                    <div class="form-group">
+                        <label for="new-product-price">Precio Unitario (CLP) *</label>
+                        <input type="number" id="new-product-price" placeholder="0" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="new-product-category">Categoría</label>
+                        <select id="new-product-category">
+                            <option value="interruptores">Interruptores</option>
+                            <option value="cables">Cables y Conductores</option>
+                            <option value="tuberias">Tuberías y Ductos</option>
+                            <option value="tableros">Tableros</option>
+                            <option value="accesorios">Accesorios</option>
+                            <option value="iluminacion">Iluminación</option>
+                            <option value="otros">Otros</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn-guardar-producto" onclick="saveNewProduct()">
+                        <i class="fas fa-save"></i> Guardar Producto en Base de Datos
                     </button>
+                    
+                    <p style="font-size: 0.8rem; color: #64748b; margin-top: 15px; text-align: center;">
+                        💡 Los productos agregados estarán disponibles inmediatamente en el buscador de cotizaciones
+                    </p>
                 </div>
-                <p style="font-size: 0.8rem; color: #64748b; margin-top: 10px;">
-                    💡 Selecciona productos de la base local con precios predefinidos (respaldo offline)
-                </p>
+                
+                <!-- Lista de productos en base de datos -->
+                <div class="lista-productos-db">
+                    <h4><i class="fas fa-list"></i> Productos en Base de Datos (<span id="products-count">0</span>)</h4>
+                    <div id="products-list-db">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                </div>
             </div>
             
             <!-- PESTAÑA 3: COTIZACIONES GUARDADAS -->
             <div id="cot-tab-guardadas" class="cot-tab-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h3 style="margin: 0;"><i class="fas fa-history"></i> Historial de Cotizaciones</h3>
-                    <button class="btn-cotizacion btn-refresh" onclick="loadSavedQuotes()">
-                        <i class="fas fa-sync"></i> Actualizar
-                    </button>
-                </div>
-                <div id="quotes-loading" class="loading">
-                    <i class="fas fa-spinner"></i> Cargando cotizaciones desde la nube...
-                </div>
-                <div id="quotes-list" style="display: none;">
-                    <table class="quotes-table">
-                        <thead>
-                            <tr>
-                                <th>N° Cotización</th>
-                                <th>Cliente</th>
-                                <th>Fecha</th>
-                                <th>Total</th>
-                                <th class="action-cell">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="quotes-body">
-                            <!-- Se llena dinámicamente -->
-                        </tbody>
-                    </table>
-                </div>
-                <div id="no-quotes" class="no-results" style="display: none; text-align: center; padding: 30px; color: #64748b;">
-                    <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                    No hay cotizaciones guardadas aún
+                <div class="cotizaciones-guardadas-container">
+                    <div class="cotizaciones-header">
+                        <h4><i class="fas fa-history"></i> Historial de Cotizaciones</h4>
+                        <button class="btn-refresh-quotes" onclick="loadSavedQuotes()">
+                            <i class="fas fa-sync"></i> Actualizar
+                        </button>
+                    </div>
+                    
+                    <div id="quotes-loading" class="loading">
+                        <i class="fas fa-spinner"></i> Cargando cotizaciones...
+                    </div>
+                    
+                    <div id="quotes-list" style="display: none; overflow-x: auto;">
+                        <table class="quotes-table">
+                            <thead>
+                                <tr>
+                                    <th>N° Cotización</th>
+                                    <th>Cliente</th>
+                                    <th>Fecha</th>
+                                    <th>Total</th>
+                                    <th class="action-cell">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quotes-body">
+                                <!-- Se llena dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="no-quotes" class="no-quotes" style="display: none;">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No hay cotizaciones guardadas aún</p>
+                        <small>Las cotizaciones que guardes aparecerán aquí</small>
+                    </div>
                 </div>
             </div>
             
-            <!-- Datos de la cotización -->
-            <div class="cotizacion-header">
+            <!-- Datos de la cotización (visible en pestaña Crear) -->
+            <div class="cotizacion-header" id="cotizacion-datos">
                 <div>
                     <div class="cotizacion-field">
                         <label>Cliente / Empresa</label>
@@ -2128,49 +2467,7 @@
                 </div>
             </div>
             
-            <!-- Tabla de productos en cotización -->
-            <table class="cotizacion-table">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th class="qty-cell">Cant.</th>
-                        <th class="price-cell">Precio Unit.</th>
-                        <th class="total-cell">Subtotal</th>
-                        <th class="action-cell"></th>
-                    </tr>
-                </thead>
-                <tbody id="quote-items">
-                    <tr>
-                        <td colspan="5" class="no-results" style="text-align: center; padding: 30px; color: #64748b;">
-                            <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                            Agrega productos desde cualquiera de las pestañas para comenzar tu cotización
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <!-- Totales -->
-            <div class="cotizacion-totals">
-                <div class="totals-box">
-                    <div class="total-row">
-                        <span class="total-label">Subtotal:</span>
-                        <span class="total-value" id="subtotal-value">$0</span>
-                    </div>
-                    <div class="total-row" id="iva-row">
-                        <span class="total-label">IVA (19%):</span>
-                        <span class="total-value" id="iva-value">$0</span>
-                    </div>
-                    <div class="total-row">
-                        <span class="total-label" id="total-label">TOTAL:</span>
-                        <span class="total-value" id="total-value">$0</span>
-                    </div>
-                    <div id="iva-status-text" style="font-size: 0.8rem; color: #64748b; margin-top: 10px; text-align: right;">
-                        <i class="fas fa-check-circle" style="color: var(--success);"></i> IVA incluido en el total
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Acciones -->
+            <!-- Acciones principales -->
             <div class="cotizacion-actions">
                 <button class="btn-cotizacion btn-pdf" onclick="generatePDF()">
                     <i class="fas fa-file-pdf"></i> Generar PDF
@@ -2179,10 +2476,10 @@
                     <i class="fas fa-print"></i> Imprimir
                 </button>
                 <button class="btn-cotizacion btn-save" onclick="saveQuote()">
-                    <i class="fas fa-save"></i> Guardar en Nube
+                    <i class="fas fa-save"></i> Guardar Cotización
                 </button>
                 <button class="btn-cotizacion btn-clear" onclick="clearQuote()">
-                    <i class="fas fa-trash"></i> Limpiar
+                    <i class="fas fa-trash"></i> Limpiar Todo
                 </button>
             </div>
         </div>
@@ -2232,17 +2529,6 @@
 </div>
 
 <script>
-    /* ========== CONFIGURACIÓN JSONBIN ========== */
-    const JSONBIN_CONFIG = {
-        masterKey: "$2a$10$d5wiwzZ.u1m2caXKKtWSGuo4.hnU4mEWvEiCaj9XFa6IpBOA0UP0a",
-        bins: {
-            inventario: "69b72a5db7ec241ddc6fab33",
-            productos: "69b72a95b7ec241ddc6fac14",
-            quota: "69b72aaac3097a1dd52a5b83"
-        },
-        baseUrl: "https://api.jsonbin.io/v3/b"
-    };
-
     /* ========== USUARIOS ========== */
     const USERS = [
         { id: "Rodrigo", pass: "1648", name: "Rodrigo Padilla", clase: "Clase D" },
@@ -2254,50 +2540,48 @@
 
     let inventory = JSON.parse(localStorage.getItem('linstelec_inv_v2')) || [];
     let bag = [];
-    let isSyncing = false;
     let currentUser = null;
     let recentTools = JSON.parse(localStorage.getItem('linstelec_recent_tools')) || [];
     let calcCount = parseInt(localStorage.getItem('linstelec_calc_count')) || 0;
 
-    /* ========== BASE DE DATOS LOCAL DE PRODUCTOS (RESPALDO OFFLINE) ========== */
-    const PRODUCTS_DB = [
-        { id: 1, code: "INT-16A", name: "Interruptor Termomagnético 16A", price: 3500 },
-        { id: 2, code: "INT-20A", name: "Interruptor Termomagnético 20A", price: 4200 },
-        { id: 3, code: "INT-25A", name: "Interruptor Termomagnético 25A", price: 5100 },
-        { id: 4, code: "DIF-25A", name: "Interruptor Diferencial 25A 30mA", price: 18500 },
-        { id: 5, code: "CAB-2.5", name: "Cable RVK 2.5mm² (metro)", price: 450 },
-        { id: 6, code: "CAB-4", name: "Cable RVK 4mm² (metro)", price: 680 },
-        { id: 7, code: "CAB-6", name: "Cable RVK 6mm² (metro)", price: 920 },
-        { id: 8, code: "CAB-10", name: "Cable RVK 10mm² (metro)", price: 1450 },
-        { id: 9, code: "TUB-20", name: "Tubo EMT 20mm (3m)", price: 2800 },
-        { id: 10, code: "TUB-25", name: "Tubo EMT 25mm (3m)", price: 3900 },
-        { id: 11, code: "TUB-32", name: "Tubo EMT 32mm (3m)", price: 5200 },
-        { id: 12, code: "CAJ-8", name: "Caja de Paso 8x8cm", price: 850 },
-        { id: 13, code: "CAJ-10", name: "Caja de Paso 10x10cm", price: 1200 },
-        { id: 14, code: "TAB-8", name: "Tablero 8 módulos", price: 12500 },
-        { id: 15, code: "TAB-12", name: "Tablero 12 módulos", price: 18900 },
-        { id: 16, code: "TAB-16", name: "Tablero 16 módulos", price: 24500 },
-        { id: 17, code: "ENCH-S", name: "Enchufe Simple", price: 1800 },
-        { id: 18, code: "ENCH-D", name: "Enchufe Doble", price: 2900 },
-        { id: 19, code: "INT-LUZ", name: "Interruptor de Luz", price: 2200 },
-        { id: 20, code: "CON-CURVA", name: "Conector Curva EMT", price: 450 },
-        { id: 21, code: "CON-RECTO", name: "Conector Recto EMT", price: 380 },
-        { id: 22, code: "ABRAZ-M", name: "Abrazadera Metálica", price: 320 },
-        { id: 23, code: "CINTA-AIS", name: "Cinta Aisladora", price: 650 },
-        { id: 24, code: "TORN-AUTO", name: "Tornillo Autoroscante", price: 45 },
-        { id: 25, code: "TARUGO-6", name: "Tarugo 6mm", price: 85 },
-        { id: 26, code: "PROY-LED", name: "Proyector LED 50W", price: 28500 },
-        { id: 27, code: "LUM-LED", name: "Lámpara LED 18W", price: 4200 },
-        { id: 28, code: "SENSOR-MOV", name: "Sensor de Movimiento", price: 15800 },
-        { id: 29, code: "BARRA-TIERRA", name: "Barra de Puesta a Tierra 1.5m", price: 8900 },
-        { id: 30, code: "CABLE-TIERRA", name: "Cable Verde 6mm² (metro)", price: 520 }
+    /* ========== BASE DE DATOS DE PRODUCTOS ========== */
+    let productsDB = JSON.parse(localStorage.getItem('linstelec_products_db')) || [
+        { id: 1, code: "INT-16A", name: "Interruptor Termomagnético 16A", price: 3500, category: "interruptores" },
+        { id: 2, code: "INT-20A", name: "Interruptor Termomagnético 20A", price: 4200, category: "interruptores" },
+        { id: 3, code: "INT-25A", name: "Interruptor Termomagnético 25A", price: 5100, category: "interruptores" },
+        { id: 4, code: "DIF-25A", name: "Interruptor Diferencial 25A 30mA", price: 18500, category: "interruptores" },
+        { id: 5, code: "CAB-2.5", name: "Cable RVK 2.5mm² (metro)", price: 450, category: "cables" },
+        { id: 6, code: "CAB-4", name: "Cable RVK 4mm² (metro)", price: 680, category: "cables" },
+        { id: 7, code: "CAB-6", name: "Cable RVK 6mm² (metro)", price: 920, category: "cables" },
+        { id: 8, code: "CAB-10", name: "Cable RVK 10mm² (metro)", price: 1450, category: "cables" },
+        { id: 9, code: "TUB-20", name: "Tubo EMT 20mm (3m)", price: 2800, category: "tuberias" },
+        { id: 10, code: "TUB-25", name: "Tubo EMT 25mm (3m)", price: 3900, category: "tuberias" },
+        { id: 11, code: "TUB-32", name: "Tubo EMT 32mm (3m)", price: 5200, category: "tuberias" },
+        { id: 12, code: "CAJ-8", name: "Caja de Paso 8x8cm", price: 850, category: "accesorios" },
+        { id: 13, code: "CAJ-10", name: "Caja de Paso 10x10cm", price: 1200, category: "accesorios" },
+        { id: 14, code: "TAB-8", name: "Tablero 8 módulos", price: 12500, category: "tableros" },
+        { id: 15, code: "TAB-12", name: "Tablero 12 módulos", price: 18900, category: "tableros" },
+        { id: 16, code: "TAB-16", name: "Tablero 16 módulos", price: 24500, category: "tableros" },
+        { id: 17, code: "ENCH-S", name: "Enchufe Simple", price: 1800, category: "accesorios" },
+        { id: 18, code: "ENCH-D", name: "Enchufe Doble", price: 2900, category: "accesorios" },
+        { id: 19, code: "INT-LUZ", name: "Interruptor de Luz", price: 2200, category: "interruptores" },
+        { id: 20, code: "CON-CURVA", name: "Conector Curva EMT", price: 450, category: "accesorios" },
+        { id: 21, code: "CON-RECTO", name: "Conector Recto EMT", price: 380, category: "accesorios" },
+        { id: 22, code: "ABRAZ-M", name: "Abrazadera Metálica", price: 320, category: "accesorios" },
+        { id: 23, code: "CINTA-AIS", name: "Cinta Aisladora", price: 650, category: "accesorios" },
+        { id: 24, code: "TORN-AUTO", name: "Tornillo Autoroscante", price: 45, category: "accesorios" },
+        { id: 25, code: "TARUGO-6", name: "Tarugo 6mm", price: 85, category: "accesorios" },
+        { id: 26, code: "PROY-LED", name: "Proyector LED 50W", price: 28500, category: "iluminacion" },
+        { id: 27, code: "LUM-LED", name: "Lámpara LED 18W", price: 4200, category: "iluminacion" },
+        { id: 28, code: "SENSOR-MOV", name: "Sensor de Movimiento", price: 15800, category: "iluminacion" },
+        { id: 29, code: "BARRA-TIERRA", name: "Barra de Puesta a Tierra 1.5m", price: 8900, category: "accesorios" },
+        { id: 30, code: "CABLE-TIERRA", name: "Cable Verde 6mm² (metro)", price: 520, category: "cables" }
     ];
 
     /* ========== ESTADO DE COTIZACIÓN ========== */
     let quoteItems = [];
     let quoteNumber = generateQuoteNumber();
     let applyIVA = true;
-    let cloudProducts = []; // Productos cargados desde JSONBin
 
     /* ========== TABLA DE AMPACIDAD RIC 04 ========== */
     const TABLA_AMPACIDAD = {
@@ -2319,65 +2603,31 @@
     let sistemaOhmActual = 'monofasico';
     let modoOhmActual = 'directo';
 
-    /* ========== FUNCIONES JSONBIN ========== */
-    async function fetchFromJSONBin(binId) {
-        try {
-            const url = `${JSONBIN_CONFIG.baseUrl}/${binId}/latest`;
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: { 
-                    'X-Master-Key': JSONBIN_CONFIG.masterKey, 
-                    'Content-Type': 'application/json' 
-                }
-            });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const data = await response.json();
-            return data.record;
-        } catch (error) {
-            console.error("❌ Error JSONBin:", error);
-            return null;
+    /* ========== FUNCIONES DE COTIZACIONES - PESTAÑAS ========== */
+    function switchCotTab(tabName, btn) {
+        // Actualizar botones de pestañas
+        document.querySelectorAll('.cot-tab-btn').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        
+        // Mostrar/ocultar contenido de pestañas
+        document.getElementById('cot-tab-crear').classList.toggle('active', tabName === 'crear');
+        document.getElementById('cot-tab-agregar-productos').classList.toggle('active', tabName === 'agregar-productos');
+        document.getElementById('cot-tab-guardadas').classList.toggle('active', tabName === 'guardadas');
+        
+        // Cargar cotizaciones guardadas si se abre esa pestaña
+        if (tabName === 'guardadas') {
+            loadSavedQuotes();
+        }
+        
+        // Actualizar lista de productos si se abre pestaña de agregar productos
+        if (tabName === 'agregar-productos') {
+            renderProductsDBList();
         }
     }
-
-    async function saveToJSONBin(binId, data) {
-        try {
-            const response = await fetch(`${JSONBIN_CONFIG.baseUrl}/${binId}`, {
-                method: 'PUT',
-                headers: { 
-                    'X-Master-Key': JSONBIN_CONFIG.masterKey, 
-                    'Content-Type': 'application/json' 
-                },
-                body: JSON.stringify(data)
-            });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            return true;
-        } catch (error) {
-            console.error("❌ Error al guardar en JSONBin:", error);
-            return false;
-        }
-    }
-
-    /* ========== CARGAR PRODUCTOS DESDE LA NUBE ========== */
-    async function loadCloudProducts() {
-        const loading = document.getElementById('cloud-loading');
-        if (loading) loading.style.display = 'block';
-        
-        const data = await fetchFromJSONBin(JSONBIN_CONFIG.bins.productos);
-        
-        if (loading) loading.style.display = 'none';
-        
-        if (data && data.products && Array.isArray(data.products)) {
-            cloudProducts = data.products;
-            console.log(`✅ ${cloudProducts.length} productos cargados desde la nube`);
-        } else {
-            cloudProducts = [...PRODUCTS_DB]; // Fallback a base local
-            console.log("⚠️ Usando base de productos local como respaldo");
-        }
-    }
-
-    /* ========== BUSCADOR DE PRODUCTOS EN LA NUBE (PESTAÑA 1) ========== */
-    function searchCloudProducts(query) {
-        const suggestions = document.getElementById('cloud-suggestions');
+    
+    /* ========== FUNCIONES DE BÚSQUEDA DE PRODUCTOS (PESTAÑA CREAR) ========== */
+    function searchProductsCrear(query) {
+        const suggestions = document.getElementById('suggestions-crear');
         suggestions.innerHTML = '';
         
         if (!query || query.length < 2) {
@@ -2385,13 +2635,13 @@
             return;
         }
         
-        const filtered = cloudProducts.filter(p => 
+        const filtered = productsDB.filter(p => 
             p.name.toLowerCase().includes(query.toLowerCase()) || 
-            (p.code && p.code.toLowerCase().includes(query.toLowerCase()))
+            p.code.toLowerCase().includes(query.toLowerCase())
         );
         
         if (filtered.length === 0) {
-            suggestions.innerHTML = '<div class="suggestion-item" style="color: #64748b; cursor: default;">Sin resultados en la nube</div>';
+            suggestions.innerHTML = '<div class="suggestion-item" style="color: #64748b; cursor: default;">❌ Sin resultados</div>';
             suggestions.classList.add('show');
             return;
         }
@@ -2399,34 +2649,147 @@
         filtered.slice(0, 8).forEach(product => {
             const div = document.createElement('div');
             div.className = 'suggestion-item';
-            div.innerHTML = `<div class="suggestion-name">${product.name}</div><div class="suggestion-code">${product.code || ''} • ${formatCLP(product.price)}</div>`;
-            div.onclick = () => selectCloudProduct(product);
+            div.innerHTML = `<div class="suggestion-name">${product.name}</div><div class="suggestion-code">${product.code} • ${formatCLP(product.price)}</div>`;
+            div.onclick = () => selectProductCrear(product);
             suggestions.appendChild(div);
         });
         
         suggestions.classList.add('show');
     }
 
-    function showCloudSuggestions() {
-        const query = document.getElementById('product-name-manual').value;
-        if (query.length >= 2) searchCloudProducts(query);
+    function showSuggestionsCrear() {
+        const query = document.getElementById('search-product-crear').value;
+        if (query.length >= 2) searchProductsCrear(query);
     }
 
-    function hideCloudSuggestionsDelayed() {
+    function hideSuggestionsCrearDelayed() {
         setTimeout(() => {
-            document.getElementById('cloud-suggestions').classList.remove('show');
+            document.getElementById('suggestions-crear').classList.remove('show');
         }, 200);
     }
 
-    function selectCloudProduct(product) {
-        document.getElementById('product-name-manual').value = product.name;
-        document.getElementById('product-price-manual').value = product.price;
-        document.getElementById('cloud-suggestions').classList.remove('show');
-        document.getElementById('product-name-manual').focus();
+    function selectProductCrear(product) {
+        document.getElementById('search-product-crear').value = product.name;
+        document.getElementById('selected-product-name').value = product.name;
+        document.getElementById('selected-product-price').value = product.price;
+        document.getElementById('selected-product-qty').value = 1;
+        document.getElementById('suggestions-crear').classList.remove('show');
+        document.getElementById('search-product-crear').focus();
+    }
+
+    /* ========== AGREGAR PRODUCTO A COTIZACIÓN (PESTAÑA CREAR) ========== */
+    function addProductToQuoteCrear() {
+        const name = document.getElementById('selected-product-name').value.trim();
+        const qty = parseInt(document.getElementById('selected-product-qty').value) || 1;
+        const price = parseFloat(document.getElementById('selected-product-price').value) || 0;
+        
+        if (!name || price <= 0) {
+            alert('⚠️ Selecciona un producto válido del buscador');
+            return;
+        }
+        
+        const existing = quoteItems.find(item => item.name === name);
+        if (existing) {
+            existing.qty += qty;
+        } else {
+            quoteItems.push({
+                id: Date.now(),
+                name: name,
+                qty: qty,
+                price: price
+            });
+        }
+        
+        // Limpiar selección
+        document.getElementById('search-product-crear').value = '';
+        document.getElementById('selected-product-name').value = '';
+        document.getElementById('selected-product-qty').value = '1';
+        document.getElementById('selected-product-price').value = '';
+        
+        renderQuoteItems();
+        calculateTotals();
+        alert('✅ Producto agregado a la cotización');
+    }
+
+    /* ========== FUNCIONES PARA AGREGAR PRODUCTOS A BASE DE DATOS ========== */
+    function saveNewProduct() {
+        const code = document.getElementById('new-product-code').value.trim();
+        const name = document.getElementById('new-product-name').value.trim();
+        const price = parseFloat(document.getElementById('new-product-price').value);
+        const category = document.getElementById('new-product-category').value;
+        
+        if (!code || !name || isNaN(price) || price <= 0) {
+            alert('⚠️ Completa todos los campos obligatorios con valores válidos');
+            return;
+        }
+        
+        // Verificar si ya existe el código
+        if (productsDB.some(p => p.code === code)) {
+            alert('⚠️ Ya existe un producto con este código');
+            return;
+        }
+        
+        // Crear nuevo producto
+        const newProduct = {
+            id: Date.now(),
+            code: code,
+            name: name,
+            price: price,
+            category: category
+        };
+        
+        // Agregar a base de datos
+        productsDB.push(newProduct);
+        localStorage.setItem('linstelec_products_db', JSON.stringify(productsDB));
+        
+        // Limpiar formulario
+        document.getElementById('new-product-code').value = '';
+        document.getElementById('new-product-name').value = '';
+        document.getElementById('new-product-price').value = '';
+        
+        // Actualizar lista
+        renderProductsDBList();
+        
+        alert(`✅ Producto "${name}" agregado exitosamente a la base de datos`);
+    }
+
+    function renderProductsDBList() {
+        const container = document.getElementById('products-list-db');
+        const countEl = document.getElementById('products-count');
+        
+        countEl.textContent = productsDB.length;
+        
+        if (productsDB.length === 0) {
+            container.innerHTML = '<p style="color: #64748b; text-align: center; padding: 20px;">No hay productos registrados</p>';
+            return;
+        }
+        
+        container.innerHTML = productsDB.map(product => `
+            <div class="producto-db-item">
+                <div class="producto-db-info">
+                    <div class="producto-db-name">${product.name}</div>
+                    <div class="producto-db-code">${product.code} • ${product.category}</div>
+                </div>
+                <div class="producto-db-price">${formatCLP(product.price)}</div>
+                <button class="btn-eliminar-producto" onclick="deleteProduct(${product.id})" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    function deleteProduct(productId) {
+        if (!confirm('¿Eliminar este producto de la base de datos?')) return;
+        
+        productsDB = productsDB.filter(p => p.id !== productId);
+        localStorage.setItem('linstelec_products_db', JSON.stringify(productsDB));
+        renderProductsDBList();
+        
+        alert('✅ Producto eliminado');
     }
 
     /* ========== FUNCIONES DE COTIZACIONES GUARDADAS ========== */
-    async function loadSavedQuotes() {
+    function loadSavedQuotes() {
         const loading = document.getElementById('quotes-loading');
         const list = document.getElementById('quotes-list');
         const noQuotes = document.getElementById('no-quotes');
@@ -2437,42 +2800,36 @@
         noQuotes.style.display = 'none';
         tbody.innerHTML = '';
         
-        // Intentar cargar desde JSONBin
-        const data = await fetchFromJSONBin(JSONBIN_CONFIG.bins.quota);
-        
-        loading.style.display = 'none';
-        
-        let quotes = [];
-        
-        if (data && data.quotes && Array.isArray(data.quotes)) {
-            quotes = data.quotes;
-        } else {
-            // Fallback a localStorage
-            quotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
-        }
-        
-        if (quotes.length === 0) {
-            noQuotes.style.display = 'block';
-            return;
-        }
-        
-        list.style.display = 'block';
-        
-        quotes.forEach(quote => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><strong>${quote.number}</strong></td>
-                <td>${quote.client || 'Sin cliente'}</td>
-                <td>${quote.date || '-'}</td>
-                <td>${formatCLP(quote.totals?.total || 0)}</td>
-                <td class="action-cell">
-                    <button class="btn-view" onclick="viewQuote('${quote.number}')"><i class="fas fa-eye"></i></button>
-                    <button class="btn-download" onclick="downloadQuotePDF('${quote.number}')"><i class="fas fa-download"></i></button>
-                    <button class="btn-delete" onclick="deleteQuote('${quote.number}')"><i class="fas fa-trash"></i></button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+        // Simular carga
+        setTimeout(() => {
+            loading.style.display = 'none';
+            
+            const savedQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
+            
+            if (savedQuotes.length === 0) {
+                noQuotes.style.display = 'block';
+                return;
+            }
+            
+            list.style.display = 'block';
+            
+            savedQuotes.forEach(quote => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${quote.number}</strong></td>
+                    <td>${quote.client || 'Sin cliente'}</td>
+                    <td>${quote.date || '-'}</td>
+                    <td>${formatCLP(quote.totals?.total || 0)}</td>
+                    <td class="action-cell">
+                        <button class="btn-action-quote btn-view" onclick="viewQuote('${quote.number}')"><i class="fas fa-eye"></i></button>
+                        <button class="btn-action-quote btn-download" onclick="downloadQuotePDF('${quote.number}')"><i class="fas fa-download"></i></button>
+                        <button class="btn-action-quote btn-edit" onclick="editQuote('${quote.number}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn-action-quote btn-delete" onclick="deleteQuote('${quote.number}')"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }, 500);
     }
 
     function viewQuote(quoteNumber) {
@@ -2494,16 +2851,21 @@
             renderQuoteItems();
             calculateTotals();
             
-            // Cambiar a pestaña de agregar
-            switchCotTab('agregar', document.querySelector('.cot-tab-btn:first-child'));
+            // Cambiar a pestaña de crear
+            switchCotTab('crear', document.querySelector('.cot-tab-btn:first-child'));
             
-            alert(`✅ Cotización ${quoteNumber} cargada para edición`);
+            alert(`✅ Cotización ${quoteNumber} cargada para visualización`);
         } else {
-            alert('⚠️ No se encontró la cotización en el almacenamiento local');
+            alert('⚠️ No se encontró la cotización');
         }
     }
 
-    async function downloadQuotePDF(quoteNumber) {
+    function editQuote(quoteNumber) {
+        viewQuote(quoteNumber);
+        alert('💡 Ahora puedes editar la cotización. Los cambios se guardarán al presionar "Guardar Cotización"');
+    }
+
+    function downloadQuotePDF(quoteNumber) {
         const savedQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
         const quote = savedQuotes.find(q => q.number === quoteNumber);
         
@@ -2614,34 +2976,15 @@
     function deleteQuote(quoteNumber) {
         if (!confirm(`¿Eliminar permanentemente la cotización ${quoteNumber}?`)) return;
         
-        // Eliminar de localStorage
         let savedQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
         savedQuotes = savedQuotes.filter(q => q.number !== quoteNumber);
         localStorage.setItem('linstelec_quotes', JSON.stringify(savedQuotes));
-        
-        // También intentar eliminar de JSONBin (opcional - requiere lógica adicional)
-        // Por ahora solo eliminamos localmente
         
         alert('✅ Cotización eliminada');
         loadSavedQuotes();
     }
 
-    /* ========== FUNCIONES DE COTIZACIONES - MODIFICADAS CON JSONBIN ========== */
-    
-    function switchCotTab(tabName, btn) {
-        document.querySelectorAll('.cot-tab-btn').forEach(b => b.classList.remove('active'));
-        if(btn) btn.classList.add('active');
-        
-        document.getElementById('cot-tab-agregar').classList.toggle('active', tabName === 'agregar');
-        document.getElementById('cot-tab-buscar').classList.toggle('active', tabName === 'buscar');
-        document.getElementById('cot-tab-guardadas').classList.toggle('active', tabName === 'guardadas');
-        
-        // Cargar cotizaciones guardadas si se abre esa pestaña
-        if (tabName === 'guardadas') {
-            loadSavedQuotes();
-        }
-    }
-    
+    /* ========== FUNCIONES COMUNES DE COTIZACIÓN ========== */
     function toggleIVA() {
         applyIVA = document.getElementById('iva-checkbox').checked;
         const indicator = document.getElementById('iva-indicator');
@@ -2670,124 +3013,11 @@
         updateDashboardTime();
         renderQuoteItems();
         toggleIVA();
-        loadCloudProducts(); // Cargar productos desde la nube al iniciar
+        renderProductsDBList();
     }
 
     function formatCLP(amount) {
         return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(amount);
-    }
-
-    // Función local para búsqueda en base local (pestaña 2)
-    function filterProducts(query) {
-        const suggestions = document.getElementById('product-suggestions');
-        suggestions.innerHTML = '';
-        
-        if (!query || query.length < 2) {
-            suggestions.classList.remove('show');
-            return;
-        }
-        
-        const filtered = PRODUCTS_DB.filter(p => 
-            p.name.toLowerCase().includes(query.toLowerCase()) || 
-            p.code.toLowerCase().includes(query.toLowerCase())
-        );
-        
-        if (filtered.length === 0) {
-            suggestions.innerHTML = '<div class="suggestion-item" style="color: #64748b; cursor: default;">Sin resultados</div>';
-            suggestions.classList.add('show');
-            return;
-        }
-        
-        filtered.slice(0, 8).forEach(product => {
-            const div = document.createElement('div');
-            div.className = 'suggestion-item';
-            div.innerHTML = `<div class="suggestion-name">${product.name}</div><div class="suggestion-code">${product.code} • ${formatCLP(product.price)}</div>`;
-            div.onclick = () => selectProduct(product);
-            suggestions.appendChild(div);
-        });
-        
-        suggestions.classList.add('show');
-    }
-
-    function showSuggestions() {
-        const query = document.getElementById('search-product').value;
-        if (query.length >= 2) filterProducts(query);
-    }
-
-    function hideSuggestionsDelayed() {
-        setTimeout(() => {
-            document.getElementById('product-suggestions').classList.remove('show');
-        }, 200);
-    }
-
-    function selectProduct(product) {
-        document.getElementById('search-product').value = product.name;
-        document.getElementById('product-price').value = product.price;
-        document.getElementById('product-qty').value = 1;
-        document.getElementById('product-suggestions').classList.remove('show');
-        document.getElementById('search-product').focus();
-    }
-
-    // Agregar producto manualmente (Pestaña 1) - ahora con selección desde nube
-    function addProductManual() {
-        const name = document.getElementById('product-name-manual').value.trim();
-        const qty = parseInt(document.getElementById('product-qty-manual').value) || 1;
-        const price = parseFloat(document.getElementById('product-price-manual').value) || 0;
-        
-        if (!name || price <= 0) {
-            alert('⚠️ Ingresa un producto válido con nombre y precio');
-            return;
-        }
-        
-        const existing = quoteItems.find(item => item.name === name);
-        if (existing) {
-            existing.qty += qty;
-        } else {
-            quoteItems.push({
-                id: Date.now(),
-                name: name,
-                qty: qty,
-                price: price
-            });
-        }
-        
-        document.getElementById('product-name-manual').value = '';
-        document.getElementById('product-qty-manual').value = '1';
-        document.getElementById('product-price-manual').value = '';
-        
-        renderQuoteItems();
-        calculateTotals();
-    }
-
-    // Agregar producto desde base local (Pestaña 2)
-    function addProductToQuote() {
-        const name = document.getElementById('search-product').value.trim();
-        const qty = parseInt(document.getElementById('product-qty').value) || 1;
-        const price = parseFloat(document.getElementById('product-price').value) || 0;
-        
-        if (!name || price <= 0) {
-            alert('⚠️ Selecciona un producto válido de la base de datos');
-            return;
-        }
-        
-        const existing = quoteItems.find(item => item.name === name);
-        if (existing) {
-            existing.qty += qty;
-        } else {
-            quoteItems.push({
-                id: Date.now(),
-                name: name,
-                qty: qty,
-                price: price
-            });
-        }
-        
-        document.getElementById('search-product').value = '';
-        document.getElementById('product-qty').value = '1';
-        document.getElementById('product-price').value = '';
-        
-        renderQuoteItems();
-        calculateTotals();
     }
 
     function renderQuoteItems() {
@@ -2796,7 +3026,7 @@
         if (quoteItems.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="no-results" style="text-align: center; padding: 30px; color: #64748b;">
                 <i class="fas fa-shopping-cart" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
-                Agrega productos desde cualquiera de las pestañas para comenzar tu cotización
+                Agrega productos para comenzar tu cotización
             </td></tr>`;
             return;
         }
@@ -2849,15 +3079,12 @@
             calculateTotals();
             document.getElementById('cot-cliente').value = '';
             document.getElementById('cot-rut').value = '';
-            document.getElementById('product-name-manual').value = '';
-            document.getElementById('search-product').value = '';
             quoteNumber = generateQuoteNumber();
             document.getElementById('cot-numero').value = quoteNumber;
         }
     }
 
-    // Guardar cotización en JSONBin Y localStorage
-    async function saveQuote() {
+    function saveQuote() {
         if (quoteItems.length === 0) {
             alert('⚠️ Agrega productos antes de guardar');
             return;
@@ -2875,7 +3102,7 @@
             user: currentUser?.name
         };
         
-        // Guardar en localStorage (respaldo local)
+        // Guardar en localStorage
         const savedQuotes = JSON.parse(localStorage.getItem('linstelec_quotes')) || [];
         const existingIndex = savedQuotes.findIndex(q => q.number === quote.number);
         if (existingIndex >= 0) {
@@ -2885,19 +3112,8 @@
         }
         localStorage.setItem('linstelec_quotes', JSON.stringify(savedQuotes.slice(0, 50)));
         
-        // Guardar en JSONBin (nube)
-        const cloudData = await fetchFromJSONBin(JSONBIN_CONFIG.bins.quota);
-        let cloudQuotes = cloudData?.quotes || [];
-        const cloudExistingIndex = cloudQuotes.findIndex(q => q.number === quote.number);
-        if (cloudExistingIndex >= 0) {
-            cloudQuotes[cloudExistingIndex] = quote;
-        } else {
-            cloudQuotes.unshift(quote);
-        }
-        
-        await saveToJSONBin(JSONBIN_CONFIG.bins.quota, { quotes: cloudQuotes.slice(0, 100) });
-        
-        alert('✅ Cotización guardada en la nube y localmente');
+        alert('✅ Cotización guardada exitosamente');
+        loadSavedQuotes();
     }
 
     function generatePDF() {
@@ -2909,7 +3125,6 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        const IVA_RATE = 0.19;
         const { subtotal, iva, total } = calculateTotals();
         
         // Header
@@ -3003,7 +3218,14 @@
         alert('✅ PDF generado exitosamente');
     }
 
-    /* ========== RESTO DE FUNCIONES DEL SISTEMA (sin cambios) ========== */
+    function generateQuoteNumber() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const random = Math.floor(Math.random() * 900) + 100;
+        return `COT-${year}-${random}`;
+    }
+
+    /* ========== RESTO DE FUNCIONES DEL SISTEMA (sin cambios importantes) ========== */
     
     function checkLogin() {
         const u = document.getElementById('userInput').value.trim();
@@ -3035,7 +3257,6 @@
                     updateRecentToolsDisplay();
                     updateStatsDisplay();
                     iniciarChatbase();
-                    loadInventoryFromCloud();
                     initCotizaciones();
                     setInterval(updateDashboardTime, 1000);
                 }, 300);
@@ -3462,7 +3683,7 @@
         res.innerHTML = mensaje;
     }
 
-    /* ========== FUNCIONES INVENTARIO CON JSONBIN ========== */
+    /* ========== FUNCIONES INVENTARIO ========== */
     function updateSyncStatus(status, message) {
         const el = document.getElementById('sync-status');
         if(!el) return;
@@ -3481,53 +3702,6 @@
         if (lastSyncEl && status === 'ok') {
             lastSyncEl.textContent = new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
         }
-    }
-
-    async function loadInventoryFromCloud() {
-        if(!JSONBIN_CONFIG.masterKey) {
-            updateSyncStatus('pending', 'Sin configurar');
-            return;
-        }
-        isSyncing = true;
-        updateSyncStatus('syncing', 'Cargando...');
-        try {
-            const data = await fetchFromJSONBin(JSONBIN_CONFIG.bins.inventario);
-            if(data && data.inventory) {
-                inventory = data.inventory;
-                localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
-                renderInv();
-                updateStockAlerts();
-                updateSyncStatus('ok', `✅ ${new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}`);
-            } else {
-                inventory = [];
-                await saveInventoryToCloud();
-                updateSyncStatus('ok', '✅ Bin inicializado');
-            }
-        } catch(error) {
-            console.error("❌ Error:", error);
-            updateSyncStatus('error', 'Error de conexión');
-            inventory = JSON.parse(localStorage.getItem('linstelec_inv_v2')) || [];
-            renderInv();
-        } finally { isSyncing = false; }
-    }
-
-    async function saveInventoryToCloud() {
-        if(!JSONBIN_CONFIG.masterKey) return;
-        if(isSyncing) return;
-        try {
-            const payload = { inventory: inventory, lastUpdate: new Date().toISOString(), updatedBy: currentUser?.name || 'Unknown' };
-            await saveToJSONBin(JSONBIN_CONFIG.bins.inventario, payload);
-            updateSyncStatus('ok', `Guardado ${new Date().toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}`);
-        } catch(error) {
-            console.error("❌ Error al guardar:", error);
-            updateSyncStatus('error', 'Error al guardar');
-        }
-    }
-
-    async function refreshInventory() {
-        updateSyncStatus('syncing', 'Actualizando...');
-        await loadInventoryFromCloud();
-        alert("📡 Inventario actualizado desde la nube");
     }
 
     function filterInventory() {
@@ -3614,7 +3788,6 @@
                         localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
                         renderInv();
                         updateStockAlerts();
-                        saveInventoryToCloud();
                         alert("✅ Inventario actualizado correctamente con " + inventory.length + " materiales");
                     }
                 } else { alert("❌ Formato de archivo no válido."); }
@@ -3632,7 +3805,6 @@
             document.getElementById('new-item-qty').value = ""; 
             renderInv();
             updateStockAlerts();
-            saveInventoryToCloud();
         }
     }
     
@@ -3671,7 +3843,6 @@
         inventory[idx].stock = parseInt(val); 
         localStorage.setItem('linstelec_inv_v2', JSON.stringify(inventory));
         updateStockAlerts();
-        saveInventoryToCloud();
     }
     
     function delMat(idx) { 
@@ -3679,7 +3850,6 @@
             inventory.splice(idx, 1); 
             renderInv();
             updateStockAlerts();
-            saveInventoryToCloud();
         } 
     }
     
@@ -3719,7 +3889,6 @@
         renderBag(); 
         renderInv();
         updateStockAlerts();
-        saveInventoryToCloud();
         alert("Archivo generado y stock actualizado.");
     }
 
@@ -3945,13 +4114,6 @@
         if (dateEl) dateEl.textContent = now.toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
         const cotFecha = document.getElementById('cot-fecha');
         if (cotFecha) cotFecha.value = now.toLocaleDateString('es-CL');
-    }
-
-    function generateQuoteNumber() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const random = Math.floor(Math.random() * 900) + 100;
-        return `COT-${year}-${random}`;
     }
 
     window.addEventListener('load', () => {
