@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LINSTELEC CHILE - Brayan Barraza</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- jsPDF para generar PDFs -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <style>
@@ -790,6 +789,53 @@ to { opacity: 1; transform: translateY(0); }
 .curva-B { background: #d1fae5; color: #065f46; }
 .curva-C { background: #dbeafe; color: #1e40af; }
 .curva-D { background: #fef3c7; color: #92400e; }
+/* ===== SELECTOR DE RESISTIVIDAD ===== */
+.resistividad-selector {
+background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+padding: 15px;
+border-radius: 10px;
+border: 2px solid #cbd5e1;
+margin: 15px 0;
+}
+.resistividad-selector label {
+font-weight: 700;
+color: var(--dark);
+margin-bottom: 10px;
+display: block;
+font-size: 0.95rem;
+}
+.resistividad-selector select {
+font-weight: 600;
+border: 2px solid var(--primary);
+background: white;
+}
+.resistividad-info {
+margin-top: 10px;
+padding: 10px;
+background: white;
+border-radius: 8px;
+font-size: 0.85rem;
+border-left: 4px solid var(--primary);
+}
+.resistividad-info strong { color: var(--primary); }
+.resistividad-table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 10px;
+font-size: 0.8rem;
+}
+.resistividad-table th, .resistividad-table td {
+padding: 6px 8px;
+border: 1px solid #e2e8f0;
+text-align: left;
+}
+.resistividad-table th {
+background: #f1f5f9;
+font-weight: 600;
+}
+.resistividad-table tr:hover {
+background: #f8fafc;
+}
 </style>
 </head>
 <body>
@@ -925,7 +971,21 @@ to { opacity: 1; transform: translateY(0); }
 <h2 style="margin: 0;">Calculadora Caída de Tensión (RIC 04)</h2>
 <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
 </div>
-<p style="font-size: 0.8rem; color: #64748b; margin: -15px 0 15px 0;"><i class="fas fa-info-circle"></i> Cálculo basado en resistividad del cobre ρ = 0.0225 (70°C)</p>
+
+<!-- Selector de Resistividad -->
+<div class="resistividad-selector">
+<label><i class="fas fa-thermometer-half"></i> Temperatura del Cable / Tipo de Aislación:</label>
+<select id="resistividad-tension" onchange="actualizarInfoResistividad('tension')">
+<option value="0.018">20°C - ρ=0.018 (Laboratorio/Sin carga)</option>
+<option value="0.0216">70°C - ρ=0.0216 (PVC estándar)</option>
+<option value="0.0225" selected>80°C - ρ=0.0225 (Estándar Chile - SEC)</option>
+<option value="0.0235">90°C - ρ=0.0235 (XLPE/EVA alta temp)</option>
+</select>
+<div id="info-resistividad-tension" class="resistividad-info">
+<strong>Estándar SEC:</strong> Para TE-1 y proyectos, usar siempre 0.0225 (80°C)
+</div>
+</div>
+
 <div class="form-group">
 <label>Tipo de Sistema:</label>
 <div class="radio-group">
@@ -990,6 +1050,21 @@ Trifásico<br>
 <h2 style="margin: 0;"><i class="fas fa-bolt"></i> Calculadora Ley de Ohm PRO</h2>
 <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
 </div>
+
+<!-- Selector de Resistividad -->
+<div class="resistividad-selector">
+<label><i class="fas fa-thermometer-half"></i> Temperatura del Cable / Tipo de Aislación:</label>
+<select id="resistividad-ohm" onchange="actualizarInfoResistividad('ohm')">
+<option value="0.018">20°C - ρ=0.018 (Laboratorio/Sin carga)</option>
+<option value="0.0216">70°C - ρ=0.0216 (PVC estándar)</option>
+<option value="0.0225" selected>80°C - ρ=0.0225 (Estándar Chile - SEC)</option>
+<option value="0.0235">90°C - ρ=0.0235 (XLPE/EVA alta temp)</option>
+</select>
+<div id="info-resistividad-ohm" class="resistividad-info">
+<strong>Estándar SEC:</strong> Para TE-1 y proyectos, usar siempre 0.0225 (80°C)
+</div>
+</div>
+
 <!-- Selector de Modo -->
 <div class="mode-selector">
 <div class="toggle-container">
@@ -1220,6 +1295,21 @@ Capacidad máxima de corriente según método de instalación (70°C)
 <h2 style="margin: 0;">Calculadora de Cortocircuito (RIC 05)</h2>
 <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
 </div>
+
+<!-- Selector de Resistividad -->
+<div class="resistividad-selector">
+<label><i class="fas fa-thermometer-half"></i> Temperatura del Cable (Cobre):</label>
+<select id="resistividad-cc" onchange="actualizarInfoResistividad('cc')">
+<option value="0.018">20°C - ρ=0.018 (Laboratorio)</option>
+<option value="0.0216">70°C - ρ=0.0216 (PVC)</option>
+<option value="0.0225" selected>80°C - ρ=0.0225 (Estándar Chile)</option>
+<option value="0.0235">90°C - ρ=0.0235 (XLPE/EVA)</option>
+</select>
+<div id="info-resistividad-cc" class="resistividad-info">
+<strong>Condiciones de falla:</strong> En cortocircuito el cable se calienta rápidamente. Usar 0.0225-0.0235
+</div>
+</div>
+
 <p style="font-size: 0.8rem; color: #64748b; margin: -15px 0 15px 0;">
 <i class="fas fa-info-circle"></i> Método de impedancia (IEC 60909) • ρ Cu = 0.0225 Ω·mm²/m (70°C)
 </p>
@@ -1252,7 +1342,7 @@ Trifásico<br><small>(380V - Entre fases)</small>
 <div class="form-group">
 <label>Material del Conductor:</label>
 <select id="cc-material">
-<option value="cobre" selected>Cobre (ρ = 0.0225 Ω·mm²/m)</option>
+<option value="cobre" selected>Cobre (ρ según temperatura seleccionada)</option>
 <option value="aluminio">Aluminio (ρ = 0.035 Ω·mm²/m)</option>
 </select>
 </div>
@@ -1348,6 +1438,22 @@ Trifásico<br><small>(380V - Entre fases)</small>
 <h2 style="margin: 0;">Cálculo de Impedancia y Cortocircuito</h2>
 <button class="btn-back" onclick="showDashboard()"><i class="fas fa-arrow-left"></i> Volver</button>
 </div>
+
+<!-- Selector de Resistividad -->
+<div class="resistividad-selector">
+<label><i class="fas fa-thermometer-half"></i> Resistividad del Cobre:</label>
+<select id="resistividad-nodos" onchange="actualizarInfoResistividad('nodos')">
+<option value="0.018">20°C - ρ=0.018 (Laboratorio)</option>
+<option value="0.0185" selected>25°C - ρ=0.0185 (Referencia técnica)</option>
+<option value="0.0216">70°C - ρ=0.0216 (PVC)</option>
+<option value="0.0225">80°C - ρ=0.0225 (Estándar Chile)</option>
+<option value="0.0235">90°C - ρ=0.0235 (XLPE/EVA)</option>
+</select>
+<div id="info-resistividad-nodos" class="resistividad-info">
+<strong>Nota:</strong> Para cálculos de impedancia en nodos, usar 0.0185-0.0225 según condiciones
+</div>
+</div>
+
 <div class="nodo-box" style="border-color: #f59e0b;"><div class="nodo-title">a) Nodo 1 (Empalme)</div><div class="grid-nodos"><div><label>Icc n.1 (kA):</label><input type="number" id="icc1" value="6.00" step="0.01"></div><div><label>Zcc n.1 (mΩ):</label><input type="number" id="zcc1" value="36.67" step="0.01"></div></div></div>
 <div class="nodo-box"><div class="nodo-title">b) Nodo 2 (TDF Voltex)</div><div class="grid-nodos"><div><label>L AL-01 (m):</label><input type="number" id="L2" value="2"></div><div><label>Sección (mm²):</label><input type="number" id="S2" value="6"></div></div><button class="btn-calc" onclick="calcNodoInteractivo(2)">CALCULAR Y VER ECUACIÓN</button><div id="ecu-2" class="ecuacion-box"></div></div>
 <div class="nodo-box"><div class="nodo-title">c) Nodo 3 (SAVE.01)</div><div class="grid-nodos"><div><label>L CR-01 (m):</label><input type="number" id="L3" value="12"></div><div><label>Sección (mm²):</label><input type="number" id="S3" value="6"></div></div><button class="btn-calc" onclick="calcNodoInteractivo(3)">CALCULAR Y VER ECUACIÓN</button><div id="ecu-3" class="ecuacion-box"></div></div>
@@ -1460,10 +1566,34 @@ const TABLA_AMPACIDAD = {
 '50': { B1: 108, B2: 125, C: 149, E: 167, D1: 185 }
 };
 const SECCIONES_DISPONIBLES = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50];
-const RHO = 0.0225; // ρ Cobre a 70°C (RIC 04 / IEC 60364-5-52)
 const LIMITE_CAIDA = 5; // Por defecto 5% (se sobrescribe por selector)
 let sistemaOhmActual = 'monofasico';
 let modoOhmActual = 'directo';
+
+/* ========== FUNCIONES DE RESISTIVIDAD ========== */
+function actualizarInfoResistividad(calculadora) {
+const select = document.getElementById(`resistividad-${calculadora}`);
+const infoDiv = document.getElementById(`info-resistividad-${calculadora}`);
+const valor = parseFloat(select.value);
+const texto = select.options[select.selectedIndex].text;
+
+const info = {
+'0.018': '<strong>Uso:</strong> Solo para pruebas de laboratorio o cables sin carga. No usar en diseños reales.',
+'0.0185': '<strong>Uso:</strong> Referencia técnica a 25°C. Útil para cálculos académicos.',
+'0.0216': '<strong>Uso:</strong> Cables PVC a 70°C. Diseño estándar para instalaciones comunes.',
+'0.0225': '<strong>Estándar SEC:</strong> Para TE-1 y proyectos. Usar siempre 0.0225 (80°C) según normativa chilena.',
+'0.0235': '<strong>Uso:</strong> Cables XLPE/EVA a 90°C. Alta temperatura, instalaciones especiales.'
+};
+
+if (infoDiv && info[valor]) {
+infoDiv.innerHTML = info[valor];
+}
+}
+
+function getResistividad(calculadora) {
+const select = document.getElementById(`resistividad-${calculadora}`);
+return select ? parseFloat(select.value) : 0.0225;
+}
 
 /* ========== RESTO DE FUNCIONES DEL SISTEMA ========== */
 function checkLogin() {
@@ -1555,18 +1685,19 @@ function updateStatsDisplay() { const statsEl = document.getElementById('stats-m
 function incrementCalcCount() { calcCount++; localStorage.setItem('linstelec_calc_count', calcCount); updateStatsDisplay(); }
 function calcNodoInteractivo(nodo) {
 incrementCalcCount();
-const rho = 0.0185, V = 220, zcc1 = parseFloat(document.getElementById('zcc1').value);
+const rho = getResistividad('nodos');
+const V = 220, zcc1 = parseFloat(document.getElementById('zcc1').value);
 const calcZ = (L, S) => ((rho / S) * L * 2) * 1000;
 let resHTML = "", z_acum = 0, z_cable = 0, icc = 0, label_cable = "";
 if (nodo === 2) {
 z_cable = calcZ(parseFloat(document.getElementById('L2').value), parseFloat(document.getElementById('S2').value));
 z_acum = zcc1 + z_cable; icc = V / (z_acum / 1000) / 1000; label_cable = "AL-01";
-resHTML = `<strong>PASO 1: Resistencia Conductor (${label_cable})</strong><br>R = (ρ / S) * L * 2 = (0.0185 / ${document.getElementById('S2').value}) * ${document.getElementById('L2').value} * 2<br>R = ${z_cable.toFixed(2)} mΩ<br><br><strong>PASO 2: Impedancia Acumulada</strong><br>Zcc = Zcc_n1 + R = ${zcc1} + ${z_cable.toFixed(2)}<br>Zcc = <span class="math-res">${z_acum.toFixed(2)} mΩ</span><br><br><strong>PASO 3: Cortocircuito Nodo 2</strong><br>Icc = V / Zcc = 220 / (${z_acum.toFixed(2)} / 1000)<br>Icc = <span class="math-res">${icc.toFixed(2)} kA</span>`;
+resHTML = `<strong>PASO 1: Resistencia Conductor (${label_cable})</strong><br>R = (ρ / S) * L * 2 = (${rho} / ${document.getElementById('S2').value}) * ${document.getElementById('L2').value} * 2<br>R = ${z_cable.toFixed(2)} mΩ<br><br><strong>PASO 2: Impedancia Acumulada</strong><br>Zcc = Zcc_n1 + R = ${zcc1} + ${z_cable.toFixed(2)}<br>Zcc = <span class="math-res">${z_acum.toFixed(2)} mΩ</span><br><br><strong>PASO 3: Cortocircuito Nodo 2</strong><br>Icc = V / Zcc = 220 / (${z_acum.toFixed(2)} / 1000)<br>Icc = <span class="math-res">${icc.toFixed(2)} kA</span>`;
 } else {
 const z_tdf = zcc1 + calcZ(parseFloat(document.getElementById('L2').value), parseFloat(document.getElementById('S2').value));
 let L = document.getElementById(nodo === 3 ? 'L3' : 'L4').value, S = document.getElementById(nodo === 3 ? 'S3' : 'S4').value;
 z_cable = calcZ(parseFloat(L), parseFloat(S)); z_acum = z_tdf + z_cable; icc = V / (z_acum / 1000) / 1000; label_cable = (nodo === 3) ? "CR-01" : "Sub-alim";
-resHTML = `<strong>PASO 1: Resistencia Conductor (${label_cable})</strong><br>R = (0.0185 / ${S}) * ${L} * 2 = ${z_cable.toFixed(2)} mΩ<br><br><strong>PASO 2: Impedancia Acumulada (desde TDF)</strong><br>Zcc = Zcc_TDF (${z_tdf.toFixed(2)}) + R<br>Zcc = <span class="math-res">${z_acum.toFixed(2)} mΩ</span><br><br><strong>PASO 3: Cortocircuito Nodo ${nodo}</strong><br>Icc = 220 / (${z_acum.toFixed(2)} / 1000) = <span class="math-res">${icc.toFixed(2)} kA</span>`;
+resHTML = `<strong>PASO 1: Resistencia Conductor (${label_cable})</strong><br>R = (${rho} / ${S}) * ${L} * 2 = ${z_cable.toFixed(2)} mΩ<br><br><strong>PASO 2: Impedancia Acumulada (desde TDF)</strong><br>Zcc = Zcc_TDF (${z_tdf.toFixed(2)}) + R<br>Zcc = <span class="math-res">${z_acum.toFixed(2)} mΩ</span><br><br><strong>PASO 3: Cortocircuito Nodo ${nodo}</strong><br>Icc = 220 / (${z_acum.toFixed(2)} / 1000) = <span class="math-res">${icc.toFixed(2)} kA</span>`;
 }
 document.getElementById(`ecu-${nodo}`).innerHTML = resHTML; document.getElementById(`ecu-${nodo}`).style.display = 'block';
 }
@@ -1675,16 +1806,16 @@ html += `<div class="resultado res-fail" style="margin-top: 15px; background: #f
 }
 // ADVERTENCIAS RIC 07.5 Y DERATING
 if (utpCheck.checked && cantidadCables > 2) {
-    html += `<div style="background:#fff3cd; border-left:4px solid #ffc107; padding:12px; margin:15px 0 5px 0; border-radius:5px; font-size:0.9rem;">
-    ⚠️ <strong>RIC 07.5 - Separación de Circuitos:</strong> 
-    No se recomienda mezclar cables de fuerza y datos en el mismo ducto sin tabique divisorio. 
-    Para evitar interferencias y riesgos, use ductos independientes o canaletas separadas.
-    </div>`;
+html += `<div style="background:#fff3cd; border-left:4px solid #ffc107; padding:12px; margin:15px 0 5px 0; border-radius:5px; font-size:0.9rem;">
+⚠️ <strong>RIC 07.5 - Separación de Circuitos:</strong>
+No se recomienda mezclar cables de fuerza y datos en el mismo ducto sin tabique divisorio.
+Para evitar interferencias y riesgos, use ductos independientes o canaletas separadas.
+</div>`;
 }
 if (totalCables > 6) {
-    html += `<div style="font-size:0.85rem; color:#64748b; margin-top:8px; padding:10px; background:#f1f5f9; border-radius:5px;">
-    ℹ️ Para >6 cables, RIC 07 recomienda aplicar un <strong>factor de reducción del 10-15%</strong> por dificultad de tracción y ventilación, o considerar aumento de diámetro.
-    </div>`;
+html += `<div style="font-size:0.85rem; color:#64748b; margin-top:8px; padding:10px; background:#f1f5f9; border-radius:5px;">
+ℹ️ Para >6 cables, RIC 07 recomienda aplicar un <strong>factor de reducción del 10-15%</strong> por dificultad de tracción y ventilación, o considerar aumento de diámetro.
+</div>`;
 }
 document.getElementById('res-ducto').innerHTML = html;
 }
@@ -1696,7 +1827,8 @@ danger.style.display = 'none';
 const tipoSistema = document.querySelector('input[name="tipoSistema"]:checked')?.value;
 if (!tipoSistema) { mostrarResultado('⚠️ Seleccione tipo de sistema (Monofásico/Trifásico)', 'res-fail'); return; }
 const esMonofasico = tipoSistema === 'monofasico';
-const rho = 0.0225, V_nominal = esMonofasico ? 220 : 380;
+const rho = getResistividad('tension');
+const V_nominal = esMonofasico ? 220 : 380;
 const limitePorcentaje = 3;
 const distancia = parseFloat(document.getElementById('dist')?.value), corriente = parseFloat(document.getElementById('amp')?.value), seccion = parseFloat(document.getElementById('sec')?.value);
 if (isNaN(distancia) || isNaN(corriente) || isNaN(seccion) || distancia <= 0 || corriente <= 0 || seccion <= 0) { mostrarResultado('⚠️ Ingrese valores válidos mayores a cero', 'res-fail'); return; }
@@ -1711,11 +1843,11 @@ const sistemaTexto = esMonofasico ? "MONOFÁSICO 220V" : "TRIFÁSICO 380V";
 const factorTexto = esMonofasico ? "2 (ida + vuelta)" : "√3 = 1.732 (entre fases)";
 const cosPhiTexto = usarCosPhi ? ` | cos φ: ${cosPhi}` : '';
 if (porcentaje <= limitePorcentaje) {
-mostrarResultado(`<strong>✅ Sistema ${sistemaTexto}</strong><br>🔹 Factor aplicado: ${factorTexto}${cosPhiTexto}<br>🔹 Caída de tensión: <strong>${deltaV.toFixed(2)} V</strong><br>🔹 Porcentaje: <strong>${porcentaje.toFixed(2)} %</strong><br>🔹 Límite RIC 04: ≤ ${limitePorcentaje}%<br><span style="color:var(--success); font-weight:bold;">✓ CUMPLE NORMA</span>`, 'res-ok');
+mostrarResultado(`<strong>✅ Sistema ${sistemaTexto}</strong><br>🔹 Factor aplicado: ${factorTexto}${cosPhiTexto}<br>🔹 Resistividad: ρ=${rho} Ω·mm²/m<br>🔹 Caída de tensión: <strong>${deltaV.toFixed(2)} V</strong><br>🔹 Porcentaje: <strong>${porcentaje.toFixed(2)} %</strong><br>🔹 Límite RIC 04: ≤ ${limitePorcentaje}%<br><span style="color:var(--success); font-weight:bold;">✓ CUMPLE NORMA</span>`, 'res-ok');
 document.getElementById('successImg').style.display = 'block';
 lanzarConfeti();
 } else {
-mostrarResultado(`<strong>❌ Sistema ${sistemaTexto}</strong><br>🔹 Factor aplicado: ${factorTexto}${cosPhiTexto}<br>🔹 Caída de tensión: <strong>${deltaV.toFixed(2)} V</strong><br>🔹 Porcentaje: <strong>${porcentaje.toFixed(2)} %</strong><br>🔹 Límite RIC 04: ≤ ${limitePorcentaje}%<br><span style="color:var(--danger); font-weight:bold;">✗ FUERA DE NORMA</span><br><small>💡 Solución: Aumentar sección, reducir distancia o mejorar cos φ</small>`, 'res-fail');
+mostrarResultado(`<strong>❌ Sistema ${sistemaTexto}</strong><br>🔹 Factor aplicado: ${factorTexto}${cosPhiTexto}<br>🔹 Resistividad: ρ=${rho} Ω·mm²/m<br>🔹 Caída de tensión: <strong>${deltaV.toFixed(2)} V</strong><br>🔹 Porcentaje: <strong>${porcentaje.toFixed(2)} %</strong><br>🔹 Límite RIC 04: ≤ ${limitePorcentaje}%<br><span style="color:var(--danger); font-weight:bold;">✗ FUERA DE NORMA</span><br><small>💡 Solución: Aumentar sección, reducir distancia o mejorar cos φ</small>`, 'res-fail');
 danger.style.display = 'flex';
 if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
 setTimeout(() => { danger.style.display = 'none'; }, 5000);
@@ -1789,253 +1921,250 @@ const container = document.getElementById('cc-reactancia-container');
 container.style.display = check.checked ? 'block' : 'none';
 }
 function calcCortocircuito() {
-    incrementCalcCount();
-    const tipoSistema = document.querySelector('input[name="ccTipoSistema"]:checked')?.value;
-    if (!tipoSistema) { mostrarResultadoCC('⚠️ Seleccione tipo de sistema', 'res-fail'); return; }
-    const esMonofasico = tipoSistema === 'monofasico';
-    const V_nominal = esMonofasico ? 220 : 380;
-    const factorSistema = esMonofasico ? 2 : Math.sqrt(3);
-    const iccOrigen_kA = parseFloat(document.getElementById('cc-icc-origen')?.value);
-    const material = document.getElementById('cc-material')?.value;
-    const rho = material === 'cobre' ? 0.0225 : 0.035; // 70°C
-    const longitud = parseFloat(document.getElementById('cc-longitud')?.value);
-    const seccion = parseFloat(document.getElementById('cc-seccion')?.value);
-    const interruptorNominal = parseFloat(document.getElementById('cc-interruptor')?.value);
-    const curva = document.getElementById('cc-curva')?.value || 'C';
-    if (isNaN(iccOrigen_kA) || iccOrigen_kA <= 0 || isNaN(longitud) || longitud <= 0 || isNaN(seccion) || seccion <= 0 || isNaN(interruptorNominal) || interruptorNominal <= 0) {
-        mostrarResultadoCC('⚠️ Ingrese valores válidos mayores a cero', 'res-fail'); return;
-    }
-    const Z_origen = (V_nominal / (iccOrigen_kA * 1000)) * 1000;
-    const R_cable_mOhm = (rho * longitud * factorSistema / seccion) * 1000;
-    const incluirX = document.getElementById('cc-reactancia-check')?.checked;
-    let Z_total, X_total = 0;
-    if (incluirX) {
-        const X_origen = parseFloat(document.getElementById('cc-x-origen')?.value) || 0;
-        const xCablePorMetro = parseFloat(document.getElementById('cc-x-cable')?.value) || 0;
-        const X_cable = xCablePorMetro * longitud;
-        X_total = X_origen + X_cable;
-        // IEC 60909 / RIC 05: Factor 1.15 por calentamiento en falla + suma vectorial
-        const R_total = (Z_origen + R_cable_mOhm * 1.15) / 1000;
-        const X_total_k = X_total / 1000;
-        Z_total = Math.sqrt(Math.pow(R_total, 2) + Math.pow(X_total_k, 2)) * 1000;
-    } else {
-        Z_total = Z_origen + (R_cable_mOhm * 1.15);
-    }
-    const icc_punto = V_nominal / (Z_total / 1000) / 1000;
-    const poderCorteMinimo = icc_punto * 1.25;
-    
-    // Verificación Magnética (RIC 05 / IEC 60898)
-    const curvasK = { B: 5, C: 10, D: 20 };
-    const k = curvasK[curva] || 10;
-    const umbralMagnetico = interruptorNominal * k;
-    const cumpleMagnetico = icc_punto * 1000 >= umbralMagnetico;
-    
-    // Verificación Adiabática (t=0.1s típico, k=115 para Cu/PVC)
-    const tiempoDespeje = 0.1;
-    const k_material = 115;
-    const s_min_adiabatica = (icc_punto * 1000 * Math.sqrt(tiempoDespeje)) / k_material;
-    const cumpleAdiabatica = seccion >= s_min_adiabatica;
-    
-    const corrienteAdmisibleCable = obtenerCorrienteAdmisible(seccion, material);
-    const cumpleCable = interruptorNominal <= corrienteAdmisibleCable;
-    const materialTexto = material === 'cobre' ? 'Cobre' : 'Aluminio';
-    const reactanciaTexto = incluirX ? `<br>• Reactancia total: ${X_total.toFixed(2)} mΩ` : '';
-    const metodoTexto = incluirX ? 'Impedancia (R+X)' : 'Resistivo simplificado';
-    let html = `
-    <div class="resultado res-warn" style="margin-bottom: 15px;">
-        <strong>📊 Datos del Cálculo:</strong><br>
-        • Sistema: ${esMonofasico ? 'Monofásico 220V' : 'Trifásico 380V'}<br>
-        • Icc en origen: ${iccOrigen_kA} kA | Curva: <strong>${curva}</strong><br>
-        • Conductor: ${materialTexto} ${seccion} mm² × ${longitud} m<br>
-        • Método: ${metodoTexto}${reactanciaTexto}<br>
-        • Impedancia total (T° falla): <strong>${Z_total.toFixed(2)} mΩ</strong>
-    </div>
-    <div class="resultado ${cumpleMagnetico ? 'res-ok' : 'res-fail'}" style="margin-bottom: 15px;">
-        <strong>⚡ Icc en Punto de Falla:</strong><br>
-        <span style="font-size: 2rem; display: block; margin: 10px 0; font-weight: bold;">${icc_punto.toFixed(2)} kA</span>
-        • Umbral magnético (${curva}×${interruptorNominal}A): <strong>${(umbralMagnetico/1000).toFixed(2)} kA</strong><br>
-        <strong style="color: ${cumpleMagnetico ? 'var(--success)' : 'var(--danger)'}; font-size: 1.1rem;">
-            ${cumpleMagnetico ? '✓ Disparo magnético instantáneo GARANTIZADO' : '✗ PELIGRO: Icc insuficiente para disparo instantáneo'}
-        </strong>
-    </div>
-    <div class="resultado ${cumpleAdiabatica ? 'res-ok' : 'res-fail'}" style="margin-bottom: 15px;">
-        <strong>🔥 Verificación Adiabática (RIC 05 / IEC 60949):</strong><br>
-        • Sección mínima requerida para t=0.1s: <strong>${s_min_adiabatica.toFixed(2)} mm²</strong><br>
-        • Sección instalada: ${seccion} mm²<br>
-        <strong style="color: ${cumpleAdiabatica ? 'var(--success)' : 'var(--danger)'}">
-            ${cumpleAdiabatica ? '✓ El cable resiste el esfuerzo térmico' : '✗ El cable podría fundirse antes del despeje'}
-        </strong>
-    </div>
-    <div class="resultado ${cumpleCable ? 'res-ok' : 'res-fail'}" style="margin-bottom: 15px;">
-        <strong>🔌 Verificación Cable vs Interruptor:</strong><br>
-        • Corriente admisible cable: ~${corrienteAdmisibleCable} A | Interruptor: ${interruptorNominal} A<br>
-        <strong style="color: ${cumpleCable ? 'var(--success)' : 'var(--danger)'}">${cumpleCable ? '✓ Coordina correctamente' : '✗ Revisar protección'}</strong>
-    </div>
-    <div class="resultado res-warn">
-        <strong>🛡️ Recomendaciones RIC 05:</strong><br>
-        • Poder de corte mínimo interruptor: <strong>${poderCorteMinimo.toFixed(2)} kA</strong><br>
-        ${!cumpleMagnetico ? '<br>⚠️ <strong>SOLUCIÓN:</strong> Reducir longitud, aumentar sección, o usar interruptor con curva B (si aplica).' : ''}
-        ${!cumpleAdiabatica ? '<br>⚠️ <strong>SOLUCIÓN:</strong> Aumentar sección del cable o usar interruptor de acción rápida (t < 0.1s).' : ''}
-    </div>
-    `;
-    document.getElementById('res-cortocircuito').innerHTML = html;
+incrementCalcCount();
+const tipoSistema = document.querySelector('input[name="ccTipoSistema"]:checked')?.value;
+if (!tipoSistema) { mostrarResultadoCC('⚠️ Seleccione tipo de sistema', 'res-fail'); return; }
+const esMonofasico = tipoSistema === 'monofasico';
+const V_nominal = esMonofasico ? 220 : 380;
+const factorSistema = esMonofasico ? 2 : Math.sqrt(3);
+const iccOrigen_kA = parseFloat(document.getElementById('cc-icc-origen')?.value);
+const material = document.getElementById('cc-material')?.value;
+const rho = material === 'cobre' ? getResistividad('cc') : 0.035;
+const longitud = parseFloat(document.getElementById('cc-longitud')?.value);
+const seccion = parseFloat(document.getElementById('cc-seccion')?.value);
+const interruptorNominal = parseFloat(document.getElementById('cc-interruptor')?.value);
+const curva = document.getElementById('cc-curva')?.value || 'C';
+if (isNaN(iccOrigen_kA) || iccOrigen_kA <= 0 || isNaN(longitud) || longitud <= 0 || isNaN(seccion) || seccion <= 0 || isNaN(interruptorNominal) || interruptorNominal <= 0) {
+mostrarResultadoCC('⚠️ Ingrese valores válidos mayores a cero', 'res-fail'); return;
+}
+const Z_origen = (V_nominal / (iccOrigen_kA * 1000)) * 1000;
+const R_cable_mOhm = (rho * longitud * factorSistema / seccion) * 1000;
+const incluirX = document.getElementById('cc-reactancia-check')?.checked;
+let Z_total, X_total = 0;
+if (incluirX) {
+const X_origen = parseFloat(document.getElementById('cc-x-origen')?.value) || 0;
+const xCablePorMetro = parseFloat(document.getElementById('cc-x-cable')?.value) || 0;
+const X_cable = xCablePorMetro * longitud;
+X_total = X_origen + X_cable;
+// IEC 60909 / RIC 05: Factor 1.15 por calentamiento en falla + suma vectorial
+const R_total = (Z_origen + R_cable_mOhm * 1.15) / 1000;
+const X_total_k = X_total / 1000;
+Z_total = Math.sqrt(Math.pow(R_total, 2) + Math.pow(X_total_k, 2)) * 1000;
+} else {
+Z_total = Z_origen + (R_cable_mOhm * 1.15);
+}
+const icc_punto = V_nominal / (Z_total / 1000) / 1000;
+const poderCorteMinimo = icc_punto * 1.25;
+// Verificación Magnética (RIC 05 / IEC 60898)
+const curvasK = { B: 5, C: 10, D: 20 };
+const k = curvasK[curva] || 10;
+const umbralMagnetico = interruptorNominal * k;
+const cumpleMagnetico = icc_punto * 1000 >= umbralMagnetico;
+// Verificación Adiabática (t=0.1s típico, k=115 para Cu/PVC)
+const tiempoDespeje = 0.1;
+const k_material = 115;
+const s_min_adiabatica = (icc_punto * 1000 * Math.sqrt(tiempoDespeje)) / k_material;
+const cumpleAdiabatica = seccion >= s_min_adiabatica;
+const corrienteAdmisibleCable = obtenerCorrienteAdmisible(seccion, material);
+const cumpleCable = interruptorNominal <= corrienteAdmisibleCable;
+const materialTexto = material === 'cobre' ? 'Cobre' : 'Aluminio';
+const resistividadTexto = material === 'cobre' ? rho : '0.035';
+const reactanciaTexto = incluirX ? `<br>• Reactancia total: ${X_total.toFixed(2)} mΩ` : '';
+const metodoTexto = incluirX ? 'Impedancia (R+X)' : 'Resistivo simplificado';
+let html = `
+<div class="resultado res-warn" style="margin-bottom: 15px;">
+<strong>📊 Datos del Cálculo:</strong><br>
+• Sistema: ${esMonofasico ? 'Monofásico 220V' : 'Trifásico 380V'}<br>
+• Icc en origen: ${iccOrigen_kA} kA | Curva: <strong>${curva}</strong><br>
+• Conductor: ${materialTexto} ${seccion} mm² × ${longitud} m<br>
+• Resistividad: ρ=${resistividadTexto} Ω·mm²/m<br>
+• Método: ${metodoTexto}${reactanciaTexto}<br>
+• Impedancia total (T° falla): <strong>${Z_total.toFixed(2)} mΩ</strong>
+</div>
+<div class="resultado ${cumpleMagnetico ? 'res-ok' : 'res-fail'}" style="margin-bottom: 15px;">
+<strong>⚡ Icc en Punto de Falla:</strong><br>
+<span style="font-size: 2rem; display: block; margin: 10px 0; font-weight: bold;">${icc_punto.toFixed(2)} kA</span>
+• Umbral magnético (${curva}×${interruptorNominal}A): <strong>${(umbralMagnetico/1000).toFixed(2)} kA</strong><br>
+<strong style="color: ${cumpleMagnetico ? 'var(--success)' : 'var(--danger)'}; font-size: 1.1rem;">
+${cumpleMagnetico ? '✓ Disparo magnético instantáneo GARANTIZADO' : '✗ PELIGRO: Icc insuficiente para disparo instantáneo'}
+</strong>
+</div>
+<div class="resultado ${cumpleAdiabatica ? 'res-ok' : 'res-fail'}" style="margin-bottom: 15px;">
+<strong>🔥 Verificación Adiabática (RIC 05 / IEC 60949):</strong><br>
+• Sección mínima requerida para t=0.1s: <strong>${s_min_adiabatica.toFixed(2)} mm²</strong><br>
+• Sección instalada: ${seccion} mm²<br>
+<strong style="color: ${cumpleAdiabatica ? 'var(--success)' : 'var(--danger)'}">
+${cumpleAdiabatica ? '✓ El cable resiste el esfuerzo térmico' : '✗ El cable podría fundirse antes del despeje'}
+</strong>
+</div>
+<div class="resultado ${cumpleCable ? 'res-ok' : 'res-fail'}" style="margin-bottom: 15px;">
+<strong>🔌 Verificación Cable vs Interruptor:</strong><br>
+• Corriente admisible cable: ~${corrienteAdmisibleCable} A | Interruptor: ${interruptorNominal} A<br>
+<strong style="color: ${cumpleCable ? 'var(--success)' : 'var(--danger)'}">${cumpleCable ? '✓ Coordina correctamente' : '✗ Revisar protección'}</strong>
+</div>
+<div class="resultado res-warn">
+<strong>🛡️ Recomendaciones RIC 05:</strong><br>
+• Poder de corte mínimo interruptor: <strong>${poderCorteMinimo.toFixed(2)} kA</strong><br>
+${!cumpleMagnetico ? '<br>⚠️ <strong>SOLUCIÓN:</strong> Reducir longitud, aumentar sección, o usar interruptor con curva B (si aplica).' : ''}
+${!cumpleAdiabatica ? '<br>⚠️ <strong>SOLUCIÓN:</strong> Aumentar sección del cable o usar interruptor de acción rápida (t < 0.1s).' : ''}
+</div>
+`;
+document.getElementById('res-cortocircuito').innerHTML = html;
 }
 function obtenerCorrienteAdmisible(seccion, material) {
-    const tablaCobre = {
-        1.5: 15, 2.5: 20, 4: 25, 6: 32, 10: 40,
-        16: 50, 25: 63, 35: 80, 50: 100
-    };
-    const tablaAluminio = {
-        1.5: 12, 2.5: 16, 4: 20, 6: 25, 10: 32,
-        16: 40, 25: 50, 35: 63, 50: 80
-    };
-    const tabla = material === 'cobre' ? tablaCobre : tablaAluminio;
-    return tabla[seccion] || 0;
+const tablaCobre = {
+1.5: 15, 2.5: 20, 4: 25, 6: 32, 10: 40,
+16: 50, 25: 63, 35: 80, 50: 100
+};
+const tablaAluminio = {
+1.5: 12, 2.5: 16, 4: 20, 6: 25, 10: 32,
+16: 40, 25: 50, 35: 63, 50: 80
+};
+const tabla = material === 'cobre' ? tablaCobre : tablaAluminio;
+return tabla[seccion] || 0;
 }
 function mostrarResultadoCC(mensaje, clase) {
-    const res = document.getElementById('res-cortocircuito');
-    res.className = `resultado ${clase}`;
-    res.innerHTML = mensaje;
+const res = document.getElementById('res-cortocircuito');
+res.className = `resultado ${clase}`;
+res.innerHTML = mensaje;
 }
 /* ========== FUNCIONES CALCULADORA OHM MEJORADA ========== */
 function cambiarModoOhm(modo, btn) {
-    modoOhmActual = modo;
-    document.querySelectorAll('.mode-selector .toggle-btn').forEach(b => b.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-    document.getElementById('modo-directo-ohm').classList.toggle('active', modo === 'directo');
-    document.getElementById('modo-inverso-ohm').classList.toggle('active', modo === 'inverso');
+modoOhmActual = modo;
+document.querySelectorAll('.mode-selector .toggle-btn').forEach(b => b.classList.remove('active'));
+if(btn) btn.classList.add('active');
+document.getElementById('modo-directo-ohm').classList.toggle('active', modo === 'directo');
+document.getElementById('modo-inverso-ohm').classList.toggle('active', modo === 'inverso');
 }
 function setSistemaOhm(sistema, btn) {
-    sistemaOhmActual = sistema;
-    document.getElementById('btn-mono-ohm').classList.toggle('active', sistema === 'monofasico');
-    document.getElementById('btn-tri-ohm').classList.toggle('active', sistema === 'trifasico');
+sistemaOhmActual = sistema;
+document.getElementById('btn-mono-ohm').classList.toggle('active', sistema === 'monofasico');
+document.getElementById('btn-tri-ohm').classList.toggle('active', sistema === 'trifasico');
 }
 function actualizarCosPhiOhm() {
-    const select = document.getElementById('cosphi-ohm');
-    const input = document.getElementById('cosphi-custom-ohm');
-    input.style.display = select.value === 'custom' ? 'block' : 'none';
+const select = document.getElementById('cosphi-ohm');
+const input = document.getElementById('cosphi-custom-ohm');
+input.style.display = select.value === 'custom' ? 'block' : 'none';
 }
 function getCosPhiOhm() {
-    const select = document.getElementById('cosphi-ohm');
-    if (select.value === 'custom') {
-        return parseFloat(document.getElementById('cosphi-custom-ohm').value) || 0.85;
-    }
-    return parseFloat(select.value);
+const select = document.getElementById('cosphi-ohm');
+if (select.value === 'custom') {
+return parseFloat(document.getElementById('cosphi-custom-ohm').value) || 0.85;
+}
+return parseFloat(select.value);
 }
 function calcularCorrienteOhm(potencia, cosPhi) {
-    const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
-    const factor = sistemaOhmActual === 'monofasico' ? 1 : Math.sqrt(3);
-    return potencia / (voltaje * factor * cosPhi);
+const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
+const factor = sistemaOhmActual === 'monofasico' ? 1 : Math.sqrt(3);
+return potencia / (voltaje * factor * cosPhi);
 }
 function validarAmpacidadOhm(seccion, corriente, metodo) {
-    const ampacidadMax = TABLA_AMPACIDAD[seccion]?.[metodo] || 0;
-    return { cumple: corriente <= ampacidadMax, ampacidadMax: ampacidadMax, porcentaje: ampacidadMax > 0 ? (corriente / ampacidadMax) * 100 : 0 };
+const ampacidadMax = TABLA_AMPACIDAD[seccion]?.[metodo] || 0;
+return { cumple: corriente <= ampacidadMax, ampacidadMax: ampacidadMax, porcentaje: ampacidadMax > 0 ? (corriente / ampacidadMax) * 100 : 0 };
 }
-// CORREGIDA: Fórmula RIC 04 / IEC 60364-5-52 (sin cosφ en denominador)
 function calcularCaidaTensionOhm(corriente, distancia, seccion) {
-    const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
-    const factor = sistemaOhmActual === 'monofasico' ? 2 : Math.sqrt(3);
-    const caidaVoltios = (factor * distancia * corriente * RHO) / seccion;
-    const porcentaje = (caidaVoltios / voltaje) * 100;
-    return { voltios: caidaVoltios, porcentaje: porcentaje };
+const rho = getResistividad('ohm');
+const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
+const factor = sistemaOhmActual === 'monofasico' ? 2 : Math.sqrt(3);
+const caidaVoltios = (factor * distancia * corriente * rho) / seccion;
+const porcentaje = (caidaVoltios / voltaje) * 100;
+return { voltios: caidaVoltios, porcentaje: porcentaje, resistividad: rho };
 }
 function recomendarInterruptor(corrienteCalculada, ampacidadCable, metodo, seccion, curva) {
-    const calibresEstandar = [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125];
-    const calibreMinimo = calibresEstandar.find(c => c >= corrienteCalculada);
-    if (!calibreMinimo) return { recomendado: null, mensaje: '⚠️ Corriente muy alta - Requiere proyecto especial', valido: false, alternativa: 'Consultar interruptor industrial' };
-    const protegeCable = calibreMinimo <= ampacidadCable;
-    const idxActual = calibresEstandar.indexOf(calibreMinimo);
-    const calibreSiguiente = calibresEstandar[idxActual + 1] || null;
-    const siguienteProtege = calibreSiguiente && calibreSiguiente <= ampacidadCable;
-    const curvasInfo = { 'B': { nombre: 'Curva B', rango: '3-5×In', uso: 'Cargas resistivas' }, 'C': { nombre: 'Curva C', rango: '5-10×In', uso: 'Cargas mixtas/motores' }, 'D': { nombre: 'Curva D', rango: '10-20×In', uso: 'Motores grandes/transformadores' } };
-    return { recomendado: calibreMinimo, calibreSiguiente: siguienteProtege ? calibreSiguiente : null, protegeCable: protegeCable, ampacidadCable: ampacidadCable, corrienteCalculada: corrienteCalculada, curva: curva, curvaInfo: curvasInfo[curva] || curvasInfo['C'], mensaje: protegeCable ? `✅ Interruptor ${calibreMinimo}A ${curva} coordina con cable y carga` : `⚠️ Cable ${seccion}mm² (${ampacidadCable}A) no soporta interruptor ${calibreMinimo}A`, valido: protegeCable, alternativa: !protegeCable && calibreSiguiente ? `Usar cable ${SECCIONES_DISPONIBLES.find(s => TABLA_AMPACIDAD[s]?.[metodo] >= calibreMinimo) || 'mayor'} mm²` : 'Revisar diseño del circuito' };
+const calibresEstandar = [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125];
+const calibreMinimo = calibresEstandar.find(c => c >= corrienteCalculada);
+if (!calibreMinimo) return { recomendado: null, mensaje: '⚠️ Corriente muy alta - Requiere proyecto especial', valido: false, alternativa: 'Consultar interruptor industrial' };
+const protegeCable = calibreMinimo <= ampacidadCable;
+const idxActual = calibresEstandar.indexOf(calibreMinimo);
+const calibreSiguiente = calibresEstandar[idxActual + 1] || null;
+const siguienteProtege = calibreSiguiente && calibreSiguiente <= ampacidadCable;
+const curvasInfo = { 'B': { nombre: 'Curva B', rango: '3-5×In', uso: 'Cargas resistivas' }, 'C': { nombre: 'Curva C', rango: '5-10×In', uso: 'Cargas mixtas/motores' }, 'D': { nombre: 'Curva D', rango: '10-20×In', uso: 'Motores grandes/transformadores' } };
+return { recomendado: calibreMinimo, calibreSiguiente: siguienteProtege ? calibreSiguiente : null, protegeCable: protegeCable, ampacidadCable: ampacidadCable, corrienteCalculada: corrienteCalculada, curva: curva, curvaInfo: curvasInfo[curva] || curvasInfo['C'], mensaje: protegeCable ? `✅ Interruptor ${calibreMinimo}A ${curva} coordina con cable y carga` : `⚠️ Cable ${seccion}mm² (${ampacidadCable}A) no soporta interruptor ${calibreMinimo}A`, valido: protegeCable, alternativa: !protegeCable && calibreSiguiente ? `Usar cable ${SECCIONES_DISPONIBLES.find(s => TABLA_AMPACIDAD[s]?.[metodo] >= calibreMinimo) || 'mayor'} mm²` : 'Revisar diseño del circuito' };
 }
 function calcularOhmDirecto() {
-    incrementCalcCount();
-    const potencia = parseFloat(document.getElementById('potencia-ohm').value);
-    const corrienteInput = parseFloat(document.getElementById('corriente-ohm').value);
-    const distancia = parseFloat(document.getElementById('distancia-ohm').value);
-    const seccion = parseFloat(document.getElementById('seccion-ohm').value);
-    const metodo = document.getElementById('metodo-instalacion-ohm').value;
-    const cosPhi = getCosPhiOhm();
-    const curva = document.getElementById('curva-interruptor-ohm').value;
-    const limiteSeleccionado = parseFloat(document.getElementById('limite-caida-ohm')?.value) || 5;
-    if (!distancia || !seccion) { alert('Por favor ingrese distancia y sección del conductor'); return; }
-    let corriente;
-    if (potencia) { corriente = calcularCorrienteOhm(potencia, cosPhi); }
-    else if (corrienteInput) { corriente = corrienteInput; }
-    else { alert('Ingrese potencia o corriente'); return; }
-    
-    const caida = calcularCaidaTensionOhm(corriente, distancia, seccion);
-    const ampacidad = validarAmpacidadOhm(seccion, corriente, metodo);
-    const resultadoDiv = document.getElementById('resultado-ohm-directo');
-    const alertaDiv = document.getElementById('alerta-ampacidad-ohm');
-    const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
-    const factor = sistemaOhmActual === 'monofasico' ? '2' : '√3 (1.732)';
-    let html = `<h3><i class="fas fa-chart-line"></i> Resultados del Cálculo</h3><div class="valor-principal">${caida.voltios.toFixed(2)} V (${caida.porcentaje.toFixed(2)}%)</div><div class="detalles"><div class="detalle-item"><strong>Corriente:</strong> ${corriente.toFixed(2)} A</div><div class="detalle-item"><strong>Voltaje:</strong> ${voltaje}V</div><div class="detalle-item"><strong>Factor:</strong> ${factor}</div><div class="detalle-item"><strong>cos φ:</strong> ${cosPhi}</div><div class="detalle-item"><strong>Distancia:</strong> ${distancia} m</div><div class="detalle-item"><strong>Sección:</strong> ${seccion} mm²</div></div>`;
-    
-    if (caida.porcentaje <= limiteSeleccionado) {
-        html += `<div style="margin-top: 15px; padding: 15px; background: #d1fae5; border-radius: 8px; text-align: center; font-weight: bold; color: #065f46;"><i class="fas fa-check-circle"></i> ✓ CUMPLE RIC 04 - Caída ≤ ${limiteSeleccionado}%</div>`;
-        resultadoDiv.className = 'resultado res-ok show';
-    } else {
-        html += `<div style="margin-top: 15px; padding: 15px; background: #fee2e2; border-radius: 8px; text-align: center; font-weight: bold; color: #991b1b;"><i class="fas fa-exclamation-triangle"></i> ✗ NO CUMPLE - Supera ${limiteSeleccionado}%<br><small>Se recomienda aumentar la sección del conductor</small></div>`;
-        resultadoDiv.className = 'resultado res-fail show';
-    }
-    resultadoDiv.innerHTML = html;
-    if (!ampacidad.cumple && ampacidad.ampacidadMax > 0) {
-        alertaDiv.innerHTML = `<h4><i class="fas fa-fire"></i> ¡ALERTA DE AMPACIDAD!</h4><p><strong>El conductor de ${seccion} mm² NO soporta ${corriente.toFixed(1)} A</strong></p><p>Capacidad máxima (${metodo}): ${ampacidad.ampacidadMax} A</p><p>Sobrecarga: ${ampacidad.porcentaje.toFixed(1)}%</p><p style="margin-top: 10px; font-weight: bold;">⚠️ El cable se puede quemar independientemente de la caída de tensión</p>`;
-        alertaDiv.classList.add('show');
-    } else { alertaDiv.classList.remove('show'); }
-    if (corriente > 0) {
-        const interruptor = recomendarInterruptor(corriente, ampacidad.ampacidadMax, metodo, seccion, curva);
-        const claseCard = interruptor.valido ? 'interruptor-card' : (interruptor.protegeCable ? 'interruptor-card warning' : 'interruptor-card danger');
-        const colorValor = interruptor.valido ? 'success' : (interruptor.protegeCable ? 'warning' : 'danger');
-        let htmlInterruptor = `<div class="${claseCard}"><h4 style="margin: 0 0 10px 0; color: var(--dark); display: flex; align-items: center; gap: 8px;"><i class="fas fa-shield-alt"></i> 🔌 Protección Recomendada (RIC 05) <span class="curva-info curva-${curva}">${interruptor.curvaInfo.nombre}</span></h4><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; font-size: 0.9rem;"><div><strong>Corriente carga:</strong><br>${corriente.toFixed(2)} A</div><div><strong>Interruptor:</strong><br><span class="interruptor-valor ${colorValor}">${interruptor.recomendado ? interruptor.recomendado + ' A' : 'N/A'}</span></div><div><strong>Ampacidad cable:</strong><br>${ampacidad.ampacidadMax} A</div><div><strong>Curva disparo:</strong><br>${interruptor.curvaInfo.rango}</div></div><p style="margin: 12px 0 0 0; font-weight: ${interruptor.valido ? '600' : 'bold'}; color: ${interruptor.valido ? 'var(--success)' : (interruptor.protegeCable ? '#92400e' : 'var(--danger)')}; font-size: 0.95rem;">${interruptor.mensaje}</p>${!interruptor.valido ? `<p style="margin: 8px 0 0 0; font-size: 0.85rem; color: #64748b; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px;">💡 <strong>Solución:</strong> ${interruptor.alternativa}</p>` : ''}<small style="display: block; margin-top: 10px; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 8px;"><i class="fas fa-info-circle"></i> ${interruptor.curvaInfo.uso}</small></div>`;
-        resultadoDiv.innerHTML += htmlInterruptor;
-    }
+incrementCalcCount();
+const potencia = parseFloat(document.getElementById('potencia-ohm').value);
+const corrienteInput = parseFloat(document.getElementById('corriente-ohm').value);
+const distancia = parseFloat(document.getElementById('distancia-ohm').value);
+const seccion = parseFloat(document.getElementById('seccion-ohm').value);
+const metodo = document.getElementById('metodo-instalacion-ohm').value;
+const cosPhi = getCosPhiOhm();
+const curva = document.getElementById('curva-interruptor-ohm').value;
+const limiteSeleccionado = parseFloat(document.getElementById('limite-caida-ohm')?.value) || 5;
+if (!distancia || !seccion) { alert('Por favor ingrese distancia y sección del conductor'); return; }
+let corriente;
+if (potencia) { corriente = calcularCorrienteOhm(potencia, cosPhi); }
+else if (corrienteInput) { corriente = corrienteInput; }
+else { alert('Ingrese potencia o corriente'); return; }
+const caida = calcularCaidaTensionOhm(corriente, distancia, seccion);
+const ampacidad = validarAmpacidadOhm(seccion, corriente, metodo);
+const resultadoDiv = document.getElementById('resultado-ohm-directo');
+const alertaDiv = document.getElementById('alerta-ampacidad-ohm');
+const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
+const factor = sistemaOhmActual === 'monofasico' ? '2' : '√3 (1.732)';
+let html = `<h3><i class="fas fa-chart-line"></i> Resultados del Cálculo</h3><div class="valor-principal">${caida.voltios.toFixed(2)} V (${caida.porcentaje.toFixed(2)}%)</div><div class="detalles"><div class="detalle-item"><strong>Corriente:</strong> ${corriente.toFixed(2)} A</div><div class="detalle-item"><strong>Voltaje:</strong> ${voltaje}V</div><div class="detalle-item"><strong>Factor:</strong> ${factor}</div><div class="detalle-item"><strong>cos φ:</strong> ${cosPhi}</div><div class="detalle-item"><strong>Resistividad:</strong> ρ=${caida.resistividad}</div><div class="detalle-item"><strong>Distancia:</strong> ${distancia} m</div><div class="detalle-item"><strong>Sección:</strong> ${seccion} mm²</div></div>`;
+if (caida.porcentaje <= limiteSeleccionado) {
+html += `<div style="margin-top: 15px; padding: 15px; background: #d1fae5; border-radius: 8px; text-align: center; font-weight: bold; color: #065f46;"><i class="fas fa-check-circle"></i> ✓ CUMPLE RIC 04 - Caída ≤ ${limiteSeleccionado}%</div>`;
+resultadoDiv.className = 'resultado res-ok show';
+} else {
+html += `<div style="margin-top: 15px; padding: 15px; background: #fee2e2; border-radius: 8px; text-align: center; font-weight: bold; color: #991b1b;"><i class="fas fa-exclamation-triangle"></i> ✗ NO CUMPLE - Supera ${limiteSeleccionado}%<br><small>Se recomienda aumentar la sección del conductor</small></div>`;
+resultadoDiv.className = 'resultado res-fail show';
+}
+resultadoDiv.innerHTML = html;
+if (!ampacidad.cumple && ampacidad.ampacidadMax > 0) {
+alertaDiv.innerHTML = `<h4><i class="fas fa-fire"></i> ¡ALERTA DE AMPACIDAD!</h4><p><strong>El conductor de ${seccion} mm² NO soporta ${corriente.toFixed(1)} A</strong></p><p>Capacidad máxima (${metodo}): ${ampacidad.ampacidadMax} A</p><p>Sobrecarga: ${ampacidad.porcentaje.toFixed(1)}%</p><p style="margin-top: 10px; font-weight: bold;">⚠️ El cable se puede quemar independientemente de la caída de tensión</p>`;
+alertaDiv.classList.add('show');
+} else { alertaDiv.classList.remove('show'); }
+if (corriente > 0) {
+const interruptor = recomendarInterruptor(corriente, ampacidad.ampacidadMax, metodo, seccion, curva);
+const claseCard = interruptor.valido ? 'interruptor-card' : (interruptor.protegeCable ? 'interruptor-card warning' : 'interruptor-card danger');
+const colorValor = interruptor.valido ? 'success' : (interruptor.protegeCable ? 'warning' : 'danger');
+let htmlInterruptor = `<div class="${claseCard}"><h4 style="margin: 0 0 10px 0; color: var(--dark); display: flex; align-items: center; gap: 8px;"><i class="fas fa-shield-alt"></i> 🔌 Protección Recomendada (RIC 05) <span class="curva-info curva-${curva}">${interruptor.curvaInfo.nombre}</span></h4><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; font-size: 0.9rem;"><div><strong>Corriente carga:</strong><br>${corriente.toFixed(2)} A</div><div><strong>Interruptor:</strong><br><span class="interruptor-valor ${colorValor}">${interruptor.recomendado ? interruptor.recomendado + ' A' : 'N/A'}</span></div><div><strong>Ampacidad cable:</strong><br>${ampacidad.ampacidadMax} A</div><div><strong>Curva disparo:</strong><br>${interruptor.curvaInfo.rango}</div></div><p style="margin: 12px 0 0 0; font-weight: ${interruptor.valido ? '600' : 'bold'}; color: ${interruptor.valido ? 'var(--success)' : (interruptor.protegeCable ? '#92400e' : 'var(--danger)')}; font-size: 0.95rem;">${interruptor.mensaje}</p>${!interruptor.valido ? `<p style="margin: 8px 0 0 0; font-size: 0.85rem; color: #64748b; padding: 8px; background: rgba(255,255,255,0.5); border-radius: 6px;">💡 <strong>Solución:</strong> ${interruptor.alternativa}</p>` : ''}<small style="display: block; margin-top: 10px; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 8px;"><i class="fas fa-info-circle"></i> ${interruptor.curvaInfo.uso}</small></div>`;
+resultadoDiv.innerHTML += htmlInterruptor;
+}
 }
 function calcularOhmInverso() {
-    incrementCalcCount();
-    const potencia = parseFloat(document.getElementById('potencia-inv-ohm').value);
-    const distancia = parseFloat(document.getElementById('distancia-inv-ohm').value);
-    const cosPhi = parseFloat(document.getElementById('cosphi-inv-ohm').value);
-    const metodo = document.getElementById('metodo-instalacion-inv-ohm').value;
-    const curva = document.getElementById('curva-interruptor-inv-ohm').value;
-    const limiteInv = parseFloat(document.getElementById('limite-caida-inv-ohm')?.value) || 5;
-    if (!potencia || !distancia) { alert('Por favor ingrese potencia y distancia'); return; }
-    const corriente = calcularCorrienteOhm(potencia, cosPhi);
-    const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
-    const factor = sistemaOhmActual === 'monofasico' ? 2 : Math.sqrt(3);
-    const caidaMaxVoltios = (limiteInv / 100) * voltaje;
-    // Fórmula corregida
-    const seccionMinimaCaida = (factor * distancia * corriente * RHO) / caidaMaxVoltios;
-    let seccionRecomendada = null; let seccionAmpacidad = null;
-    for (const seccion of SECCIONES_DISPONIBLES) {
-        const caida = calcularCaidaTensionOhm(corriente, distancia, seccion);
-        const ampacidad = validarAmpacidadOhm(seccion, corriente, metodo);
-        if (caida.porcentaje <= limiteInv && ampacidad.cumple && !seccionRecomendada) { seccionRecomendada = seccion; seccionAmpacidad = ampacidad.ampacidadMax; break; }
-    }
-    const resultadoDiv = document.getElementById('resultado-ohm-inverso');
-    const seccionDiv = document.getElementById('seccion-recomendada-ohm');
-    let html = `<h3><i class="fas fa-calculator"></i> Análisis del Cálculo</h3><div class="detalles"><div class="detalle-item"><strong>Corriente calculada:</strong> ${corriente.toFixed(2)} A</div><div class="detalle-item"><strong>Distancia:</strong> ${distancia} m</div><div class="detalle-item"><strong>cos φ:</strong> ${cosPhi}</div><div class="detalle-item"><strong>Sección mínima teórica:</strong> ${seccionMinimaCaida.toFixed(2)} mm²</div></div>`;
-    if (seccionRecomendada) {
-        html += `<div style="margin-top: 15px; padding: 15px; background: #d1fae5; border-radius: 8px;"><strong><i class="fas fa-check-circle"></i> Solución encontrada:</strong><br>Cable de ${seccionRecomendada} mm² cumple con caída de tensión (≤${limiteInv}%) y ampacidad</div>`;
-        const interruptorInv = recomendarInterruptor(corriente, TABLA_AMPACIDAD[seccionRecomendada]?.[metodo] || 0, metodo, seccionRecomendada, curva);
-        seccionDiv.innerHTML = `<h3><i class="fas fa-check-circle"></i> Sección Recomendada</h3><span class="numero">${seccionRecomendada} mm²</span><p>Capacidad: ${seccionAmpacidad} A | Método: ${metodo}</p><small>Caída de tensión ≤ ${limiteInv}% según RIC 04</small>${interruptorInv.recomendado ? `<div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.3);"><small><i class="fas fa-shield-alt"></i> Protección: <strong>${interruptorInv.recomendado} A</strong> <span class="curva-info curva-${curva}" style="margin-left: 5px;">${curva}</span></small></div>` : ''}`;
-        seccionDiv.className = 'seccion-recomendada show'; resultadoDiv.className = 'resultado res-ok show';
-    } else {
-        html += `<div style="margin-top: 15px; padding: 15px; background: #fee2e2; border-radius: 8px;"><strong><i class="fas fa-exclamation-triangle"></i> Advertencia:</strong><br>Se requiere cable mayor a 50 mm² o reducir distancia/potencia</div>`;
-        seccionDiv.classList.remove('show'); resultadoDiv.className = 'resultado res-warn show';
-    }
-    resultadoDiv.innerHTML = html;
+incrementCalcCount();
+const potencia = parseFloat(document.getElementById('potencia-inv-ohm').value);
+const distancia = parseFloat(document.getElementById('distancia-inv-ohm').value);
+const cosPhi = parseFloat(document.getElementById('cosphi-inv-ohm').value);
+const metodo = document.getElementById('metodo-instalacion-inv-ohm').value;
+const curva = document.getElementById('curva-interruptor-inv-ohm').value;
+const limiteInv = parseFloat(document.getElementById('limite-caida-inv-ohm')?.value) || 5;
+if (!potencia || !distancia) { alert('Por favor ingrese potencia y distancia'); return; }
+const corriente = calcularCorrienteOhm(potencia, cosPhi);
+const voltaje = sistemaOhmActual === 'monofasico' ? 220 : 380;
+const factor = sistemaOhmActual === 'monofasico' ? 2 : Math.sqrt(3);
+const rho = getResistividad('ohm');
+const caidaMaxVoltios = (limiteInv / 100) * voltaje;
+const seccionMinimaCaida = (factor * distancia * corriente * rho) / caidaMaxVoltios;
+let seccionRecomendada = null; let seccionAmpacidad = null;
+for (const seccion of SECCIONES_DISPONIBLES) {
+const caida = calcularCaidaTensionOhm(corriente, distancia, seccion);
+const ampacidad = validarAmpacidadOhm(seccion, corriente, metodo);
+if (caida.porcentaje <= limiteInv && ampacidad.cumple && !seccionRecomendada) { seccionRecomendada = seccion; seccionAmpacidad = ampacidad.ampacidadMax; break; }
+}
+const resultadoDiv = document.getElementById('resultado-ohm-inverso');
+const seccionDiv = document.getElementById('seccion-recomendada-ohm');
+let html = `<h3><i class="fas fa-calculator"></i> Análisis del Cálculo</h3><div class="detalles"><div class="detalle-item"><strong>Corriente calculada:</strong> ${corriente.toFixed(2)} A</div><div class="detalle-item"><strong>Distancia:</strong> ${distancia} m</div><div class="detalle-item"><strong>cos φ:</strong> ${cosPhi}</div><div class="detalle-item"><strong>Resistividad:</strong> ρ=${rho}</div><div class="detalle-item"><strong>Sección mínima teórica:</strong> ${seccionMinimaCaida.toFixed(2)} mm²</div></div>`;
+if (seccionRecomendada) {
+html += `<div style="margin-top: 15px; padding: 15px; background: #d1fae5; border-radius: 8px;"><strong><i class="fas fa-check-circle"></i> Solución encontrada:</strong><br>Cable de ${seccionRecomendada} mm² cumple con caída de tensión (≤${limiteInv}%) y ampacidad</div>`;
+const interruptorInv = recomendarInterruptor(corriente, TABLA_AMPACIDAD[seccionRecomendada]?.[metodo] || 0, metodo, seccionRecomendada, curva);
+seccionDiv.innerHTML = `<h3><i class="fas fa-check-circle"></i> Sección Recomendada</h3><span class="numero">${seccionRecomendada} mm²</span><p>Capacidad: ${seccionAmpacidad} A | Método: ${metodo}</p><small>Caída de tensión ≤ ${limiteInv}% según RIC 04</small>${interruptorInv.recomendado ? `<div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255,255,255,0.3);"><small><i class="fas fa-shield-alt"></i> Protección: <strong>${interruptorInv.recomendado} A</strong> <span class="curva-info curva-${curva}" style="margin-left: 5px;">${curva}</span></small></div>` : ''}`;
+seccionDiv.className = 'seccion-recomendada show'; resultadoDiv.className = 'resultado res-ok show';
+} else {
+html += `<div style="margin-top: 15px; padding: 15px; background: #fee2e2; border-radius: 8px;"><strong><i class="fas fa-exclamation-triangle"></i> Advertencia:</strong><br>Se requiere cable mayor a 50 mm² o reducir distancia/potencia</div>`;
+seccionDiv.classList.remove('show'); resultadoDiv.className = 'resultado res-warn show';
+}
+resultadoDiv.innerHTML = html;
 }
 /* ========== INICIALIZACIÓN ========== */
 function updateDashboardTime() {
-    const now = new Date();
-    const timeEl = document.getElementById('dash-time');
-    const dateEl = document.getElementById('dash-date');
-    if (timeEl) timeEl.textContent = now.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
-    if (dateEl) dateEl.textContent = now.toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+const now = new Date();
+const timeEl = document.getElementById('dash-time');
+const dateEl = document.getElementById('dash-date');
+if (timeEl) timeEl.textContent = now.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+if (dateEl) dateEl.textContent = now.toLocaleDateString('es-CL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 }
 window.addEventListener('load', () => {
 // Para desarrollo: descomentar para saltar login
